@@ -1,12 +1,17 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/l8Y9zz-y)
+# Habit Quest
+
+Habit Quest is a habit tracking app designed to allow users to define the habits they wish to create or break.
+
+Habits the user wishes to start will be assigned a positive score, based on how important the habit is to the user.
+
+Habits the user wishes to break will be assigned a negative score based on how important the habit is to the user.
+
 # COMP 4631 – Mobile App II
-## Project Code Repository (Starter)
+This program is a product of UMass Lowell's Mobile App. Programming II, Spring 2026 class.
 
-This repository provides the initial structure for the
-semester-long Mobile App II project.
+The team:
+* Meyers, Shades - Project Manager & Design Quality Assurance Lead
+* Azevedo, Luca - Front-End Dev.
+* Echeverry, Miguel - Back-End Dev.
+* Luc, Marvens - Assistant Dev.
 
-- Teams will work in their assigned GitHub Classroom repository.
-- Code should be committed regularly throughout the semester.
-- Final code submission deadline: **April 30, 2026**.
-
-Do not create additional repositories for this project.
