@@ -15,3 +15,6 @@ The team:
 * Echeverry, Miguel - Back-End Dev.
 * Luc, Marvens - Assistant Dev.
 
+
+# Blog
+Our on-going blog: [Blog](https://github.com/UML-COMP4630-LIN/project-coderepository-habitquest/blob/main/Blog.md)
