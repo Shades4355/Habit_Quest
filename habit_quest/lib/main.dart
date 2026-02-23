@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-void main() {
+import 'package:flutter/services.dart'; // Required for SystemChrome
+
+void main() async {
+  // 1. Ensure plugin services are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. Lock the app to Portrait (Source: Document Section 1.D)
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   runApp(const HabitQuestApp());
 }
 
