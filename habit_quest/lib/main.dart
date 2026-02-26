@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart'; // Required for SystemChrome
 
-import "./interfaces/AppDrawer.dart";
-import './interfaces/NotificationInterfacePopUp.dart';
-
 import './screens/HomePageScreen.dart';
 import './screens/ExtendedGraphScreen.dart';
 import './screens/ManageHabitsScreen.dart';
