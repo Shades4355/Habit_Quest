@@ -53,7 +53,7 @@ Team meeting #5
 
 In attendance: Shades and Luca
 
-Absent without prior messaging: Marvins
+Absent without prior messaging: Marvens
 
 Late because of a Valorant match: Miguel
 
@@ -61,7 +61,7 @@ Since last week, Luca worked on the UI for the Demo. He also implemented the UI�
 
 Shades has made slow progress on the master testing document, due to a 3 day long headache.
 
-On 23-Feb., Luca requested Marvins assist by moving several functions into separate files in new folders (ex: a “screens” folder for all the screen files) to make the code easier to maintain and improve. Marvins has not yet responded.
+On 23-Feb., Luca requested Marvens assist by moving several functions into separate files in new folders (ex: a “screens” folder for all the screen files) to make the code easier to maintain and improve. Marvens has not yet responded.
 
 Miguel has started working with the database on his learning side project. He has also been researching how to implement our stretch goal, should we have time. Miguel has also started looking at “fluttertoast” as a replacement for Flutter’s “snackbar” notifications.
 
@@ -71,7 +71,7 @@ Shades plans to continue writing the master testing document, as well as review 
 
 Miguel plans to switch from the side project to working on Habit Quest once the file structure is sorted.
 
-Current blockers: at least 3/4th of the team is needed to finalize the remaining pending items in the SADD. And Miguel needs Marvins to finish modifying the file structure before Miguel can meaningfully start on the back-end.
+Current blockers: at least 3/4th of the team is needed to finalize the remaining pending items in the SADD. And Miguel needs Marvens to finish modifying the file structure before Miguel can meaningfully start on the back-end.
 
 Current state: we have a front-end; we need the back-end; and our file structure needs to be adjusted.
 
