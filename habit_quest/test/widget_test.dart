@@ -9,22 +9,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:habit_quest/main.dart';
+import 'package:habit_quest/screens/HomePageScreen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App Has A Title', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const HabitQuestApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that our app has a Title.
+    expect(find.text("Habit Quest"), findsOne);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets("Homepage containts the correct text", (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: const HomePageScreen()));
+
+    expect(find.textContaining("Today's Score:"), findsOneWidget);
+    expect(find.textContaining("Unrecorded Habits"), findsOneWidget);
+  });
+
+  testWidgets("Homepage contains the navigation 'hamburger'", (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: const HomePageScreen()));
+    // find hamburger button
+    final hamburger = find.byType(DrawerButton);
+
+    expect(hamburger, findsOneWidget);
+
+    await tester.tap(hamburger);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text("Settings"), findsOneWidget);
   });
 }
