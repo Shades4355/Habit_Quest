@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/services.dart'; // Required for SystemChrome
+import 'package:flutter/services.dart'; 
 
 import './screens/HomePageScreen.dart';
 import './screens/ExtendedGraphScreen.dart';
@@ -8,12 +7,8 @@ import './screens/ManageHabitsScreen.dart';
 import './screens/HabitHistoryScreen.dart';
 import './screens/SettingsScreen.dart';
 
-
 void main() async {
-  // 1. Ensure plugin services are initialized
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 2. Lock the app to Portrait (Source: Document Section 1.D)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -22,27 +17,51 @@ void main() async {
   runApp(const HabitQuestApp());
 }
 
-class HabitQuestApp extends StatelessWidget {
+class HabitQuestApp extends StatefulWidget {
   const HabitQuestApp({super.key});
 
   @override
+  State<HabitQuestApp> createState() => _HabitQuestAppState();
+}
+
+class _HabitQuestAppState extends State<HabitQuestApp> {
+  // This variable tracks if we are in light or dark mode
+  ThemeMode _themeMode = ThemeMode.light;
+
+  // This function will be passed to the Settings screen to change the mode
+  void _toggleTheme(bool isDark) {
+    setState(() {
+      _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // The app will display its name on the top bar[cite: 6].
-    // Usually locked to portrait, except for specific screens[cite: 7].
     return MaterialApp(
       title: 'Habit Quest',
+      // Define the Light Theme
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo, brightness: Brightness.light),
         useMaterial3: true,
       ),
+      // Define the Dark Theme
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo, brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      // Tell the app which one to use based on our state
+      themeMode: _themeMode, 
       initialRoute: '/',
       routes: {
-        // When the User launches the app, they will be on the homepage[cite: 3].
         '/': (context) => const HomePageScreen(),
         '/extended_graph': (context) => const ExtendedGraphScreen(),
         '/manage_habits': (context) => const ManageHabitsScreen(),
         '/habit_history': (context) => const HabitHistoryScreen(),
-        '/settings': (context) => const SettingsScreen(),
+        // We pass the current state and the toggle function to Settings
+        '/settings': (context) => SettingsScreen(
+          isDarkMode: _themeMode == ThemeMode.dark,
+          onThemeChanged: _toggleTheme,
+        ),
       },
     );
   }
