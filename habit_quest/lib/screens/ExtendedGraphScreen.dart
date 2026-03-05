@@ -1,30 +1,99 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/services.dart';
 
 // ==================== EXTENDED GRAPH SCREEN ====================
 
-class ExtendedGraphScreen extends StatelessWidget {
+class ExtendedGraphScreen extends StatefulWidget {
   const ExtendedGraphScreen({super.key});
 
   @override
+  State<ExtendedGraphScreen> createState() => _ExtendedGraphScreen();
+}
+
+class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    // Restore all orientations when leaving
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // NOTE: The document states this screen should lock to landscape mode[cite: 27].
-    // Orientation locking requires device-specific configuration outside the scope of a simple UI mockup.
     return Scaffold(
       appBar: AppBar(
         title: const Text('Extended Graph'),
-        // There will be a back button... which will take Users back to the "Homepage"[cite: 29].
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Center(
-        // The "Extended Graph" screen will display a line graph showing User scores over the last 30 days[cite: 28].
-        child: Container(
-          height: 300,
-          width: double.infinity,
-          color: Colors.indigo.shade200,
-          child: const Center(child: Text('Placeholder: 30-Day Score Line Graph (Landscape View)')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: LineChart(
+          LineChartData(
+            minX: 0,
+            maxX: 29,
+            minY: 0,
+            maxY: 20,
+            gridData: FlGridData(show: true),
+            borderData: FlBorderData(show: true),
+            titlesData: FlTitlesData(
+              rightTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 36,
+                ),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  interval: 5,
+                  getTitlesWidget: (value, meta) {
+                    return Text('Day ${value.toInt() + 1}');
+                  },
+                ),
+              ),
+            ),
+            // date belongs here!!!!
+            lineBarsData: [
+              LineChartBarData(
+                // get raid of everything under here
+                spots: List.generate(
+                  30,
+                  (index) => FlSpot(
+                    index.toDouble(),
+                    (index % 10 + 5).toDouble(),
+                  ),
+                ),
+                isCurved: true,
+                barWidth: 3,
+                dotData: FlDotData(show: true),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,16 +2,36 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart'; // Required for SystemChrome
 
+// Database and Repository imports
+import 'package:habit_quest/database/app_database.dart';
+import 'package:habit_quest/repositories/habit_repository.dart';
+
+// For SQLite Inspector (Debugging tool)
+import 'package:flutter/foundation.dart';
+import 'package:sqlite_inspector/sqlite_inspector.dart';
+
 import './screens/HomePageScreen.dart';
 import './screens/ExtendedGraphScreen.dart';
 import './screens/ManageHabitsScreen.dart';
 import './screens/HabitHistoryScreen.dart';
 import './screens/SettingsScreen.dart';
 
-
 void main() async {
   // 1. Ensure plugin services are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (kDebugMode) {
+    await SqliteInspector.start();
+  }
+
+  // Initialize database
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+
+  // Initialize the repository
+  final habitRepo = HabitRepository(
+    habitDao: database.habitDao,
+    habitRecordDao: database.habitRecordDao
+  );
 
   // 2. Lock the app to Portrait (Source: Document Section 1.D)
   await SystemChrome.setPreferredOrientations([
@@ -19,12 +39,13 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const HabitQuestApp());
+  runApp(HabitQuestApp(habitRepo: habitRepo));
 }
 
 class HabitQuestApp extends StatelessWidget {
-  const HabitQuestApp({super.key});
+  const HabitQuestApp({super.key, required this.habitRepo});
 
+  final HabitRepository habitRepo;
   @override
   Widget build(BuildContext context) {
     // The app will display its name on the top bar[cite: 6].
@@ -38,10 +59,10 @@ class HabitQuestApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         // When the User launches the app, they will be on the homepage[cite: 3].
-        '/': (context) => const HomePageScreen(),
-        '/extended_graph': (context) => const ExtendedGraphScreen(),
-        '/manage_habits': (context) => const ManageHabitsScreen(),
-        '/habit_history': (context) => const HabitHistoryScreen(),
+        '/': (context) => HomePageScreen(habitRepo: habitRepo),
+        '/extended_graph': (context) => ExtendedGraphScreen(),
+        '/manage_habits': (context) => ManageHabitsScreen(habitRepo: habitRepo),
+        '/habit_history': (context) => HabitHistoryScreen(/*habitRepo: habitRepo*/),
         '/settings': (context) => const SettingsScreen(),
       },
     );
