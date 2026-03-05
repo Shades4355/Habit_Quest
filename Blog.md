@@ -76,3 +76,22 @@ Current blockers: at least 3/4th of the team is needed to finalize the remaining
 Current state: we have a front-end; we need the back-end; and our file structure needs to be adjusted.
 
 
+### 03-March-2026
+Team meeting #6:
+
+In attendance: Shades, Luca, Marvens, Miguel
+
+Since last week, Shades has written more manual tests, and has started reading up on how to write widget tests.
+
+Marvens has started and finished working on the 7-day and 30-day graphs.
+
+And Miguel has been working on the database.
+
+Today, we went over the SADD. We talked about the remaining pending items, as well as some UI changes. We additionally worked together to troubleshoot some technical difficulties.
+
+Miguel is planning to finish up with the database this week.
+
+Marvens is planning to get our calendar and clock UI libraries integrated this week.
+
+Luca will start working on Dark Mode and add a toggle for “Show Deadlines” in the settings.
+
