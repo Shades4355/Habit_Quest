@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
+import 'package:flutter/services.dart';
 
 import './screens/HomePageScreen.dart';
 import './screens/ExtendedGraphScreen.dart';
@@ -8,7 +8,10 @@ import './screens/HabitHistoryScreen.dart';
 import './screens/SettingsScreen.dart';
 
 void main() async {
+  // 1. Ensure plugin services are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. Lock the app to Portrait (Source: Document Section 1.D)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -41,16 +44,22 @@ class _HabitQuestAppState extends State<HabitQuestApp> {
       title: 'Habit Quest',
       // Define the Light Theme
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo, brightness: Brightness.light),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.indigo,
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
       ),
       // Define the Dark Theme
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo, brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.indigo,
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       // Tell the app which one to use based on our state
-      themeMode: _themeMode, 
+      themeMode: _themeMode,
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePageScreen(),
@@ -59,9 +68,9 @@ class _HabitQuestAppState extends State<HabitQuestApp> {
         '/habit_history': (context) => const HabitHistoryScreen(),
         // We pass the current state and the toggle function to Settings
         '/settings': (context) => SettingsScreen(
-          isDarkMode: _themeMode == ThemeMode.dark,
-          onThemeChanged: _toggleTheme,
-        ),
+              isDarkMode: _themeMode == ThemeMode.dark,
+              onThemeChanged: _toggleTheme,
+            ),
       },
     );
   }

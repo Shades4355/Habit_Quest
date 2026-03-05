@@ -5,8 +5,8 @@ import '../interfaces/NotificationInterfacePopUp.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
-class SettingsScreen extends StatelessWidget {
-  // These are the parameters passed from main.dart to control the theme
+class SettingsScreen extends StatefulWidget {
+  // Properties passed from main.dart
   final bool isDarkMode;
   final Function(bool) onThemeChanged;
 
@@ -15,6 +15,14 @@ class SettingsScreen extends StatelessWidget {
     required this.isDarkMode,
     required this.onThemeChanged,
   });
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  // Local state for the deadline reminder toggle
+  bool _deadlineReminder = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +42,12 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           const Divider(),
+
           // "Clear History" option.
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text('Clear History',
-                style: TextStyle(color: Colors.red)),
-            // The "Clear History" button will prompt the User to confirm... with a pop-up.
+            title:
+                const Text('Clear History', style: TextStyle(color: Colors.red)),
             onTap: () {
               showDialog(
                   context: context,
@@ -49,12 +57,10 @@ class SettingsScreen extends StatelessWidget {
                             'Are you sure you want to clear your entire habit history?'),
                         actions: [
                           TextButton(
-                            // If the User clicks "Cancel", close the pop-up.
                             onPressed: () => Navigator.pop(ctx),
                             child: const Text('Cancel'),
                           ),
                           TextButton(
-                            // If the User confirms, delete the entire Habit History.
                             onPressed: () {
                               Navigator.pop(ctx);
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -70,11 +76,11 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           const Divider(),
+
           // "Notification Settings" option.
           ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text('Notification Settings'),
-            // The "Notification Settings" option will open the "Notifications" interface.
             onTap: () {
               showModalBottomSheet(
                   context: context,
@@ -82,33 +88,49 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           const Divider(),
+
+          // --- NEW: Toggle deadline reminder ---
+          SwitchListTile(
+            secondary: const Icon(Icons.notification_important_outlined),
+            title: const Text('Toggle deadline reminder'),
+            value: _deadlineReminder,
+            onChanged: (bool value) {
+              setState(() {
+                _deadlineReminder = value;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Deadline reminders: ${value ? "ON" : "OFF"}')),
+              );
+            },
+          ),
+          const Divider(),
+
           // "Dark Mode" with an on/off slider.
           SwitchListTile(
             secondary: const Icon(Icons.dark_mode),
             title: const Text('Dark Mode'),
-            // Uses the value passed from the parent (main.dart)
-            value: isDarkMode,
+            // Uses the value passed from the parent (widget.isDarkMode)
+            value: widget.isDarkMode,
             onChanged: (bool value) {
-              // Calls the function in main.dart to update the entire app
-              onThemeChanged(value);
+              // Updates the global state in main.dart
+              widget.onThemeChanged(value);
               
-              // Slider presents different colors in on/off positions (handled by material switch default).
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Dark Mode set to: $value')));
             },
           ),
           const Divider(),
+
           // "Credits" option.
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('Credits'),
-            // The "Credits" option will open a pop-up.
             onTap: () {
               showDialog(
                   context: context,
                   builder: (ctx) => const AlertDialog(
                         title: Text('Credits'),
-                        // Displays team names and thanks the user.
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
