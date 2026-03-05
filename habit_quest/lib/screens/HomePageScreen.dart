@@ -33,7 +33,7 @@ class HomePageScreen extends StatelessWidget {
             const Divider(),
             const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Align(alignment: Alignment.centerLeft, child: Text('Unrecorded Habits (Pending):', style: TextStyle(fontWeight: FontWeight.bold))),
+              child: Align(alignment: Alignment.centerLeft, child: Text('Unrecorded Habits:', style: TextStyle(fontWeight: FontWeight.bold))),
             ),
             // The "Homepage" will display a list of unrecorded habits[cite: 20].
             ListView.builder(
