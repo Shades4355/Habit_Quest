@@ -5,7 +5,7 @@ import '../interfaces/RecordHabitInterfacePopUp.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
-import 'package:habit_quest/graphs/reusable_chart.dart';
+import 'package:habit_quest/widgets/habit_chart.dart';
 
 // ==================== HOMEPAGE SCREEN ====================
 
@@ -105,14 +105,18 @@ class _HomePageScreenState extends State<HomePageScreen> {
             InkWell(
               // Clicking on the graph will take the user to the "Extended Graph" screen[cite: 12].
               onTap: () => Navigator.pushNamed(context, '/extended_graph'),
-              child: SizedBox(
-                height: 200,
-                child:AbsorbPointer( 
-                  child: ScoreChart(
-                    scores:const [5,7,6,8,9,6,10],
-                    maxY:20,
+              child: Padding(padding: const EdgeInsets.all(16.0),
+                child:
+                SizedBox(
+                  height: 200,
+                  child:AbsorbPointer( 
+                    child: ScoreChart(
+                      isHomePage: true,
+                      habitRepo: widget.habitRepo,
+                      maxY:20,
+                    ),
                   )
-                )
+                ),
               ),
             ),
             const SizedBox(height: 20),

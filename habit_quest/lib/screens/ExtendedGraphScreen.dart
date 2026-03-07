@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:habit_quest/repositories/habit_repository.dart';
+import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:flutter/services.dart';
 
 // ==================== EXTENDED GRAPH SCREEN ====================
 
 class ExtendedGraphScreen extends StatefulWidget {
-  const ExtendedGraphScreen({super.key});
+  final HabitRepository habitRepo;
+
+  const ExtendedGraphScreen({super.key, required this.habitRepo});
 
   @override
   State<ExtendedGraphScreen> createState() => _ExtendedGraphScreen();
@@ -16,6 +19,7 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
   @override
   void initState() {
     super.initState();
+    // Set landscape mode when entering the screen
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -24,12 +28,10 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
 
   @override
   void dispose() {
-    // Restore all orientations when leaving
+    // Reset to portrait mode when leaving the screen
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
     ]);
     super.dispose();
   }
@@ -46,55 +48,11 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: LineChart(
-          LineChartData(
-            minX: 0,
-            maxX: 29,
-            minY: 0,
-            maxY: 20,
-            gridData: FlGridData(show: true),
-            borderData: FlBorderData(show: true),
-            titlesData: FlTitlesData(
-              rightTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              topTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 36,
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: 5,
-                  getTitlesWidget: (value, meta) {
-                    return Text('Day ${value.toInt() + 1}');
-                  },
-                ),
-              ),
-            ),
-            // date belongs here!!!!
-            lineBarsData: [
-              LineChartBarData(
-                // get raid of everything under here
-                spots: List.generate(
-                  30,
-                  (index) => FlSpot(
-                    index.toDouble(),
-                    (index % 10 + 5).toDouble(),
-                  ),
-                ),
-                isCurved: true,
-                barWidth: 3,
-                dotData: FlDotData(show: true),
-              ),
-            ],
-          ),
-        ),
+        child: ScoreChart(
+          isHomePage: false,
+          habitRepo: widget.habitRepo,
+          maxY: 20,
+        )
       ),
     );
   }

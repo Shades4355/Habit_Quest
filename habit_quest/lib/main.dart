@@ -60,7 +60,7 @@ class HabitQuestApp extends StatelessWidget {
       routes: {
         // When the User launches the app, they will be on the homepage[cite: 3].
         '/': (context) => HomePageScreen(habitRepo: habitRepo),
-        '/extended_graph': (context) => ExtendedGraphScreen(),
+        '/extended_graph': (context) => ExtendedGraphScreen(habitRepo: habitRepo),
         '/manage_habits': (context) => ManageHabitsScreen(habitRepo: habitRepo),
         '/habit_history': (context) => HabitHistoryScreen(/*habitRepo: habitRepo*/),
         '/settings': (context) => const SettingsScreen(),

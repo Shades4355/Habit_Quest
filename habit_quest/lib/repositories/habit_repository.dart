@@ -97,4 +97,11 @@ class HabitRepository {
 
   /// Gets the total score across all habit records for a specific date
   Future<int?> getScoreForDate(DateTime date) => habitRecordDao.getScoreForDate(_dayKey(date));
+
+  /// Gets the total score across all habit records for the last N days
+  Future<List<int?>> getScoreForLastNDays(int n) {
+    final now = DateTime.now();
+    final past = List.generate(n, (i) => _dayKey(now.subtract(Duration(days: i))));
+    return Future.wait(past.map((d) => habitRecordDao.getScoreForDate(d)));
+  }
 }
