@@ -102,7 +102,7 @@ class HabitRepository {
   Future<List<int?>> getScoreForLastNDays(int n) {
     final now = DateTime.now();
     final past = List.generate(
-      n, (i) => _dayKey(now.subtract(Duration(days: n - i)))
+      n, (i) => _dayKey(now.subtract(Duration(days: n - i - 1)))
     );
     return Future.wait(past.map((d) => habitRecordDao.getScoreForDate(d)));
   }
