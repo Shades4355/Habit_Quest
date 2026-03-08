@@ -1,57 +1,127 @@
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 
-// class NotificationService {
-//   final notificationPlugin = FlutterLocalNotificationsPlugin();
+class NotificationService {
+  static final NotificationService _instance = NotificationService._internal();
+  factory NotificationService() => _instance;
+  NotificationService._internal();
 
-//   bool _isInitialized = false;
+  /// Singleton pattern to ensure only one instance of the service exists
+  final notificationPlugin = FlutterLocalNotificationsPlugin();
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
 
-//   bool get isInitialized => _isInitialized;
+  /// Check if notifications are enabled (Android-specific)
+  Future<bool> areNotificationsEnabled() async {
+    return await Permission.notification.isGranted;
+  }
 
-//   // Initialize Notification Service
-//   Future<void> initNotification() async {
-//     if (_isInitialized) return;
+  Future<bool> requestPermissions() async {
+    final status = await Permission.notification.status;
+    
+    if (status.isDenied || status.isPermanentlyDenied) {
+      await openAppSettings();
+      return false;
+    }
+    
+    final result = await Permission.notification.request();
+    return result.isGranted;
+  }
 
-//     // Android initialization
-//     const initSettingsAndroid  = AndroidInitializationSettings('@mipmap/ic_launcher');
+  /// Initialize Notification Service
+  Future<void> initNotification() async {
+    if (_isInitialized) return;
 
-//     // iOS initialization
-//     const initSettingsIOS = DarwinInitializationSettings(
-//       requestSoundPermission: true,
-//       requestBadgePermission: true,
-//       requestAlertPermission: true,
-//     );
+    // Initialize timezone data
+    tz_data.initializeTimeZones();
 
-//     // Initialization settings for both platforms
-//     const initSettings = InitializationSettings(
-//       android: initSettingsAndroid,
-//       iOS: initSettingsIOS,
-//     );
+    // Android initialization
+    const initSettingsAndroid  = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-//     // Initialize the plugin
-//     await notificationPlugin.initialize(settings: initSettings);
-//     _isInitialized = true;
-//   }
+    // iOS initialization
+    const initSettingsIOS = DarwinInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
 
-//   // Notification Setup
-//   NotificationDetails notificationDetails() {
-//     return const NotificationDetails(
-//       android: AndroidNotificationDetails(
-//         'daily_reminder_channel',
-//         'Daily Reminders',
-//         channelDescription: 'Channel for daily habit reminders',
-//         importance: Importance.max,
-//         priority: Priority.high,  
-//       ),
-//       iOS: DarwinNotificationDetails()
-//     );
-//   }
-//   // Show Notification
-//   Future<void> showNotification({int id = 0, String? title, String? body}) async {
-//     await notificationPlugin.show(
-//       id: id,
-//       title: title ?? 'Reminder: Record Your Habits!',
-//       body: body ?? 'Don\'t forget to log your habits for today!',
-//       notificationDetails: notificationDetails(),
-//     );
-//   }
-// }
+    // Initialization settings for both platforms
+    const initSettings = InitializationSettings(
+      android: initSettingsAndroid,
+      iOS: initSettingsIOS,
+    );
+
+    // Initialize the plugin
+    await notificationPlugin.initialize(settings: initSettings);
+
+    // Only request permission if user has notifications enabled
+    final prefs = await SharedPreferences.getInstance();
+    final notificationsEnabled = prefs.getBool('allowDaily') ?? false;
+    if (notificationsEnabled && !await areNotificationsEnabled()) {
+      await requestPermissions();
+    }
+
+    _isInitialized = true;
+  }
+
+  /// Notification Setup
+  NotificationDetails notificationDetails() {
+    return const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'daily_reminder_channel',
+        'Daily Reminders',
+        channelDescription: 'Channel for daily habit reminders',
+        importance: Importance.max,
+        priority: Priority.high,  
+      ),
+      iOS: DarwinNotificationDetails()
+    );
+  }
+
+  /// Show a notification
+  Future<void> showNotification({int id = 0, String? title, String? body}) async {
+    await notificationPlugin.show(
+      id: id,
+      title: title ?? 'Reminder: Record Your Habits!',
+      body: body ?? 'Don\'t forget to log your habits for today!',
+      notificationDetails: notificationDetails(),
+    );
+  }
+
+  /// Schedule a daily notification at a specific time
+  Future<void> scheduleDailyNotification({int id = 0, String? title, String? body, required int hour, required int minute}) async {
+    final scheduledDate = _nextInstanceOfTime(hour, minute);
+    await notificationPlugin.zonedSchedule(
+      id: id,
+      title: title ?? 'Reminder: Record Your Habits!',
+      body: body ?? 'Don\'t forget to log your habits for today!',
+      scheduledDate: scheduledDate,
+      notificationDetails: notificationDetails(),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  // Helper to get the next instance of a specific time
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
+  // Cancel specific notification by ID
+  Future<void> cancelNotification(int id) async {
+    await notificationPlugin.cancel(id: id);
+  }
+
+  // Cancel all notifications
+  Future<void> cancelAllNotifications() async {
+    await notificationPlugin.cancelAll();
+  }
+}

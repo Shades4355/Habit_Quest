@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter/services.dart'; // Required for SystemChrome
 
 // Database and Repository imports
@@ -10,6 +9,10 @@ import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqlite_inspector/sqlite_inspector.dart';
 
+// Notification Service
+import 'package:habit_quest/services/notification_service.dart';
+
+// Screens
 import './screens/HomePageScreen.dart';
 import './screens/ExtendedGraphScreen.dart';
 import './screens/ManageHabitsScreen.dart';
@@ -17,9 +20,13 @@ import './screens/HabitHistoryScreen.dart';
 import './screens/SettingsScreen.dart';
 
 void main() async {
-  // 1. Ensure plugin services are initialized
+  // Ensure plugin services are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Notification Service
+  await NotificationService().initNotification();
+
+  // Start SQLite Inspector in debug mode
   if (kDebugMode) {
     await SqliteInspector.start();
   }
@@ -33,7 +40,7 @@ void main() async {
     habitRecordDao: database.habitRecordDao
   );
 
-  // 2. Lock the app to Portrait (Source: Document Section 1.D)
+  // Lock the app to Portrait (Source: Document Section 1.D)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
