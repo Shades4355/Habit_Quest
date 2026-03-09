@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:habit_quest/widgets/date_picker.dart';
+import 'package:habit_quest/widgets/time_picker.dart';
+
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 
@@ -47,23 +50,26 @@ class _RecordHabitInterfacePopUpState extends State<RecordHabitInterfacePopUp> {
           const SizedBox(height: 20),
           // Allow user to select a date[cite: 38].
           // Defaults to current day[cite: 39]. Users can select from pop-up calendar[cite: 43].
-          ListTile(
-            leading: const Icon(Icons.calendar_today),
-            title: const Text('Date: Today (Placeholder)'),
-            trailing: const Icon(Icons.edit),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: Date Picker Pop-up')));
-            },
-          ),
+          DatePicker(),
+          // ListTile(
+          //   leading: const Icon(Icons.calendar_today),
+          //   title: const Text('Date: Today (Placeholder)'),
+          //   trailing: const Icon(Icons.edit),
+          //   onTap: () {
+          //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: Date Picker Pop-up')));
+          //   },
+          // ),
           // Allow selecting a time[cite: 45]. Defaults to current time[cite: 46].
-          ListTile(
-            leading: const Icon(Icons.access_time),
-            title: const Text('Time: Now (Placeholder)'),
-            trailing: const Icon(Icons.edit),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: Time Picker Pop-up')));
-            },
-          ),
+          TimePicker(),
+          
+          // ListTile(
+          //   leading: const Icon(Icons.access_time),
+          //   title: const Text('Time: Now (Placeholder)'),
+          //   trailing: const Icon(Icons.edit),
+          //   onTap: () {
+          //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: Time Picker Pop-up')));
+          //   },
+          // ),
           const SizedBox(height: 20),
           // The interface will prompt the User for the completed habit[cite: 47].
           const Text('Select Habit Completed:'),
