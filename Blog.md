@@ -95,3 +95,15 @@ Marvens is planning to get our calendar and clock UI libraries integrated this w
 
 Luca will start working on Dark Mode and add a toggle for “Show Deadlines” in the settings.
 
+
+### 10-March-2026
+Team meeting #7:
+
+In attendance: Shades, Miguel, Marvens
+
+Not in attendance, but responsive on Discord: Luca
+
+Since last week, Miguel and Marvens worked on implementing the Database, the Notification settings, and the graphs. Shades worked on writing tests - manual test instructions and widget tests.
+
+This week, Miguel will try to refactor the code to remove the `habitRepo` requirement from several classes. Marvens will work on adding functionality to the Show Deadlines toggle and fix the order of the displayed Date. Shades will try to finish writing the instructions for the manual tests, and, if Miguel’s refactoring completes before next week, Shades will also start refactoring the widget tests. And Luca will refactor the files and class names to be snake case instead of Pascal case, per Flutter's conventions.
+
