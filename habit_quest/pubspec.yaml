@@ -28,6 +28,14 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  floor: ^1.5.0
+  sqflite: ^2.3.0
+  fl_chart: ^1.1.1
+
+  # Used for database inspection during development, not used in production 
+  sqlite3_flutter_libs: ^0.5.40
+  sqlite_inspector: ^0.0.3
+
   flutter:
     sdk: flutter
 
@@ -35,7 +43,16 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Needed for timezone support in notifications
+  flutter_local_notifications: ^21.0.0
+  timezone: ^0.11.0
+  permission_handler: ^11.0.0
+  shared_preferences: ^2.2.2
+
 dev_dependencies:
+  analyzer: 6.4.1
+  floor_generator: ^1.5.0
+  build_runner: 2.4.13
   flutter_test:
     sdk: flutter
 
