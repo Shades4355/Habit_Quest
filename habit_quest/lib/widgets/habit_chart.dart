@@ -66,23 +66,47 @@ class ScoreChart extends StatelessWidget{
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: 1,
+                  interval: isHomePage? 1 : 5,
                   reservedSize: 30,
                   getTitlesWidget: (value, meta) {
-                    return Text("");
+                    final days = isHomePage ? 7 : 30;
+                    final date = DateTime.now().subtract(Duration(days: days - value.toInt()));
+                    final label = '${date.month}/${date.day}';
+                    return Text(
+                      label,
+                      // style: const TextStyle(fontSize: 10)
+                    );
                   },
                 ),
               ),
             ),
             lineBarsData: [
-                  LineChartBarData(
-                    // get raid of everything under here
-                    spots: spots,
-                    isCurved: true,
-                    barWidth: 3,
-                    dotData: FlDotData(show: true),
-                  ),
-                ],
+              LineChartBarData(
+                // get raid of everything under here
+                spots: spots,
+                isCurved: true,
+                barWidth: 3,
+                dotData: FlDotData(show: true),
+              ),
+            ],
+            lineTouchData: LineTouchData(
+              touchTooltipData: LineTouchTooltipData(
+                getTooltipItems: (touchedSpots) {
+                  return touchedSpots.map((spot) {
+                    final days = isHomePage ? 7 : 30;
+                    final date = DateTime.now().subtract(
+                      Duration(days: days - 1 - spot.x.toInt())
+                    );
+                    final dateStr = '${date.month}/${date.day}';
+                    final score = spot.y.toInt();
+                    return LineTooltipItem(
+                      '($dateStr, $score)',
+                      const TextStyle(color: Colors.white),
+                    );
+                  }).toList();
+                },
+              ),
+            ),
           ),
         );
       },
