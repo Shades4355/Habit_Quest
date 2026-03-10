@@ -78,6 +78,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     },
                   ),
                   title: Text(currentHabit.habitName,),
+                  // TODO: Using SharedPreferences, use a boolean to check if deadlines are enabled
                   // subtitle: Text('Deadline: No deadline'),
                   trailing: Text(
                     '${currentHabit.importanceLevel}', 
