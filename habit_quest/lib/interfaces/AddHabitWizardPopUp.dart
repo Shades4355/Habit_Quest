@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'package:habit_quest/database/entities/habit.dart';
+
+enum HabitType { start, stop }
 
 // --- Add Habit Wizard Pop-up (General [cite: 89]) ---
 class AddHabitWizardPopUp extends StatefulWidget {
-  const AddHabitWizardPopUp({super.key});
+  final Future<void> Function(Habit newHabit) onSave;
+
+  const AddHabitWizardPopUp({super.key, required this.onSave});
   @override
   State<AddHabitWizardPopUp> createState() => _AddHabitWizardPopUpState();
 }
@@ -11,7 +16,8 @@ class AddHabitWizardPopUp extends StatefulWidget {
 
 class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
   int _currentDisplay = 1;
-  String _habitType = 'Start'; // Placeholder for Display 1 choice
+  String _habitName = ''; // Placeholder for Display 2 text field input
+  HabitType _habitType = HabitType.start; // Placeholder for Display 1 choice
   double _importanceRating = 3.0; // Placeholder for Display 3 scale [cite: 122]
 
   @override
@@ -31,9 +37,17 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ChoiceChip(label: const Text('START'), selected: _habitType == 'Start', onSelected: (b) => setState(() => _habitType = 'Start')),
+                ChoiceChip(
+                  label: const Text('START'), 
+                  selected: _habitType == HabitType.start, 
+                  onSelected: (b) => setState(() => _habitType = HabitType.start)
+                ),
                 const SizedBox(width: 10),
-                ChoiceChip(label: const Text('STOP'), selected: _habitType == 'Stop', onSelected: (b) => setState(() => _habitType = 'Stop')),
+                ChoiceChip(
+                  label: const Text('STOP'),
+                  selected: _habitType == HabitType.stop,
+                  onSelected: (b) => setState(() => _habitType = HabitType.stop)
+                ),
               ],
             ),
           ],
@@ -45,7 +59,10 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
             const Text('Name Your Habit (Step 2/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             // Provide a text field for the User to enter the habit's name[cite: 107].
-            const TextField(decoration: InputDecoration(labelText: 'Habit Name', border: OutlineInputBorder())),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Habit Name', border: OutlineInputBorder()),
+              onChanged: (val) => setState(() => _habitName = val),
+            ),
           ],
 
           // --- Display 3 content ---
@@ -83,17 +100,30 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
               ),
               // "Save" button behavior advances displays or finalizes[cite: 100, 114, 134].
               ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    if (_currentDisplay < 3) {
-                      // Advances the interface to next display[cite: 102, 117].
+                onPressed: () async {
+                  if (_currentDisplay < 3) {
+                    setState(() {
                       _currentDisplay++;
-                    } else {
-                      // Final Save: Create new habit, apply score logic, close interface[cite: 135, 140, 142].
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: New Habit Saved with calculated score')));
-                    }
-                  });
+                    });
+                    return;
+                  }
+
+                  final habitName = _habitName.trim();
+                  if (habitName.isEmpty) {
+                    return;
+                  }
+
+                  final newHabit = Habit.newHabit(
+                    habitName: habitName,
+                    importanceLevel: _habitType == HabitType.start ? _importanceRating.round() : -_importanceRating.round(),
+                    millisecondsSinceEpoch: DateTime.now().millisecondsSinceEpoch,
+                  );
+                  await widget.onSave(newHabit);
+
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: New Habit Saved with calculated score')));
+                  }
                 },
                 child: Text(_currentDisplay < 3 ? 'Next' : 'Finish & Save'),
               ),
