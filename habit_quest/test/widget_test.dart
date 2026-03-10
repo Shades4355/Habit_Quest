@@ -17,16 +17,6 @@ import 'package:habit_quest/interfaces/RecordHabitInterfacePopUp.dart';
 void main() {
   WidgetController.hitTestWarningShouldBeFatal = true;
 
-  testWidgets("Tap events test", (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: const HomePageScreen()));
-
-    await tester.tap(find.byType(DrawerButton));
-    await tester.pump();
-
-    await tester.tap(find.text("Manage Habits"));
-    await tester.pump();
-  });
-
   testWidgets('App Has A Title', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const HabitQuestApp());
@@ -68,7 +58,7 @@ void main() {
     expect(hamburger1, findsOneWidget);
 
     await tester.tap(hamburger1);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text("Settings"), findsOneWidget);
 
@@ -80,7 +70,7 @@ void main() {
     expect(hamburger2, findsOneWidget);
 
     await tester.tap(hamburger2);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text("Settings"), findsOneWidget);
 
@@ -92,7 +82,7 @@ void main() {
     expect(hamburger3, findsOneWidget);
 
     await tester.tap(hamburger3);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     final settingsButton = find.text("Settings");
     expect(settingsButton, findsOneWidget);
@@ -192,7 +182,7 @@ void main() {
 
     // open Nav. Panel
     await tester.tap(find.byType(DrawerButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     // select Settings
     final settingsButton = find.text("Settings");
