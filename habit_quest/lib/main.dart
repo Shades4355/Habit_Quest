@@ -35,7 +35,7 @@ void main() async {
   final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
 
   // Initialize the repository
-  final habitRepo = HabitRepository(
+  HabitRepository.initialize(
     habitDao: database.habitDao,
     habitRecordDao: database.habitRecordDao
   );
@@ -46,13 +46,12 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(HabitQuestApp(habitRepo: habitRepo));
+  runApp(HabitQuestApp());
 }
 
 class HabitQuestApp extends StatefulWidget {
-  const HabitQuestApp({super.key, required this.habitRepo});
+  const HabitQuestApp({super.key});
 
-  final HabitRepository habitRepo;
   @override
   State<HabitQuestApp> createState() => _HabitQuestAppState();
 }
@@ -93,10 +92,10 @@ class _HabitQuestAppState extends State<HabitQuestApp> {
       initialRoute: '/',
       routes: {
         // When the User launches the app, they will be on the homepage[cite: 3].
-        '/': (context) => HomePageScreen(habitRepo: widget.habitRepo),
-        '/extended_graph': (context) => ExtendedGraphScreen(habitRepo: widget.habitRepo),
-        '/manage_habits': (context) => ManageHabitsScreen(habitRepo: widget.habitRepo),
-        '/habit_history': (context) => HabitHistoryScreen(/*habitRepo: habitRepo*/),
+        '/': (context) => HomePageScreen(/*habitRepo: widget.habitRepo*/),
+        '/extended_graph': (context) => const ExtendedGraphScreen(/*habitRepo: widget.habitRepo*/),
+        '/manage_habits': (context) => const ManageHabitsScreen(/*habitRepo: widget.habitRepo*/),
+        '/habit_history': (context) => const HabitHistoryScreen(/*habitRepo: widget.habitRepo*/),
         '/settings': (context) => SettingsScreen(
               isDarkMode: _themeMode == ThemeMode.dark,
               onThemeChanged: _toggleTheme,

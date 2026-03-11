@@ -6,9 +6,7 @@ import 'package:flutter/services.dart';
 // ==================== EXTENDED GRAPH SCREEN ====================
 
 class ExtendedGraphScreen extends StatefulWidget {
-  final HabitRepository habitRepo;
-
-  const ExtendedGraphScreen({super.key, required this.habitRepo});
+  const ExtendedGraphScreen({super.key});
 
   @override
   State<ExtendedGraphScreen> createState() => _ExtendedGraphScreen();
@@ -50,7 +48,7 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
         padding: const EdgeInsets.all(16.0),
         child: ScoreChart(
           isHomePage: false,
-          habitRepo: widget.habitRepo,
+          habitRepo: HabitRepository.instance,
           maxY: 20,
         )
       ),

@@ -10,19 +10,18 @@ import 'package:habit_quest/widgets/habit_chart.dart';
 // ==================== HOMEPAGE SCREEN ====================
 
 class HomePageScreen extends StatefulWidget {
-  const HomePageScreen({super.key, required this.habitRepo});
-
-  final HabitRepository habitRepo;
+  const HomePageScreen({super.key});
 
   @override
   State<HomePageScreen> createState() => _HomePageScreenState();
 }
 
 class _HomePageScreenState extends State<HomePageScreen> {
+  HabitRepository get _habitRepo => HabitRepository.instance;
 
   Widget _todaysScore() {
     return FutureBuilder<int?>(
-      future: widget.habitRepo.getScoreForDate(DateTime.now()),
+      future: _habitRepo.getScoreForDate(DateTime.now()),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -41,7 +40,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Widget _habitsList() {
     return FutureBuilder<List<Habit>>(
-      future: widget.habitRepo.getActiveHabits(), //getUnrecordedHabitsToday(),
+      future: _habitRepo.getActiveHabits(), //getUnrecordedHabitsToday(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -63,7 +62,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             if (habitId == null) return const SizedBox.shrink();
 
             return FutureBuilder<bool>(
-              future: widget.habitRepo.isCompletedToday(habitId),
+              future: _habitRepo.isCompletedToday(habitId),
               builder: (context, completionSnapshot) {
                 final isCompleted = completionSnapshot.data ?? false;
 
@@ -73,7 +72,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       isCompleted ? Icons.check_box : Icons.check_box_outline_blank,
                     ),
                     onPressed: () async {
-                      await widget.habitRepo.toggleCompletedToday(habitId);
+                      await _habitRepo.toggleCompletedToday(habitId);
                       setState(() {});
                     },
                   ),
@@ -113,7 +112,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   child:AbsorbPointer( 
                     child: ScoreChart(
                       isHomePage: true,
-                      habitRepo: widget.habitRepo,
+                      habitRepo: _habitRepo,
                       maxY:20,
                     ),
                   )
@@ -142,7 +141,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (ctx) => RecordHabitInterfacePopUp(habitRepo: widget.habitRepo)
+              builder: (ctx) => RecordHabitInterfacePopUp()
           );
         },
       ),
