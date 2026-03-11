@@ -35,9 +35,7 @@ class ManageHabitsScreen extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                         context: context,
-                        builder: (ctx) => EditHabitInterfacePopUp(
-                          habit: habits[i],
-                          onSave: _habitRepo.updateHabit)
+                        builder: (ctx) => EditHabitInterfacePopUp(habit: habits[i])
                     );
                   },
                 ),
@@ -72,7 +70,7 @@ class ManageHabitsScreen extends StatelessWidget {
           showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (ctx) => AddHabitWizardPopUp(onSave: _habitRepo.addHabit)
+              builder: (ctx) => AddHabitWizardPopUp()
           );
         },
         label: const Text('Add New Habit'),
