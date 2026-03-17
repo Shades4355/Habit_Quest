@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../interfaces/AppDrawer.dart';
-import '../interfaces/NotificationInterfacePopUp.dart';
+import '../interfaces/app_drawer.dart';
+import '../interfaces/notification_interface_pop_up.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
@@ -115,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (bool value) {
               // Updates the global state in main.dart
               widget.onThemeChanged(value);
-              
+
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Dark Mode set to: $value')));
             },

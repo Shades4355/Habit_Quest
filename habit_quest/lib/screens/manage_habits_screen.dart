@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:habit_quest/repositories/habit_repository.dart';
 
-import "../interfaces/AppDrawer.dart";
-import '../interfaces/EditHabitInterfacePopUp.dart';
-import '../interfaces/AddHabitWizardPopUp.dart';
+import "../interfaces/app_drawer.dart";
+import '../interfaces/edit_habit_interface_pop_up.dart';
+import '../interfaces/add_habit_wizard_pop_up.dart';
 
 // ==================== MANAGE HABITS SCREEN ====================
 
