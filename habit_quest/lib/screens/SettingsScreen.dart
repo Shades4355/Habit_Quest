@@ -2,19 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../interfaces/AppDrawer.dart';
 import '../interfaces/NotificationInterfacePopUp.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
 class SettingsScreen extends StatefulWidget {
   // Properties passed from main.dart
-  final bool isDarkMode;
-  final Function(bool) onThemeChanged;
 
-  const SettingsScreen({
-    super.key,
-    required this.isDarkMode,
-    required this.onThemeChanged,
-  });
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -23,6 +18,27 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   // Local state for the deadline reminder toggle
   bool _deadlineReminder = false;
+  bool _darkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final pref = await SharedPreferences.getInstance();
+    setState(() {
+      _deadlineReminder = pref.getBool('deadlineReminder') ?? false;
+      _darkMode = pref.getBool('darkMode') ?? false;
+    });
+  }
+
+  Future<void> _savePreferences() async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('deadlineReminder', _deadlineReminder);
+    await pref.setBool('darkMode', _darkMode);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,13 +127,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             secondary: const Icon(Icons.dark_mode),
             title: const Text('Dark Mode'),
             // Uses the value passed from the parent (widget.isDarkMode)
-            value: widget.isDarkMode,
-            onChanged: (bool value) {
+            value: _darkMode,
+            onChanged: (bool value) async {
               // Updates the global state in main.dart
-              widget.onThemeChanged(value);
-              
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Dark Mode set to: $value')));
+              setState(() => _darkMode = value);
+              await _savePreferences();
             },
           ),
           const Divider(),

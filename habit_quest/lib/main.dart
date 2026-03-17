@@ -12,6 +12,9 @@ import 'package:sqlite_inspector/sqlite_inspector.dart';
 // Notification Service
 import 'package:habit_quest/services/notification_service.dart';
 
+// Shared Preferences
+import 'package:shared_preferences/shared_preferences.dart';
+
 // Screens
 import './screens/HomePageScreen.dart';
 import './screens/ExtendedGraphScreen.dart';
@@ -58,13 +61,18 @@ class HabitQuestApp extends StatefulWidget {
 }
 
 class _HabitQuestAppState extends State<HabitQuestApp> {
-  // This variable tracks if we are in light or dark mode
-  ThemeMode _themeMode = ThemeMode.light;
+  bool _darkMode = false;
 
-  // This function will be passed to the Settings screen to change the mode
-  void _toggleTheme(bool isDark) {
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  void _loadPreferences() async {
+    final pref = await SharedPreferences.getInstance();
     setState(() {
-      _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+      _darkMode = pref.getBool('darkMode') ?? false;
     });
   }
 
@@ -89,7 +97,7 @@ class _HabitQuestAppState extends State<HabitQuestApp> {
         useMaterial3: true,
       ),
       // Tell the app which one to use based on our state
-      themeMode: _themeMode,
+      themeMode: _darkMode ? ThemeMode.dark : ThemeMode.light,
       initialRoute: '/',
       routes: {
         // When the User launches the app, they will be on the homepage[cite: 3].
@@ -97,10 +105,7 @@ class _HabitQuestAppState extends State<HabitQuestApp> {
         '/extended_graph': (context) => ExtendedGraphScreen(habitRepo: widget.habitRepo),
         '/manage_habits': (context) => ManageHabitsScreen(habitRepo: widget.habitRepo),
         '/habit_history': (context) => HabitHistoryScreen(/*habitRepo: habitRepo*/),
-        '/settings': (context) => SettingsScreen(
-              isDarkMode: _themeMode == ThemeMode.dark,
-              onThemeChanged: _toggleTheme,
-            ),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }
