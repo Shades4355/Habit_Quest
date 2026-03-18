@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import "../interfaces/app_drawer.dart";
 import '../interfaces/record_habit_interface_pop_up.dart';
-
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
@@ -37,28 +35,22 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
-  // Widget _emptyHabitListPlaceholder() {
-
   Widget _habitsList() {
     return FutureBuilder<List<Habit>>(
-      future: widget.habitRepo.getActiveHabits(), //getUnrecordedHabitsToday(),
+      future: widget.habitRepo.getActiveHabits(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
 
-        final habit = snapshot.data ?? [];
-
-        // if (habit.isEmpty) {
-        //   return const Text('All habits recorded for today!');
-        // }
+        final habits = snapshot.data ?? [];
 
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: habit.length,
+          itemCount: habits.length,
           itemBuilder: (ctx, i) {
-            final currentHabit = habit[i];
+            final currentHabit = habits[i];
             final habitId = currentHabit.id;
             if (habitId == null) return const SizedBox.shrink();
 
@@ -71,18 +63,20 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   leading: IconButton(
                     icon: Icon(
                       isCompleted ? Icons.check_box : Icons.check_box_outline_blank,
+                      color: isCompleted ? Colors.green : null,
                     ),
                     onPressed: () async {
                       await widget.habitRepo.toggleCompletedToday(habitId);
                       setState(() {});
                     },
                   ),
-                  title: Text(currentHabit.habitName,),
-                  // TODO: Using SharedPreferences, use a boolean to check if deadlines are enabled
-                  // subtitle: Text('Deadline: No deadline'),
+                  title: Text(currentHabit.habitName),
                   trailing: Text(
                     '${currentHabit.importanceLevel}',
-                    style: TextStyle(color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red)
+                    style: TextStyle(
+                      color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red,
+                      fontWeight: FontWeight.bold,
+                    )
                   ),
                 );
               },
@@ -95,49 +89,51 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // CALCULATE DYNAMIC HEIGHT HERE
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double dynamicChartHeight = screenHeight * 0.25; // 25% of screen height
+
     return Scaffold(
-      // There will be a "hamburger" button at the top left... displaying a navigation panel[cite: 8].
       drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Habit Quest')),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // The "Homepage" will display a line graph showing User scores over the last 7 days[cite: 11].
             InkWell(
-              // Clicking on the graph will take the user to the "Extended Graph" screen[cite: 12].
               onTap: () => Navigator.pushNamed(context, '/extended_graph'),
-              child: Padding(padding: const EdgeInsets.all(16.0),
-                child:
-                SizedBox(
-                  height: 200,
-                  child:AbsorbPointer(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SizedBox(
+                  height: dynamicChartHeight, // DYNAMIC HEIGHT APPLIED
+                  child: AbsorbPointer(
                     child: ScoreChart(
                       isHomePage: true,
                       habitRepo: widget.habitRepo,
-                      maxY:20,
+                      maxY: 20,
                     ),
                   )
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            // The "Homepage" will display the User's current daily score[cite: 19].
             _todaysScore(),
             const Divider(),
             const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Align(alignment: Alignment.centerLeft, child: Text('Unrecorded Habits (Pending):', style: TextStyle(fontWeight: FontWeight.bold))),
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft, 
+                child: Text('Unrecorded Habits (Pending):', style: TextStyle(fontWeight: FontWeight.bold))
+              ),
             ),
-            // The "Homepage" will display a list of unrecorded habits[cite: 20].
             _habitsList(),
+            // Extra padding at the bottom so the FAB doesn't cover the list
+            const SizedBox(height: 80),
           ],
         ),
       ),
-      // There will be a circular button with a plus sign centered... at the bottom of the homepage[cite: 13, 15, 16].
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        // When the User clicks on the plus button... they will be taken to the "Record Habit" interface[cite: 17].
         onPressed: () {
           showModalBottomSheet(
               context: context,
