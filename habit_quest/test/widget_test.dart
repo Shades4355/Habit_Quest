@@ -4,16 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:habit_quest/main.dart';
 
 // Screens
-import 'package:habit_quest/screens/HabitHistoryScreen.dart';
-import 'package:habit_quest/screens/HomePageScreen.dart';
-import 'package:habit_quest/screens/ManageHabitsScreen.dart';
+import 'package:habit_quest/screens/habit_history_screen.dart';
+import 'package:habit_quest/screens/home_page_screen.dart';
+import 'package:habit_quest/screens/manage_habits_screen.dart';
 
 // Interfaces
-import 'package:habit_quest/interfaces/AddHabitWizardPopUp.dart';
-import 'package:habit_quest/interfaces/AppDrawer.dart';
-import 'package:habit_quest/interfaces/EditHabitInterfacePopUp.dart';
-import 'package:habit_quest/interfaces/NotificationInterfacePopUp.dart';
-import 'package:habit_quest/interfaces/RecordHabitInterfacePopUp.dart';
+import 'package:habit_quest/interfaces/add_habit_wizard_pop_up.dart';
+import 'package:habit_quest/interfaces/app_drawer.dart';
+import 'package:habit_quest/interfaces/edit_habit_interface_pop_up.dart';
+import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
+import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 
 // Database
 import 'package:habit_quest/database/app_database.dart';

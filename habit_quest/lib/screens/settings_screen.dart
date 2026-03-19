@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../interfaces/app_drawer.dart';
-import '../interfaces/notification_interface_pop_up.dart';
+import 'package:habit_quest/interfaces/app_drawer.dart';
+import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
 
 // ==================== SETTINGS SCREEN ====================
 

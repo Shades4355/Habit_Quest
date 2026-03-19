@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import "../interfaces/app_drawer.dart";
-import '../interfaces/record_habit_interface_pop_up.dart';
+import "package:habit_quest/interfaces/app_drawer.dart";
+import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
