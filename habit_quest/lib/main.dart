@@ -13,11 +13,11 @@ import 'package:sqlite_inspector/sqlite_inspector.dart';
 import 'package:habit_quest/services/notification_service.dart';
 
 // Screens
-import './screens/HomePageScreen.dart';
-import './screens/ExtendedGraphScreen.dart';
-import './screens/ManageHabitsScreen.dart';
-import './screens/HabitHistoryScreen.dart';
-import './screens/SettingsScreen.dart';
+import 'screens/home_page_screen.dart';
+import 'screens/extended_graph_screen.dart';
+import 'screens/manage_habits_screen.dart';
+import 'screens/habit_history_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() async {
   // Ensure plugin services are initialized

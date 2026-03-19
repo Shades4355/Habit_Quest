@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import "../interfaces/AppDrawer.dart";
-import '../interfaces/RecordHabitInterfacePopUp.dart';
+import "../interfaces/app_drawer.dart";
+import '../interfaces/record_habit_interface_pop_up.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
@@ -80,7 +80,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   // TODO: Using SharedPreferences, use a boolean to check if deadlines are enabled
                   // subtitle: Text('Deadline: No deadline'),
                   trailing: Text(
-                    '${currentHabit.importanceLevel}', 
+                    '${currentHabit.importanceLevel}',
                     style: TextStyle(color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red)
                   ),
                 );
@@ -109,7 +109,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 child:
                 SizedBox(
                   height: 200,
-                  child:AbsorbPointer( 
+                  child:AbsorbPointer(
                     child: ScoreChart(
                       isHomePage: true,
                       habitRepo: _habitRepo,
