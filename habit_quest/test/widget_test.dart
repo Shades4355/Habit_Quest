@@ -17,6 +17,7 @@ import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 
 // Database
 import 'package:habit_quest/database/app_database.dart';
+import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 
 
@@ -239,7 +240,9 @@ void main() {
   });
 
   testWidgets("Edit Habit interface contains the correct text", (WidgetTester tester) async {
-    // await tester.pumpWidget(Material(child: MaterialApp(home: EditHabitInterfacePopUp())));
+    Habit mockHabit = Habit(id: 0, habitName: "Climbing, 30 minutes", importanceLevel: 4, createdAtMilliseconds: DateTime.now().millisecondsSinceEpoch, isArchived: false);
+
+    await tester.pumpWidget(Material(child: MaterialApp(home: EditHabitInterfacePopUp(habit: mockHabit))));
 
     // test for interface Title
     expect(find.text("Edit Habit"), findsOneWidget);
