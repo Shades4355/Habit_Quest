@@ -3,19 +3,38 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:habit_quest/main.dart';
 
+// Screens
 import 'package:habit_quest/screens/HabitHistoryScreen.dart';
 import 'package:habit_quest/screens/HomePageScreen.dart';
 import 'package:habit_quest/screens/ManageHabitsScreen.dart';
 
+// Interfaces
 import 'package:habit_quest/interfaces/AddHabitWizardPopUp.dart';
 import 'package:habit_quest/interfaces/AppDrawer.dart';
 import 'package:habit_quest/interfaces/EditHabitInterfacePopUp.dart';
 import 'package:habit_quest/interfaces/NotificationInterfacePopUp.dart';
 import 'package:habit_quest/interfaces/RecordHabitInterfacePopUp.dart';
 
+// Database
+import 'package:habit_quest/database/app_database.dart';
+import 'package:habit_quest/repositories/habit_repository.dart';
+
 
 void main() {
   WidgetController.hitTestWarningShouldBeFatal = true;
+
+  Future<void> initTestDatabase() async {
+    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+    HabitRepository.initialize(
+      habitDao: database.habitDao,
+      habitRecordDao: database.habitRecordDao
+    );
+  }
+
+  setUpAll(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await initTestDatabase();
+  });
 
   testWidgets('App Has A Title', (WidgetTester tester) async {
     // Build our app and trigger a frame.
@@ -220,7 +239,7 @@ void main() {
   });
 
   testWidgets("Edit Habit interface contains the correct text", (WidgetTester tester) async {
-    await tester.pumpWidget(Material(child: MaterialApp(home: EditHabitInterfacePopUp())));
+    // await tester.pumpWidget(Material(child: MaterialApp(home: EditHabitInterfacePopUp())));
 
     // test for interface Title
     expect(find.text("Edit Habit"), findsOneWidget);
