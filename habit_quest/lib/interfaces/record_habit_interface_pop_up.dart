@@ -9,9 +9,7 @@ import 'package:habit_quest/repositories/habit_repository.dart';
 
 // --- Record Habit Interface [cite: 33] ---
 class RecordHabitInterfacePopUp extends StatefulWidget {
-  const RecordHabitInterfacePopUp({super.key, required this.habitRepo});
-
-  final HabitRepository habitRepo;
+  const RecordHabitInterfacePopUp({super.key});
 
   @override
   State<RecordHabitInterfacePopUp> createState() => _RecordHabitInterfacePopUpState();
@@ -20,13 +18,15 @@ class RecordHabitInterfacePopUp extends StatefulWidget {
 class _RecordHabitInterfacePopUpState extends State<RecordHabitInterfacePopUp> {
   int? _selectedHabitId;
 
+  HabitRepository get _habitRepo => HabitRepository.instance;
+
   Future<void> _saveSelection() async {
     final selectedHabitId = _selectedHabitId;
     if (selectedHabitId == null) {
       return;
     }
 
-    await widget.habitRepo.toggleCompletedToday(selectedHabitId);
+    await _habitRepo.toggleCompletedToday(selectedHabitId);
 
     if (!mounted) return;
 
@@ -75,7 +75,7 @@ class _RecordHabitInterfacePopUpState extends State<RecordHabitInterfacePopUp> {
           const Text('Select Habit Completed:'),
           // The User will select a habit from a drop down list of all current habits[cite: 49].
           FutureBuilder<List<Habit>>(
-            future: widget.habitRepo.getActiveHabits(),
+            future: _habitRepo.getActiveHabits(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Padding(

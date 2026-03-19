@@ -4,13 +4,25 @@ import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
 
 class HabitRepository {
+  static HabitRepository? _instance;
+
+  static HabitRepository get instance {
+    final instance = _instance;
+    if (instance == null) {
+      throw StateError('HabitRepository not initialized. Call HabitRepository.initialize(...) first.');
+    }
+    return instance;
+  }
+
+  static HabitRepository initialize({
+    required HabitDao habitDao,
+    required HabitRecordDao habitRecordDao,
+  }) => _instance ??= HabitRepository._internal(habitDao, habitRecordDao);
+
   final HabitDao habitDao;
   final HabitRecordDao habitRecordDao;
 
-  HabitRepository({
-    required this.habitDao,
-    required this.habitRecordDao,
-  });
+  HabitRepository._internal(this.habitDao, this.habitRecordDao);
 
   /// Converts a DateTime to an integer key in the format MMDDYYYY 
   int _dayKey(DateTime date) => date.month * 1000000 + date.day * 10000 + date.year;

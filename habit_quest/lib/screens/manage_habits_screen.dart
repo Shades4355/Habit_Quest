@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'package:habit_quest/repositories/habit_repository.dart';
 
-import "../interfaces/app_drawer.dart";
-import '../interfaces/edit_habit_interface_pop_up.dart';
-import '../interfaces/add_habit_wizard_pop_up.dart';
+import "package:habit_quest/interfaces/app_drawer.dart";
+import 'package:habit_quest/interfaces/edit_habit_interface_pop_up.dart';
+import 'package:habit_quest/interfaces/add_habit_wizard_pop_up.dart';
 
 // ==================== MANAGE HABITS SCREEN ====================
 
 class ManageHabitsScreen extends StatelessWidget {
-  const ManageHabitsScreen({super.key, required this.habitRepo});
+  const ManageHabitsScreen({super.key});
 
-  final HabitRepository habitRepo;
+  HabitRepository get _habitRepo => HabitRepository.instance;
 
   Widget _currentHabitsList() {
     return FutureBuilder(
-      future: habitRepo.getActiveHabits(),
+      future: _habitRepo.getActiveHabits(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -35,16 +35,14 @@ class ManageHabitsScreen extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                         context: context,
-                        builder: (ctx) => EditHabitInterfacePopUp(
-                          habit: habits[i],
-                          onSave: habitRepo.updateHabit)
+                        builder: (ctx) => EditHabitInterfacePopUp(habit: habits[i])
                     );
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () async {
-                    habitRepo.archiveHabit(habits[i].id!);
+                    _habitRepo.archiveHabit(habits[i].id!);
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: Delete Habit')));
                   },
                 ),
@@ -72,7 +70,7 @@ class ManageHabitsScreen extends StatelessWidget {
           showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (ctx) => AddHabitWizardPopUp(onSave: habitRepo.addHabit)
+              builder: (ctx) => AddHabitWizardPopUp()
           );
         },
         label: const Text('Add New Habit'),
