@@ -24,7 +24,7 @@ class ManageHabitsScreen extends StatelessWidget {
         final habits = snapshot.data ?? [];
         return ListView.builder(
           // Pushes the list up so it's not hidden behind the FloatingActionButton
-          padding: const EdgeInsets.only(bottom: 100, top: 10), 
+          padding: const EdgeInsets.only(bottom: 100, top: 10),
           itemCount: habits.length,
           itemBuilder: (ctx, i) => ListTile(
             leading: CircleAvatar(child: Text('${i + 1}')),
@@ -44,7 +44,7 @@ class ManageHabitsScreen extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () async {
-                    await habitRepo.archiveHabit(habits[i].id!);
+                    await _habitRepo.archiveHabit(habits[i].id!);
                     // Refresh UI logic here if needed
                   },
                 ),
@@ -55,7 +55,7 @@ class ManageHabitsScreen extends StatelessWidget {
       },
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

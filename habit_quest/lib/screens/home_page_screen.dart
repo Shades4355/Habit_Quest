@@ -38,7 +38,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Widget _habitsList() {
     return FutureBuilder<List<Habit>>(
-      future: widget.habitRepo.getActiveHabits(),
+      future: _habitRepo.getActiveHabits(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -109,7 +109,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   child: AbsorbPointer(
                     child: ScoreChart(
                       isHomePage: true,
-                      habitRepo: widget.habitRepo,
+                      habitRepo: _habitRepo,
                       maxY: 20,
                     ),
                   )
@@ -122,7 +122,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Align(
-                alignment: Alignment.centerLeft, 
+                alignment: Alignment.centerLeft,
                 child: Text('Unrecorded Habits:', style: TextStyle(fontWeight: FontWeight.bold))
               ),
             ),
