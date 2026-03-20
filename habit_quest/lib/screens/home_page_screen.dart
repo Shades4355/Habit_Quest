@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import "../interfaces/app_drawer.dart";
-import '../interfaces/record_habit_interface_pop_up.dart';
+
+import "package:habit_quest/interfaces/app_drawer.dart";
+import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
+
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
@@ -8,19 +10,18 @@ import 'package:habit_quest/widgets/habit_chart.dart';
 // ==================== HOMEPAGE SCREEN ====================
 
 class HomePageScreen extends StatefulWidget {
-  const HomePageScreen({super.key, required this.habitRepo});
-
-  final HabitRepository habitRepo;
+  const HomePageScreen({super.key});
 
   @override
   State<HomePageScreen> createState() => _HomePageScreenState();
 }
 
 class _HomePageScreenState extends State<HomePageScreen> {
+  HabitRepository get _habitRepo => HabitRepository.instance;
 
   Widget _todaysScore() {
     return FutureBuilder<int?>(
-      future: widget.habitRepo.getScoreForDate(DateTime.now()),
+      future: _habitRepo.getScoreForDate(DateTime.now()),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -55,7 +56,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             if (habitId == null) return const SizedBox.shrink();
 
             return FutureBuilder<bool>(
-              future: widget.habitRepo.isCompletedToday(habitId),
+              future: _habitRepo.isCompletedToday(habitId),
               builder: (context, completionSnapshot) {
                 final isCompleted = completionSnapshot.data ?? false;
 
@@ -66,7 +67,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       color: isCompleted ? Colors.green : null,
                     ),
                     onPressed: () async {
-                      await widget.habitRepo.toggleCompletedToday(habitId);
+                      await _habitRepo.toggleCompletedToday(habitId);
                       setState(() {});
                     },
                   ),
@@ -122,7 +123,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Align(
                 alignment: Alignment.centerLeft, 
-                child: Text('Unrecorded Habits (Pending):', style: TextStyle(fontWeight: FontWeight.bold))
+                child: Text('Unrecorded Habits:', style: TextStyle(fontWeight: FontWeight.bold))
               ),
             ),
             _habitsList(),
@@ -138,7 +139,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (ctx) => RecordHabitInterfacePopUp(habitRepo: widget.habitRepo)
+              builder: (ctx) => RecordHabitInterfacePopUp()
           );
         },
       ),

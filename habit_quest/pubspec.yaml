@@ -53,6 +53,7 @@ dev_dependencies:
   analyzer: 6.4.1
   floor_generator: ^1.5.0
   build_runner: 2.4.13
+  sqflite_common_ffi: ^2.3.4
   flutter_test:
     sdk: flutter
 

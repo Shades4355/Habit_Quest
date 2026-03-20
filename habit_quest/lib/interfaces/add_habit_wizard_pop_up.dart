@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
+import 'package:habit_quest/repositories/habit_repository.dart';
 
 enum HabitType { start, stop }
 
 // --- Add Habit Wizard Pop-up (General [cite: 89]) ---
 class AddHabitWizardPopUp extends StatefulWidget {
-  final Future<void> Function(Habit newHabit) onSave;
 
-  const AddHabitWizardPopUp({super.key, required this.onSave});
+  const AddHabitWizardPopUp({super.key});
   @override
   State<AddHabitWizardPopUp> createState() => _AddHabitWizardPopUpState();
 }
@@ -19,6 +19,10 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
   String _habitName = ''; // Placeholder for Display 2 text field input
   HabitType _habitType = HabitType.start; // Placeholder for Display 1 choice
   double _importanceRating = 3.0; // Placeholder for Display 3 scale [cite: 122]
+
+  Future<void> _saveHabit(Habit newHabit) async {
+    HabitRepository.instance.addHabit(newHabit);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +122,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
                     importanceLevel: _habitType == HabitType.start ? _importanceRating.round() : -_importanceRating.round(),
                     millisecondsSinceEpoch: DateTime.now().millisecondsSinceEpoch,
                   );
-                  await widget.onSave(newHabit);
+                  await _saveHabit(newHabit);
 
                   if (context.mounted) {
                     Navigator.pop(context);
