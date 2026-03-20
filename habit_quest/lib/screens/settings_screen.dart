@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../interfaces/AppDrawer.dart';
-import '../interfaces/NotificationInterfacePopUp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:habit_quest/interfaces/app_drawer.dart';
+import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
 
 // ==================== SETTINGS SCREEN ====================
 

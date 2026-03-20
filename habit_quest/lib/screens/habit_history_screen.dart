@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../interfaces/AppDrawer.dart';
+import 'package:habit_quest/interfaces/app_drawer.dart';
 
 
 // ==================== HABIT HISTORY SCREEN ====================
