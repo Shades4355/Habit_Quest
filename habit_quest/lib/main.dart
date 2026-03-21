@@ -12,6 +12,10 @@ import 'package:sqlite_inspector/sqlite_inspector.dart';
 // Notification Service
 import 'package:habit_quest/services/notification_service.dart';
 
+// State Management
+import 'package:habit_quest/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
+
 // Screens
 import 'package:habit_quest/screens/home_page_screen.dart';
 import 'package:habit_quest/screens/extended_graph_screen.dart';
@@ -46,32 +50,22 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(HabitQuestApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const HabitQuestApp(),
+    ),
+);
 }
-
-class HabitQuestApp extends StatefulWidget {
+class HabitQuestApp extends StatelessWidget {  // change to StatelessWidget
   const HabitQuestApp({super.key});
 
   @override
-  State<HabitQuestApp> createState() => _HabitQuestAppState();
-}
-
-class _HabitQuestAppState extends State<HabitQuestApp> {
-  // This variable tracks if we are in light or dark mode
-  ThemeMode _themeMode = ThemeMode.light;
-
-  // This function will be passed to the Settings screen to change the mode
-  void _toggleTheme(bool isDark) {
-    setState(() {
-      _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       title: 'Habit Quest',
-      // Define the Light Theme
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.indigo,
@@ -79,7 +73,6 @@ class _HabitQuestAppState extends State<HabitQuestApp> {
         ),
         useMaterial3: true,
       ),
-      // Define the Dark Theme
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.indigo,
@@ -87,19 +80,14 @@ class _HabitQuestAppState extends State<HabitQuestApp> {
         ),
         useMaterial3: true,
       ),
-      // Tell the app which one to use based on our state
-      themeMode: _themeMode,
+      themeMode: themeProvider.darkMode ? ThemeMode.dark : ThemeMode.light,
       initialRoute: '/',
       routes: {
-        // When the User launches the app, they will be on the homepage[cite: 3].
-        '/': (context) => HomePageScreen(/*habitRepo: widget.habitRepo*/),
-        '/extended_graph': (context) => const ExtendedGraphScreen(/*habitRepo: widget.habitRepo*/),
-        '/manage_habits': (context) => const ManageHabitsScreen(/*habitRepo: widget.habitRepo*/),
-        '/habit_history': (context) => const HabitHistoryScreen(/*habitRepo: widget.habitRepo*/),
-        '/settings': (context) => SettingsScreen(
-              isDarkMode: _themeMode == ThemeMode.dark,
-              onThemeChanged: _toggleTheme,
-            ),
+        '/': (context) => HomePageScreen(),
+        '/extended_graph': (context) => const ExtendedGraphScreen(),
+        '/manage_habits': (context) => const ManageHabitsScreen(),
+        '/habit_history': (context) => const HabitHistoryScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }

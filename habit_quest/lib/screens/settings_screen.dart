@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
 
+// State Management
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/theme_provider.dart';
+
 // ==================== SETTINGS SCREEN ====================
 
 class SettingsScreen extends StatefulWidget {
   // Properties passed from main.dart
-  final bool isDarkMode;
-  final Function(bool) onThemeChanged;
 
-  const SettingsScreen({
-    super.key,
-    required this.isDarkMode,
-    required this.onThemeChanged,
-  });
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -23,6 +21,11 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   // Local state for the deadline reminder toggle
   bool _deadlineReminder = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,14 +113,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             secondary: const Icon(Icons.dark_mode),
             title: const Text('Dark Mode'),
-            // Uses the value passed from the parent (widget.isDarkMode)
-            value: widget.isDarkMode,
+            value: context.watch<ThemeProvider>().darkMode,
             onChanged: (bool value) {
-              // Updates the global state in main.dart
-              widget.onThemeChanged(value);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Dark Mode set to: $value')));
+              context.read<ThemeProvider>().toggleDarkMode(value);
             },
           ),
           const Divider(),
