@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
+
+// State Management
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/theme_provider.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
@@ -18,26 +21,10 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   // Local state for the deadline reminder toggle
   bool _deadlineReminder = false;
-  bool _darkMode = false;
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
-  }
-
-  Future<void> _loadPreferences() async {
-    final pref = await SharedPreferences.getInstance();
-    setState(() {
-      _deadlineReminder = pref.getBool('deadlineReminder') ?? false;
-      _darkMode = pref.getBool('darkMode') ?? false;
-    });
-  }
-
-  Future<void> _savePreferences() async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setBool('deadlineReminder', _deadlineReminder);
-    await pref.setBool('darkMode', _darkMode);
   }
 
   @override
@@ -126,12 +113,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             secondary: const Icon(Icons.dark_mode),
             title: const Text('Dark Mode'),
-            // Uses the value passed from the parent (widget.isDarkMode)
-            value: _darkMode,
-            onChanged: (bool value) async {
-              // Updates the global state in main.dart
-              setState(() => _darkMode = value);
-              await _savePreferences();
+            value: context.watch<ThemeProvider>().darkMode,
+            onChanged: (bool value) {
+              context.read<ThemeProvider>().toggleDarkMode(value);
             },
           ),
           const Divider(),
