@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
-import 'package:habit_quest/repositories/habit_repository.dart';
+
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 
 enum HabitType { start, stop }
 
@@ -21,7 +23,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
   double _importanceRating = 3.0; // Placeholder for Display 3 scale [cite: 122]
 
   Future<void> _saveHabit(Habit newHabit) async {
-    HabitRepository.instance.addHabit(newHabit);
+    await context.read<HabitProvider>().addHabit(newHabit);
   }
 
   @override
