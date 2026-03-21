@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+import 'package:habit_quest/database/entities/habit.dart';
+import 'package:habit_quest/repositories/habit_repository.dart';
+
+class HabitProvider extends ChangeNotifier {
+  int _todayScore = 0;
+  HabitRepository get _habitRepo => HabitRepository.instance;
+  List<Habit> _habits = [];
+  List<Habit> get habits => _habits;
+  int get todayScore => _todayScore;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  HabitProvider() {
+    loadHabits();
+  }
+
+  Future<void> loadHabits() async {
+    _isLoading = true;
+    notifyListeners();
+
+    _habits = await _habitRepo.getActiveHabits();
+    _todayScore = await _habitRepo.getScoreForDate(DateTime.now()) ?? 0;
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> addHabit(Habit habit) async {
+    await _habitRepo.addHabit(habit);
+    await loadHabits();
+  }
+
+  Future<void> removeHabit(Habit habit) async {
+    final id = habit.id;
+    if (id == null) return;
+
+    await _habitRepo.archiveHabit(id);
+    await loadHabits();
+  }
+
+  Future<void> updateHabit(Habit habit) async {
+    await _habitRepo.updateHabit(habit);
+    await loadHabits();
+  }
+
+  Future<void> toggleCompletedToday(int habitId) async {
+    await _habitRepo.toggleCompletedToday(habitId);
+    await loadHabits();
+  }
+
+  Future<int?> getScoreForDate(DateTime date) => _habitRepo.getScoreForDate(date);
+
+}

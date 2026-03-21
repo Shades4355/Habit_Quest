@@ -3,92 +3,74 @@ import 'package:flutter/material.dart';
 import "package:habit_quest/interfaces/app_drawer.dart";
 import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 
-import 'package:habit_quest/database/entities/habit.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
+import 'package:provider/provider.dart';
 
 // ==================== HOMEPAGE SCREEN ====================
 
-class HomePageScreen extends StatefulWidget {
+class HomePageScreen extends StatelessWidget {
   const HomePageScreen({super.key});
-
-  @override
-  State<HomePageScreen> createState() => _HomePageScreenState();
-}
-
-class _HomePageScreenState extends State<HomePageScreen> {
   HabitRepository get _habitRepo => HabitRepository.instance;
 
-  Widget _todaysScore() {
-    return FutureBuilder<int?>(
-      future: _habitRepo.getScoreForDate(DateTime.now()),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
-
-        final score = snapshot.data ?? 0;
-        return Text(
-          'Today\'s Score: $score',
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        );
-      },
+  Widget _todaysScore(BuildContext context) {
+    final score = context.watch<HabitProvider>().todayScore;
+    return Text(
+      'Today\'s Score: $score',
+      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
     );
   }
 
-  Widget _habitsList() {
-    return FutureBuilder<List<Habit>>(
-      future: _habitRepo.getActiveHabits(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+  Widget _habitsList(BuildContext context) {
+    final habitProvider = context.watch<HabitProvider>();
 
-        final habits = snapshot.data ?? [];
+    if (habitProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: habits.length,
-          itemBuilder: (ctx, i) {
-            final currentHabit = habits[i];
-            final habitId = currentHabit.id;
-            if (habitId == null) return const SizedBox.shrink();
+    final habits = habitProvider.habits;
 
-            return FutureBuilder<bool>(
-              future: _habitRepo.isCompletedToday(habitId),
-              builder: (context, completionSnapshot) {
-                final isCompleted = completionSnapshot.data ?? false;
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: habits.length,
+      itemBuilder: (ctx, i) {
+        final currentHabit = habits[i];
+        final habitId = currentHabit.id;
+        if (habitId == null) return const SizedBox.shrink();
 
-                return ListTile(
-                  leading: IconButton(
-                    icon: Icon(
-                      isCompleted ? Icons.check_box : Icons.check_box_outline_blank,
-                      color: isCompleted ? Colors.green : null,
-                    ),
-                    onPressed: () async {
-                      await _habitRepo.toggleCompletedToday(habitId);
-                      setState(() {});
-                    },
-                  ),
-                  title: Text(currentHabit.habitName),
-                  trailing: Text(
-                    '${currentHabit.importanceLevel}',
-                    style: TextStyle(
-                      color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    )
-                  ),
-                );
-              },
+        return FutureBuilder<bool>(
+          future: _habitRepo.isCompletedToday(habitId),
+          builder: (context, completionSnapshot) {
+            final isCompleted = completionSnapshot.data ?? false;
+
+            return ListTile(
+              leading: IconButton(
+                icon: Icon(
+                  isCompleted ? Icons.check_box : Icons.check_box_outline_blank,
+                  color: isCompleted ? Colors.green : null,
+                ),
+                onPressed: () async {
+                  await context.read<HabitProvider>().toggleCompletedToday(habitId);
+                },
+              ),
+              title: Text(currentHabit.habitName),
+              trailing: Text(
+                '${currentHabit.importanceLevel}',
+                style: TextStyle(
+                  color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red,
+                  fontWeight: FontWeight.bold,
+                )
+              ),
             );
-          }
+          },
         );
-      },
+      }
     );
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     // CALCULATE DYNAMIC HEIGHT HERE
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -117,7 +99,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _todaysScore(),
+            _todaysScore(context),
             const Divider(),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -126,7 +108,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 child: Text('Unrecorded Habits:', style: TextStyle(fontWeight: FontWeight.bold))
               ),
             ),
-            _habitsList(),
+            _habitsList(context),
             // Extra padding at the bottom so the FAB doesn't cover the list
             const SizedBox(height: 80),
           ],
@@ -135,12 +117,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {
-          showModalBottomSheet(
+        onPressed: () async {
+          await showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               builder: (ctx) => RecordHabitInterfacePopUp()
-          );
+          ).then((_) async {
+            if (!context.mounted) return;
+            await context.read<HabitProvider>().loadHabits();
+          });
         },
       ),
     );
