@@ -293,6 +293,16 @@ class _$HabitRecordDao extends HabitRecordDao {
   }
 
   @override
+  Future<List<HabitRecord>> findRecordsForDate(int date) async {
+    return _queryAdapter.queryList('SELECT * FROM HabitRecord WHERE date = ?1',
+        mapper: (Map<String, Object?> row) => HabitRecord(
+            habitId: row['habitId'] as int,
+            date: row['date'] as int,
+            scoreDelta: row['scoreDelta'] as int),
+        arguments: [date]);
+  }
+
+  @override
   Future<int?> deleteRecord(
     int habitId,
     int date,

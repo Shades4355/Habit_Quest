@@ -1,24 +1,39 @@
 import 'package:flutter/material.dart';
-
 import 'package:habit_quest/interfaces/app_drawer.dart';
-
-
-// ==================== HABIT HISTORY SCREEN ====================
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/habit_record_provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 
 class HabitHistoryScreen extends StatelessWidget {
   const HabitHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final habitRecordProvider = context.watch<HabitRecordProvider>();
+    final habitProvider = context.watch<HabitProvider>();
+
+    if (habitRecordProvider.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // Generate last 30 days in reverse order (most recent first)
+    final days = List.generate(30, (i) => 
+      DateTime.now().subtract(Duration(days: i))
+    );
+
     return Scaffold(
       drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Habit History')),
-      // The "Habit History" screen will display daily accomplished habits going back at least 30 days[cite: 170].
-      // Displayed Habits will be displayed in reverse recorded order[cite: 173].
-      // Displayed habits will be grouped by day[cite: 174].
       body: ListView.builder(
-        itemCount: 3, // Placeholder for number of days
+        itemCount: days.length,
         itemBuilder: (ctx, dayIndex) {
+          final date = days[dayIndex];
+          final records = habitRecordProvider.getRecordsForDaySync(date);
+
+          // if (records.isEmpty) return const Text();
+
+          final totalScore = records.fold(0, (sum, r) => sum + r.scoreDelta);
+
           return Column(
             children: [
               Container(
@@ -27,22 +42,44 @@ class HabitHistoryScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Date Placeholder (Day ${dayIndex + 1})', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    // Each group will display the total score for that day[cite: 175].
-                    const Text('Total Score: +8', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo)),
+                    Text(
+                      '${date.month}/${date.day}/${date.year}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)
+                    ),
+                    Text(
+                      'Total Score: $totalScore',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: totalScore >= 0 ? Colors.green : Colors.red,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              // Each group will display a breakdown of the score for that day[cite: 176].
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 3, // Placeholder habits per day
-                itemBuilder: (ctx, habitIndex) => const ListTile(
-                  leading: Icon(Icons.check_circle, color: Colors.green),
-                  title: Text('Recorded Habit Name'),
-                  trailing: Text('+2 points'),
-                ),
+                itemCount: records.length,
+                itemBuilder: (ctx, habitIndex) {
+                  final record = records[habitIndex];
+                  // Find habit name from provider
+                  final habit = habitProvider.habits
+                      .where((h) => h.id == record.habitId)
+                      .firstOrNull;
+                  return ListTile(
+                    leading: Icon(
+                      Icons.check_circle,
+                      color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+                    ),
+                    title: Text(habit?.habitName ?? 'Unknown Habit'),
+                    trailing: Text(
+                      '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
+                      style: TextStyle(
+                        color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           );

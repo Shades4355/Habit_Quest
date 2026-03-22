@@ -25,7 +25,7 @@ class HabitRepository {
   HabitRepository._internal(this.habitDao, this.habitRecordDao);
 
   /// Converts a DateTime to an integer key in the format MMDDYYYY 
-  int _dayKey(DateTime date) => date.month * 1000000 + date.day * 10000 + date.year;
+  int dayKey(DateTime date) => date.month * 1000000 + date.day * 10000 + date.year;
 
   /// Retrieves all active (non-archived) habits from the database
   Future<List<Habit>> getActiveHabits() => habitDao.findActiveHabits();
@@ -78,14 +78,14 @@ class HabitRepository {
 
   /// Marks a habit as completed for today by creating or updating a HabitRecord with a positive scoreDelta
   Future<bool> isCompletedToday(int habitID) async {
-    final date = _dayKey(DateTime.now());
+    final date = dayKey(DateTime.now());
     final record = await habitRecordDao.findRecord(habitID, date);
     return record != null;
   }
 
   /// Toggles the completion status of a habit for the day
   Future<void> toggleCompletedToday(int habitId) async {
-    final date = _dayKey(DateTime.now());
+    final date = dayKey(DateTime.now());
     final existing = await habitRecordDao.findRecord(habitId, date);
     
     if (existing == null) {
@@ -107,15 +107,24 @@ class HabitRepository {
   /// Gets all habit records for a specific habit
   Future<List<HabitRecord>> getRecordsForHabit(int habitId) => habitRecordDao.findRecordsForHabit(habitId);
 
+  Future<List<HabitRecord>> getRecordsForDate(DateTime date) => habitRecordDao.findRecordsForDate(dayKey(date));
+
   /// Gets the total score across all habit records for a specific date
-  Future<int?> getScoreForDate(DateTime date) => habitRecordDao.getScoreForDate(_dayKey(date));
+  Future<int?> getScoreForDate(DateTime date) => habitRecordDao.getScoreForDate(dayKey(date));
 
   /// Gets the total score across all habit records for the last N days
   Future<List<int?>> getScoreForLastNDays(int n) {
     final now = DateTime.now();
     final past = List.generate(
-      n, (i) => _dayKey(now.subtract(Duration(days: n - i - 1)))
+      n, (i) => dayKey(now.subtract(Duration(days: n - i - 1)))
     );
     return Future.wait(past.map((d) => habitRecordDao.getScoreForDate(d)));
+  }
+
+  Future<List<HabitRecord>> getRecordsForLastNDays(int n) async {
+    final now = DateTime.now();
+    final keys = List.generate(n, (i) => dayKey(now.subtract(Duration(days: i))));
+    final results = await Future.wait(keys.map((k) => habitRecordDao.findRecordsForDate(k)));
+    return results.expand((r) => r).toList();
   }
 }

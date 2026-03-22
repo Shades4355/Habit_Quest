@@ -15,6 +15,7 @@ import 'package:habit_quest/services/notification_service.dart';
 // State Management
 import 'package:habit_quest/providers/theme_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:provider/provider.dart';
 
 // Screens
@@ -56,6 +57,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
+        ChangeNotifierProvider(create: (_) => HabitRecordProvider()),
       ],
       child: const HabitQuestApp(),
     ),
