@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:habit_quest/database/entities/habit.dart';
 
 import "package:habit_quest/interfaces/app_drawer.dart";
 import 'package:habit_quest/interfaces/edit_habit_interface_pop_up.dart';
