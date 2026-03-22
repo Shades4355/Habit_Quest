@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -16,30 +17,32 @@ class NotificationService {
 
   /// Check if notifications are enabled (Android-specific)
   Future<bool> areNotificationsEnabled() async {
-    final status = await Permission.notification.status;
-    return status.isGranted || status == PermissionStatus.provisional;
+    if (Platform.isIOS) {
+      final result = await notificationPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.checkPermissions();
+      return result?.isEnabled ?? false;
+    }
+    return await Permission.notification.isGranted;
   }
 
   Future<bool> requestPermissions() async {
-    final status = await Permission.notification.status;
+    if (Platform.isIOS) {
+      final result = await notificationPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      return result ?? false;
+    }
 
-    if (status.isGranted || status == PermissionStatus.provisional) {
-      return true;
+    // Android flow
+    final status = await Permission.notification.status;
+    if (status.isPermanentlyDenied || status.isDenied) {
+      await openAppSettings();
+      return false;
     }
 
     final result = await Permission.notification.request();
-    if (result.isGranted || result == PermissionStatus.provisional) {
-      return true;
-    }
-
-    // If iOS does not grant in-app, allow user to enable in Settings and re-check.
-    if (result.isDenied || result.isPermanentlyDenied || result.isRestricted) {
-      await openAppSettings();
-      final refreshed = await Permission.notification.status;
-      return refreshed.isGranted || refreshed == PermissionStatus.provisional;
-    }
-
-    return false;
+    return result.isGranted;
   }
 
   /// Initialize Notification Service
@@ -54,9 +57,9 @@ class NotificationService {
 
     // iOS initialization
     const initSettingsIOS = DarwinInitializationSettings(
-      requestSoundPermission: true,
-      requestBadgePermission: true,
-      requestAlertPermission: true,
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+      requestAlertPermission: false,
     );
 
     // Initialization settings for both platforms
