@@ -16,19 +16,30 @@ class NotificationService {
 
   /// Check if notifications are enabled (Android-specific)
   Future<bool> areNotificationsEnabled() async {
-    return await Permission.notification.isGranted;
+    final status = await Permission.notification.status;
+    return status.isGranted || status == PermissionStatus.provisional;
   }
 
   Future<bool> requestPermissions() async {
     final status = await Permission.notification.status;
-    
-    if (status.isDenied || status.isPermanentlyDenied) {
-      await openAppSettings();
-      return false;
+
+    if (status.isGranted || status == PermissionStatus.provisional) {
+      return true;
     }
-    
+
     final result = await Permission.notification.request();
-    return result.isGranted;
+    if (result.isGranted || result == PermissionStatus.provisional) {
+      return true;
+    }
+
+    // If iOS does not grant in-app, allow user to enable in Settings and re-check.
+    if (result.isDenied || result.isPermanentlyDenied || result.isRestricted) {
+      await openAppSettings();
+      final refreshed = await Permission.notification.status;
+      return refreshed.isGranted || refreshed == PermissionStatus.provisional;
+    }
+
+    return false;
   }
 
   /// Initialize Notification Service
