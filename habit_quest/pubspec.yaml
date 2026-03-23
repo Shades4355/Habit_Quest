@@ -49,6 +49,7 @@ dependencies:
   permission_handler: ^11.0.0
   shared_preferences: ^2.2.2
   provider: ^6.1.5+1
+  flutter_native_timezone_latest: ^1.0.0
 
 dev_dependencies:
   analyzer: 6.4.1
