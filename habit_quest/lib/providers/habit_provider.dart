@@ -3,16 +3,32 @@ import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 
 class HabitProvider extends ChangeNotifier {
-  int _todayScore = 0;
-  Map<int, bool> _completionStatus = {};
+  // Singleton pattern for repository access
   HabitRepository get _habitRepo => HabitRepository.instance;
-  List<Habit> _habits = [];
-  List<Habit> get habits => _habits;
+
+  // Todays score
+  int _todayScore = 0;
   int get todayScore => _todayScore;
+
+  // Completion status for each habit (key: habitId, value: completed today)
+  Map<int, bool> _completionStatus = {};
   Map<int, bool> get completionStatus => _completionStatus;
 
+  // List of active habits
+  List<Habit> _habits = [];
+  List<Habit> get habits => _habits;
+
+  // Loading state
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  // Weekly scores for chart
+  List<int?> _weekScores = [];
+  List<int?> get weekScores => _weekScores;
+
+  // Monthly scores for chart
+  List<int?> _monthScores = [];
+  List<int?> get monthScores => _monthScores;
 
   HabitProvider() {
     loadHabits();
@@ -24,6 +40,8 @@ class HabitProvider extends ChangeNotifier {
 
     _habits = await _habitRepo.getActiveHabits();
     _todayScore = await _habitRepo.getScoreForDate(DateTime.now()) ?? 0;
+    _weekScores = await _habitRepo.getScoreForLastNDays(7);
+    _monthScores = await _habitRepo.getScoreForLastNDays(30);
     _completionStatus = {};
     for (final habit in _habits) {
       if (habit.id != null) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:habit_quest/repositories/habit_repository.dart';
 
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:provider/provider.dart';
@@ -14,102 +13,86 @@ class ScoreChart extends StatelessWidget{
     required this.chartType,
   });
 
-
-
-  Future<List<FlSpot>> _getDataPoints(BuildContext context) async {
-    final days = chartType == ChartType.home ? 7 : 30;
-    final data = await context.read<HabitProvider>().getScoreForLastNDays(days);
-
+  List<FlSpot> _getDataPoints(BuildContext context) {
+    final data = chartType == ChartType.home
+      ? context.read<HabitProvider>().weekScores
+      : context.read<HabitProvider>().monthScores;
     return List.generate(data.length, (index) => FlSpot(index.toDouble(), data[index]?.toDouble() ?? 0));
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<FlSpot>>(
-      future: _getDataPoints(context),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    final spots = _getDataPoints(context);
 
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
+    if (spots.isEmpty) {
+      return const Center(child: Text('No score data available'));
+    }
 
-        final spots = snapshot.data ?? [];
-
-        if (spots.isEmpty) {
-          return const Center(child: Text('No score data available'));
-        }
-
-        return LineChart(
-          LineChartData(
-            minX: 0,
-            maxX: chartType == ChartType.home ? 6 : 30,
-            minY: -20,
-            maxY: 20,
-            gridData: FlGridData(
-              show: true,
-              verticalInterval: 1,
-              horizontalInterval: 5),
-            borderData: FlBorderData(show: true),
-            titlesData: FlTitlesData(
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: 5,
-                  reservedSize: 30
-                )
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: chartType == ChartType.home ? 1 : 5,
-                  reservedSize: 30,
-                  getTitlesWidget: (value, meta) {
-                    final days = chartType == ChartType.home ? 7 : 30;
-                    final date = DateTime.now().subtract(Duration(days: days - value.toInt()));
-                    final label = '${date.month}/${date.day}';
-                    return Text(
-                      label,
-                      // style: const TextStyle(fontSize: 10)
-                    );
-                  },
-                ),
-              ),
-            ),
-            lineBarsData: [
-              LineChartBarData(
-                // get raid of everything under here
-                spots: spots,
-                isCurved: true,
-                barWidth: 3,
-                dotData: FlDotData(show: true),
-              ),
-            ],
-            lineTouchData: LineTouchData(
-              touchTooltipData: LineTouchTooltipData(
-                getTooltipItems: (touchedSpots) {
-                  return touchedSpots.map((spot) {
-                    final days = chartType == ChartType.home ? 7 : 30;
-                    final date = DateTime.now().subtract(
-                      Duration(days: days - 1 - spot.x.toInt())
-                    );
-                    final dateStr = '${date.month}/${date.day}';
-                    final score = spot.y.toInt();
-                    return LineTooltipItem(
-                      '($dateStr, $score)',
-                      const TextStyle(color: Colors.white),
-                    );
-                  }).toList();
-                },
-              ),
+    return LineChart(
+      LineChartData(
+        minX: 0,
+        maxX: chartType == ChartType.home ? 6 : 29,
+        minY: -20,
+        maxY: 20,
+        gridData: FlGridData(
+          show: true,
+          verticalInterval: 1,
+          horizontalInterval: 5
+        ),
+        borderData: FlBorderData(show: true),
+        titlesData: FlTitlesData(
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 5,
+              reservedSize: 30
+            )
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: chartType == ChartType.home ? 1 : 5,
+              reservedSize: 30,
+              getTitlesWidget: (value, meta) {
+                final days = chartType == ChartType.home ? 7 : 30;
+                final date = DateTime.now().subtract(Duration(days: days - value.toInt()));
+                final label = '${date.month}/${date.day}';
+                return Text(
+                  label,
+                );
+              },
             ),
           ),
-        );
-      },
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            spots: spots,
+            isCurved: true,
+            barWidth: 3,
+            dotData: FlDotData(show: true),
+          ),
+        ],
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((spot) {
+                final days = chartType == ChartType.home ? 7 : 30;
+                final date = DateTime.now().subtract(
+                  Duration(days: days - 1 - spot.x.toInt())
+                );
+                final dateStr = '${date.month}/${date.day}';
+                final score = spot.y.toInt();
+                return LineTooltipItem(
+                  '($dateStr, $score)',
+                  const TextStyle(color: Colors.white),
+                );
+              }).toList();
+            },
+          ),
+        ),
+      ),
     );
   }
 }
