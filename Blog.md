@@ -107,3 +107,18 @@ Since last week, Miguel and Marvens worked on implementing the Database, the Not
 
 This week, Miguel will try to refactor the code to remove the `habitRepo` requirement from several classes. Marvens will work on adding functionality to the Show Deadlines toggle and fix the order of the displayed Date. Shades will try to finish writing the instructions for the manual tests, and, if Miguel’s refactoring completes before next week, Shades will also start refactoring the widget tests. And Luca will refactor the files and class names to be snake case instead of Pascal case, per Flutter's conventions.
 
+
+### 18-March-2026
+Team meeting #8:
+
+In attendance: everyone
+
+By majority consent, we moved this meeting from the 17th to the 18th.
+
+Since the last meeting, Luca attempted to refactor the file names, but encountered an unusually high number of errors. Shades picked up the task and finished the refactoring. Miguel worked on refactoring the code to make it possible to run widget tests; he has mostly finished. Shades attempted to run widget tests with the new refactoring, but is stuck on how to mock up a database for the testing environment. Marvens started working on the toggle feature for the deadlines display.
+
+For this week, Luca will work on refactoring the interface windows to be dynamically sized instead of statically sized. Marvens will continue work on the toggle feature for the deadlines. Miguel will work on connecting the Habits History page to the database. Shades will continue working on the Master Testing Document and widget testing.
+
+Luca was having some difficulties with his emulators; we troubleshooted as a group.
+
+
