@@ -1,11 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:provider/provider.dart';
+import 'package:habit_quest/database/entities/habit_record.dart';
+import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 
-class HabitHistoryScreen extends StatelessWidget {
+class HabitHistoryScreen extends StatefulWidget {
   const HabitHistoryScreen({super.key});
+
+  @override
+  State<HabitHistoryScreen> createState() => _HabitHistoryScreenState();
+}
+
+class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HabitRecordProvider>().loadRecordsForLastNDays(30);
+    });
+  }
+
+  Widget _habitRecordTile(BuildContext context, HabitRecord record, Habit? habit) {
+    return ListTile(
+      leading: Icon(
+        Icons.check_circle,
+        color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+      ),
+      title: Text(habit?.habitName ?? 'Unknown Habit'),
+      trailing: Text(
+        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
+        style: TextStyle(
+          color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +47,6 @@ class HabitHistoryScreen extends StatelessWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    // Generate last 30 days in reverse order (most recent first)
     final days = List.generate(30, (i) => 
       DateTime.now().subtract(Duration(days: i))
     );
@@ -30,58 +60,29 @@ class HabitHistoryScreen extends StatelessWidget {
           final date = days[dayIndex];
           final records = habitRecordProvider.getRecordsForDaySync(date);
 
-          // if (records.isEmpty) return const Text();
-
           final totalScore = records.fold(0, (sum, r) => sum + r.scoreDelta);
 
-          return Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12.0),
-                color: Colors.grey.shade200,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${date.month}/${date.day}/${date.year}',
-                      style: const TextStyle(fontWeight: FontWeight.bold)
-                    ),
-                    Text(
-                      'Total Score: $totalScore',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: totalScore >= 0 ? Colors.green : Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
+          return ExpansionTile(
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            collapsedBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+            title: Text(
+              '${date.month}/${date.day}/${date.year}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            trailing: Text(
+              'Total Score: $totalScore',
+              style: TextStyle(                
+                color: totalScore >= 0 ? Colors.green : Colors.red,
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: records.length,
-                itemBuilder: (ctx, habitIndex) {
-                  final record = records[habitIndex];
-                  // Find habit name from provider
-                  final habit = habitProvider.habits
-                      .where((h) => h.id == record.habitId)
-                      .firstOrNull;
-                  return ListTile(
-                    leading: Icon(
-                      Icons.check_circle,
-                      color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
-                    ),
-                    title: Text(habit?.habitName ?? 'Unknown Habit'),
-                    trailing: Text(
-                      '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
-                      style: TextStyle(
-                        color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+            ),
+            children: records.isEmpty
+              ? [const ListTile(title: Text('No habits completed'))]
+              : records.map((record) {
+                final habit = habitProvider.habits
+                    .where((h) => h.id == record.habitId)
+                    .firstOrNull;
+                return _habitRecordTile(context, record, habit);
+              }).toList(),
           );
         },
       ),
