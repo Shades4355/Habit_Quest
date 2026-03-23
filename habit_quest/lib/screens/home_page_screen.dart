@@ -4,6 +4,7 @@ import "package:habit_quest/interfaces/app_drawer.dart";
 import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 
 import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,6 @@ import 'package:provider/provider.dart';
 
 class HomePageScreen extends StatelessWidget {
   const HomePageScreen({super.key});
-  HabitRepository get _habitRepo => HabitRepository.instance;
 
   Widget _todaysScore(BuildContext context) {
     final score = context.watch<HabitProvider>().todayScore;
@@ -20,6 +20,37 @@ class HomePageScreen extends StatelessWidget {
       'Today\'s Score: $score',
       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
     );
+  }
+
+  Widget _habitTile(BuildContext context, Habit currentHabit) {
+    final habitProvider = context.watch<HabitProvider>();
+    final habitId = currentHabit.id;
+    if (habitId == null) return const SizedBox.shrink();
+
+    // final isCompleted = habitProvider.completionStatus[habitId] ?? false;
+    final unCompleted = !(habitProvider.completionStatus[habitId] ?? false);
+    if (!unCompleted) return const SizedBox.shrink();
+    return ListTile(
+          leading: IconButton(
+            icon: Icon(
+              Icons.check_box_outline_blank
+              // color: isCompleted ? Colors.green : null,
+            ),
+            onPressed: () async {
+              await context.read<HabitProvider>().toggleCompletedToday(habitId);
+            },
+          ),
+          title: Text(currentHabit.habitName),
+          trailing: Text(
+            '${currentHabit.importanceLevel}',
+            style: TextStyle(
+              color: currentHabit.importanceLevel > 0
+                  ? Colors.green
+                  : Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
   }
 
   Widget _habitsList(BuildContext context) {
@@ -37,44 +68,17 @@ class HomePageScreen extends StatelessWidget {
       itemCount: habits.length,
       itemBuilder: (ctx, i) {
         final currentHabit = habits[i];
-        final habitId = currentHabit.id;
-        if (habitId == null) return const SizedBox.shrink();
-
-        return FutureBuilder<bool>(
-          future: _habitRepo.isCompletedToday(habitId),
-          builder: (context, completionSnapshot) {
-            final isCompleted = completionSnapshot.data ?? false;
-
-            return ListTile(
-              leading: IconButton(
-                icon: Icon(
-                  isCompleted ? Icons.check_box : Icons.check_box_outline_blank,
-                  color: isCompleted ? Colors.green : null,
-                ),
-                onPressed: () async {
-                  await context.read<HabitProvider>().toggleCompletedToday(habitId);
-                },
-              ),
-              title: Text(currentHabit.habitName),
-              trailing: Text(
-                '${currentHabit.importanceLevel}',
-                style: TextStyle(
-                  color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red,
-                  fontWeight: FontWeight.bold,
-                )
-              ),
-            );
-          },
-        );
-      }
+        return _habitTile(context, currentHabit);
+      },
     );
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     // CALCULATE DYNAMIC HEIGHT HERE
     final double screenHeight = MediaQuery.of(context).size.height;
-    final double dynamicChartHeight = screenHeight * 0.25; // 25% of screen height
+    final double dynamicChartHeight =
+        screenHeight * 0.25; // 25% of screen height
 
     return Scaffold(
       drawer: const AppDrawer(),
@@ -89,12 +93,8 @@ class HomePageScreen extends StatelessWidget {
                 child: SizedBox(
                   height: dynamicChartHeight, // DYNAMIC HEIGHT APPLIED
                   child: AbsorbPointer(
-                    child: ScoreChart(
-                      isHomePage: true,
-                      habitRepo: _habitRepo,
-                      maxY: 20,
-                    ),
-                  )
+                    child: ScoreChart(chartType: ChartType.home),
+                  ),
                 ),
               ),
             ),
@@ -105,7 +105,10 @@ class HomePageScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Unrecorded Habits:', style: TextStyle(fontWeight: FontWeight.bold))
+                child: Text(
+                  'Unrecorded Habits:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             _habitsList(context),
@@ -119,9 +122,9 @@ class HomePageScreen extends StatelessWidget {
         child: const Icon(Icons.add),
         onPressed: () async {
           await showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (ctx) => RecordHabitInterfacePopUp()
+            context: context,
+            isScrollControlled: true,
+            builder: (ctx) => RecordHabitInterfacePopUp(),
           ).then((_) async {
             if (!context.mounted) return;
             await context.read<HabitProvider>().loadHabits();

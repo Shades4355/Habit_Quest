@@ -15,7 +15,7 @@ class NotificationService {
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
-  /// Check if notifications are enabled (Android-specific)
+  /// Check if notifications are enabled
   Future<bool> areNotificationsEnabled() async {
     if (Platform.isIOS) {
       final result = await notificationPlugin

@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:habit_quest/repositories/habit_repository.dart';
 
+import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:provider/provider.dart';
+
+enum ChartType { home, extended }
 class ScoreChart extends StatelessWidget{
-  final HabitRepository habitRepo;
-  final double maxY;
-  final bool isHomePage;
+  final ChartType chartType;
 
   const ScoreChart({
     super.key,
-    required this.habitRepo,
-    required this.isHomePage,
-    required this.maxY,
+    required this.chartType,
   });
 
 
 
-  Future<List<FlSpot>> _getDataPoints() async {
-    final days = isHomePage ? 7 : 30;
-    final data = await habitRepo.getScoreForLastNDays(days);
+  Future<List<FlSpot>> _getDataPoints(BuildContext context) async {
+    final days = chartType == ChartType.home ? 7 : 30;
+    final data = await context.read<HabitProvider>().getScoreForLastNDays(days);
 
     return List.generate(data.length, (index) => FlSpot(index.toDouble(), data[index]?.toDouble() ?? 0));
   }
@@ -26,7 +26,7 @@ class ScoreChart extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<FlSpot>>(
-      future: _getDataPoints(),
+      future: _getDataPoints(context),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -45,9 +45,9 @@ class ScoreChart extends StatelessWidget{
         return LineChart(
           LineChartData(
             minX: 0,
-            maxX: isHomePage? 6 : 30,
-            minY: -maxY,
-            maxY: maxY,
+            maxX: chartType == ChartType.home ? 6 : 30,
+            minY: -20,
+            maxY: 20,
             gridData: FlGridData(
               show: true,
               verticalInterval: 1,
@@ -66,10 +66,10 @@ class ScoreChart extends StatelessWidget{
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: isHomePage? 1 : 5,
+                  interval: chartType == ChartType.home ? 1 : 5,
                   reservedSize: 30,
                   getTitlesWidget: (value, meta) {
-                    final days = isHomePage ? 7 : 30;
+                    final days = chartType == ChartType.home ? 7 : 30;
                     final date = DateTime.now().subtract(Duration(days: days - value.toInt()));
                     final label = '${date.month}/${date.day}';
                     return Text(
@@ -93,7 +93,7 @@ class ScoreChart extends StatelessWidget{
               touchTooltipData: LineTouchTooltipData(
                 getTooltipItems: (touchedSpots) {
                   return touchedSpots.map((spot) {
-                    final days = isHomePage ? 7 : 30;
+                    final days = chartType == ChartType.home ? 7 : 30;
                     final date = DateTime.now().subtract(
                       Duration(days: days - 1 - spot.x.toInt())
                     );

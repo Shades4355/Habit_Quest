@@ -4,10 +4,12 @@ import 'package:habit_quest/repositories/habit_repository.dart';
 
 class HabitProvider extends ChangeNotifier {
   int _todayScore = 0;
+  Map<int, bool> _completionStatus = {};
   HabitRepository get _habitRepo => HabitRepository.instance;
   List<Habit> _habits = [];
   List<Habit> get habits => _habits;
   int get todayScore => _todayScore;
+  Map<int, bool> get completionStatus => _completionStatus;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -22,6 +24,12 @@ class HabitProvider extends ChangeNotifier {
 
     _habits = await _habitRepo.getActiveHabits();
     _todayScore = await _habitRepo.getScoreForDate(DateTime.now()) ?? 0;
+    _completionStatus = {};
+    for (final habit in _habits) {
+      if (habit.id != null) {
+        _completionStatus[habit.id!] = await _habitRepo.isCompletedToday(habit.id!);
+      }
+    }
 
     _isLoading = false;
     notifyListeners();
@@ -51,5 +59,7 @@ class HabitProvider extends ChangeNotifier {
   }
 
   Future<int?> getScoreForDate(DateTime date) => _habitRepo.getScoreForDate(date);
+
+  Future<List<int?>> getScoreForLastNDays(int n) => _habitRepo.getScoreForLastNDays(n);
 
 }

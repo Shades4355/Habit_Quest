@@ -46,11 +46,7 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ScoreChart(
-          isHomePage: false,
-          habitRepo: HabitRepository.instance,
-          maxY: 20,
-        )
+        child: ScoreChart(chartType: ChartType.extended)
       ),
     );
   }
