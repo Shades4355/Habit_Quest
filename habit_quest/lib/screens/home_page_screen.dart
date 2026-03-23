@@ -5,7 +5,6 @@ import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/database/entities/habit.dart';
-import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:provider/provider.dart';
 

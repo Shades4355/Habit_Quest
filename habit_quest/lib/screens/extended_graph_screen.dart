@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:flutter/services.dart';
 
