@@ -66,9 +66,12 @@ class HabitRecordProvider extends ChangeNotifier {
   
   List<Habit> topUncompletedHabits(List<Habit> habits, {int limit = 5}) {
     final uncompleted = habits
-        .where((h) => h.id != null && (_uncompletedHabit[h.id] ?? true))
+        .where((h) =>
+            h.id != null &&
+            h.importanceLevel > 0 &&
+            (_uncompletedHabit[h.id] ?? true))
         .toList();
-    uncompleted.sort((a, b) => b.importanceLevel.abs().compareTo(a.importanceLevel.abs()));
+    uncompleted.sort((a, b) => b.importanceLevel.compareTo(a.importanceLevel));
     return uncompleted.take(limit).toList();
   }
 
