@@ -38,8 +38,8 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
             // Display 1 will display the prompt "Add A New Habit"[cite: 94].
             const Text('Add A New Habit (Step 1/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
-            // Prompt the User to select whether they are creating a habit they wish to start or stop[cite: 95].
-            const Text('Are you trying to START or STOP this habit?'),
+            // Prompt the User to select whether they are creating a habit they wish to start or break[cite: 95].
+            const Text('Are you trying to START or BREAK this habit?'),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -50,7 +50,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
                 ),
                 const SizedBox(width: 10),
                 ChoiceChip(
-                  label: const Text('STOP'),
+                  label: const Text('BREAK'),
                   selected: _habitType == HabitType.stop,
                   onSelected: (b) => setState(() => _habitType = HabitType.stop)
                 ),
@@ -74,7 +74,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
           // --- Display 3 content ---
           if (_currentDisplay == 3) ...[
             // Display 3 will display the new habit's name[cite: 120].
-            const Text('Habit Importance: [Name Placeholder] (Step 3/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Habit Importance: $_habitName (Step 3/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             // Prompt Users to select an importance rating... scale ranging from 1 to 5[cite: 121, 122].
             Text('Importance Rating: ${_importanceRating.round()}'),

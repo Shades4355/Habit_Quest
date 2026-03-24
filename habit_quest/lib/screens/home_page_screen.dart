@@ -61,12 +61,14 @@ class HomePageScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final topHabits = habitRecordProvider.topUncompletedHabits(habitProvider.habits);
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 5,
+      itemCount: topHabits.length,
       itemBuilder: (ctx, i) {
-        final habit = habitRecordProvider.topUncompletedHabits(habitProvider.habits)[i];
+        final habit = topHabits[i];
         return _habitTile(context, habit);
       },
     );
