@@ -10,6 +10,9 @@ import 'package:flutter/foundation.dart';
 import 'package:sqlite_inspector/sqlite_inspector.dart';
 
 // Notification Service
+import 'package:flutter_native_timezone_latest/flutter_native_timezone_latest.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:habit_quest/services/notification_service.dart';
 
 // State Management
@@ -30,6 +33,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Notification Service
+  tz_data.initializeTimeZones();
+  final String timeZoneName = await FlutterNativeTimezoneLatest.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
   await NotificationService().initNotification();
 
   // Start SQLite Inspector in debug mode
