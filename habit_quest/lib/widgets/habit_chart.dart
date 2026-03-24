@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:provider/provider.dart';
 
 enum ChartType { home, extended }
@@ -15,8 +15,8 @@ class ScoreChart extends StatelessWidget{
 
   List<FlSpot> _getDataPoints(BuildContext context) {
     final data = chartType == ChartType.home
-      ? context.read<HabitProvider>().weekScores
-      : context.read<HabitProvider>().monthScores;
+      ? context.read<HabitRecordProvider>().weekScores
+      : context.read<HabitRecordProvider>().monthScores;
     return List.generate(data.length, (index) => FlSpot(index.toDouble(), data[index]?.toDouble() ?? 0));
   }
 

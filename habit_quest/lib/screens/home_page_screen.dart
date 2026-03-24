@@ -5,6 +5,7 @@ import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/database/entities/habit.dart';
+import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,7 @@ class HomePageScreen extends StatelessWidget {
   const HomePageScreen({super.key});
 
   Widget _todaysScore(BuildContext context) {
-    final score = context.watch<HabitProvider>().todayScore;
+    final score = context.watch<HabitRecordProvider>().todayScore;
     return Text(
       'Today\'s Score: $score',
       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -22,52 +23,51 @@ class HomePageScreen extends StatelessWidget {
   }
 
   Widget _habitTile(BuildContext context, Habit currentHabit) {
-    final habitProvider = context.watch<HabitProvider>();
+    final habitRecordProvider = context.watch<HabitRecordProvider>();
     final habitId = currentHabit.id;
     if (habitId == null) return const SizedBox.shrink();
 
-    // final isCompleted = habitProvider.completionStatus[habitId] ?? false;
-    final unCompleted = !(habitProvider.completionStatus[habitId] ?? false);
-    if (!unCompleted) return const SizedBox.shrink();
+    final isCompleted = habitRecordProvider.completedHabit[habitId] ?? false;
+    if (isCompleted) return const SizedBox.shrink();
     return ListTile(
-          leading: IconButton(
-            icon: Icon(
-              Icons.check_box_outline_blank
-              // color: isCompleted ? Colors.green : null,
-            ),
-            onPressed: () async {
-              await context.read<HabitProvider>().toggleCompletedToday(habitId);
-            },
-          ),
-          title: Text(currentHabit.habitName),
-          trailing: Text(
-            '${currentHabit.importanceLevel}',
-            style: TextStyle(
-              color: currentHabit.importanceLevel > 0
-                  ? Colors.green
-                  : Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        );
+      leading: IconButton(
+        icon: Icon(
+          Icons.check_box_outline_blank
+          // color: isCompleted ? Colors.green : null,
+        ),
+        onPressed: () async {
+          await context.read<HabitRecordProvider>().toggleCompletedToday(habitId);
+        },
+      ),
+      title: Text(currentHabit.habitName),
+      trailing: Text(
+        '${currentHabit.importanceLevel}',
+        style: TextStyle(
+          color: currentHabit.importanceLevel > 0
+              ? Colors.green
+              : Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
   Widget _habitsList(BuildContext context) {
-    final habitProvider = context.watch<HabitProvider>();
+    final HabitProvider habitProvider = context.watch<HabitProvider>();
+    final habitRecordProvider = context.watch<HabitRecordProvider>();
+  
 
-    if (habitProvider.isLoading) {
+    if (habitProvider.isLoading || habitRecordProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-
-    final habits = habitProvider.habits;
 
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: habits.length,
+      itemCount: 5,
       itemBuilder: (ctx, i) {
-        final currentHabit = habits[i];
-        return _habitTile(context, currentHabit);
+        final habit = habitRecordProvider.topUncompletedHabits(habitProvider.habits)[i];
+        return _habitTile(context, habit);
       },
     );
   }
@@ -126,7 +126,7 @@ class HomePageScreen extends StatelessWidget {
             builder: (ctx) => RecordHabitInterfacePopUp(),
           ).then((_) async {
             if (!context.mounted) return;
-            await context.read<HabitProvider>().loadHabits();
+            await context.read<HabitRecordProvider>().loadAll();
           });
         },
       ),

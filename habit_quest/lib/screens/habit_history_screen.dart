@@ -18,7 +18,7 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HabitRecordProvider>().loadRecordsForLastNDays(30);
+      context.read<HabitRecordProvider>().loadAll();
     });
   }
 
