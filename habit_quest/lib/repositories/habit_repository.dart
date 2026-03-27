@@ -76,37 +76,29 @@ class HabitRepository {
   /// unarchives a habit from the database
   Future<int?> unarchiveHabit(int id) => habitDao.unarchiveHabit(id);
 
-  /// Marks a habit as completed for today by creating or updating a HabitRecord with a positive scoreDelta
-  Future<bool> isCompletedToday(int habitID) async {
-    final date = dayKey(DateTime.now());
-    final record = await habitRecordDao.findRecord(habitID, date);
-    return record != null;
+  /// Toggles the completion status of a habit for the day
+  Future<void> recordHabit(int habitId, DateTime date) async {
+    final habit = await habitDao.findHabitById(habitId);
+
+    if (habit == null) return;
+
+    await habitRecordDao.insertRecord(HabitRecord(
+      habitId: habitId,
+      date: dayKey(date),
+      scoreDelta: habit.importanceLevel,
+    ));
   }
 
-  /// Toggles the completion status of a habit for the day
-  Future<void> toggleCompletedToday(int habitId) async {
-    final date = dayKey(DateTime.now());
-    final existing = await habitRecordDao.findRecord(habitId, date);
-    
-    if (existing == null) {
-      final habit = await habitDao.findHabitById(habitId);
-      if (habit == null) return;
-
-      await habitRecordDao.insertRecord(
-        HabitRecord(
-          habitId: habitId,
-          date: date,
-          scoreDelta: habit.importanceLevel,
-        ),
-      );
-    } else {
-      await habitRecordDao.deleteRecord(habitId, date);
-    }
+  /// Checks if a habit is completed on a specific date
+  Future<bool> isCompletedOnDate(int habitId, DateTime date) async {
+    final count = await habitRecordDao.countRecordsForHabit(habitId, dayKey(date)) ?? 0;
+    return count > 0;
   }
 
   /// Gets all habit records for a specific habit
   Future<List<HabitRecord>> getRecordsForHabit(int habitId) => habitRecordDao.findRecordsForHabit(habitId);
 
+  /// Gets all habit records for a specific date
   Future<List<HabitRecord>> getRecordsForDate(DateTime date) => habitRecordDao.findRecordsForDate(dayKey(date));
 
   /// Gets the total score across all habit records for a specific date
@@ -121,10 +113,14 @@ class HabitRepository {
     return Future.wait(past.map((d) => habitRecordDao.getScoreForDate(d)));
   }
 
+  /// Gets all habit records for the last N days
   Future<List<HabitRecord>> getRecordsForLastNDays(int n) async {
     final now = DateTime.now();
     final keys = List.generate(n, (i) => dayKey(now.subtract(Duration(days: i))));
     final results = await Future.wait(keys.map((k) => habitRecordDao.findRecordsForDate(k)));
     return results.expand((r) => r).toList();
   }
+
+  /// Counts the number of records for a specific habit and date
+  Future<int?> countRecordsForHabit(int habitId, DateTime date) => habitRecordDao.countRecordsForHabit(habitId, dayKey(date));
 }

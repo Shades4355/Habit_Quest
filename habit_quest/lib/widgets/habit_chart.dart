@@ -57,7 +57,8 @@ class ScoreChart extends StatelessWidget{
               reservedSize: 30,
               getTitlesWidget: (value, meta) {
                 final days = chartType == ChartType.home ? 7 : 30;
-                final date = DateTime.now().subtract(Duration(days: days - value.toInt()));
+                final todaysDate = DateTime.now();
+                final date = todaysDate.subtract(Duration(days: days - 1 - value.toInt()));
                 final label = '${date.month}/${date.day}';
                 return Text(
                   label,
@@ -79,7 +80,8 @@ class ScoreChart extends StatelessWidget{
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((spot) {
                 final days = chartType == ChartType.home ? 7 : 30;
-                final date = DateTime.now().subtract(
+                final todaysDate = DateTime.now();
+                final date = todaysDate.subtract(
                   Duration(days: days - 1 - spot.x.toInt())
                 );
                 final dateStr = '${date.month}/${date.day}';

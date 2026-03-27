@@ -6,9 +6,13 @@ class HabitProvider extends ChangeNotifier {
   // Singleton pattern for repository access
   HabitRepository get _habitRepo => HabitRepository.instance;
 
-  // List of active habits
+  // List of ALL habits
   List<Habit> _habits = [];
   List<Habit> get habits => _habits;
+
+  // List of active habits
+  List<Habit> _activeHabits = [];
+  List<Habit> get activeHabits => _activeHabits;
 
   // Loading state
   bool _isLoading = false;
@@ -23,7 +27,8 @@ class HabitProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _habits = await _habitRepo.getActiveHabits();
+    _activeHabits = await _habitRepo.getActiveHabits();
+    _habits = _activeHabits + await _habitRepo.getArchivedHabits();
 
     _isLoading = false;
     notifyListeners();
@@ -49,4 +54,5 @@ class HabitProvider extends ChangeNotifier {
     await _habitRepo.updateHabit(habit);
     await loadHabits();
   }
+
 }

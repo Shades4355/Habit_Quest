@@ -55,8 +55,8 @@ class HabitRecordProvider extends ChangeNotifier {
     _uncompletedHabit = {};
     for (final habit in habits) {
       if (habit.id != null) {
-        _completedHabit[habit.id!] = await _habitRepo.isCompletedToday(habit.id!);
-        _uncompletedHabit[habit.id!] = !(await _habitRepo.isCompletedToday(habit.id!));
+        _completedHabit[habit.id!] = await _habitRepo.isCompletedOnDate(habit.id!, DateTime.now());
+        _uncompletedHabit[habit.id!] = !(await _habitRepo.isCompletedOnDate(habit.id!, DateTime.now()));
       }
     }
 
@@ -64,6 +64,7 @@ class HabitRecordProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  /// Get top uncompleted habits for today, sorted by importance level
   List<Habit> topUncompletedHabits(List<Habit> habits, {int limit = 5}) {
     final uncompleted = habits
         .where((h) =>
@@ -75,15 +76,22 @@ class HabitRecordProvider extends ChangeNotifier {
     return uncompleted.take(limit).toList();
   }
 
+  /// Get uncompleted habits for today
   List<Habit> unCompletedHabits(List<Habit> habits) {
     return habits
         .where((h) => h.id != null && (_uncompletedHabit[h.id] ?? true))
         .toList();
   }
 
-  /// Toggle completion status for a habit today
-  Future<void> toggleCompletedToday(int habitId) async {
-    await _habitRepo.toggleCompletedToday(habitId);
+  /// Toggle completion status for a habit
+  Future<void> recordHabit(int habitId, DateTime date) async {
+    await _habitRepo.recordHabit(habitId, date);
+    await loadAll();
+  }
+
+  /// Marks a habit as completed for today
+  Future<void> recordHabitToday(int habitId) async {
+    await _habitRepo.recordHabit(habitId, DateTime.now());
     await loadAll();
   }
 

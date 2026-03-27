@@ -44,7 +44,9 @@ void main() async {
   }
 
   // Initialize database
-  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db')
+    .addMigrations(AppDatabase.migrations)
+    .build();
 
   // Initialize the repository
   HabitRepository.initialize(

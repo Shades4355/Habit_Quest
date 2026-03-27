@@ -18,7 +18,7 @@ class ManageHabitsScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final habits = habitProvider.habits;
+    final habits = habitProvider.activeHabits;
     if (habits.isEmpty) {
       return const Center(child: Text('No active habits yet.'));
     }

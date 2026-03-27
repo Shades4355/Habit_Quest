@@ -82,7 +82,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -101,8 +101,6 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `Habit` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `habitName` TEXT NOT NULL, `habitDescription` TEXT, `importanceLevel` INTEGER NOT NULL, `createdAtMilliseconds` INTEGER NOT NULL, `isArchived` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `HabitRecord` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `habitId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `scoreDelta` INTEGER NOT NULL, FOREIGN KEY (`habitId`) REFERENCES `Habit` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
-        await database.execute(
-            'CREATE UNIQUE INDEX `index_HabitRecord_habitId_date` ON `HabitRecord` (`habitId`, `date`)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -303,6 +301,17 @@ class _$HabitRecordDao extends HabitRecordDao {
   }
 
   @override
+  Future<int?> countRecordsForHabit(
+    int habitId,
+    int date,
+  ) async {
+    return _queryAdapter.query(
+        'SELECT COUNT(*) FROM HabitRecord WHERE habitId = ?1 AND date = ?2',
+        mapper: (Map<String, Object?> row) => row.values.first as int,
+        arguments: [habitId, date]);
+  }
+
+  @override
   Future<int?> deleteRecord(
     int habitId,
     int date,
@@ -331,6 +340,6 @@ class _$HabitRecordDao extends HabitRecordDao {
   @override
   Future<int> insertRecord(HabitRecord record) {
     return _habitRecordInsertionAdapter.insertAndReturnId(
-        record, OnConflictStrategy.replace);
+        record, OnConflictStrategy.abort);
   }
 }

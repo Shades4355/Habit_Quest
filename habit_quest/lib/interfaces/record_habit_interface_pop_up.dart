@@ -18,28 +18,31 @@ class RecordHabitInterfacePopUp extends StatefulWidget {
 
 class _RecordHabitInterfacePopUpState extends State<RecordHabitInterfacePopUp> {
   int? _selectedHabitId;
+  DateTime _date = DateTime.now();
+
+  String get formattedDate =>
+      '${_date.month.toString().padLeft(2, '0')}/'
+      '${_date.day.toString().padLeft(2, '0')}/'
+      '${_date.year}';
 
   Future<void> _saveSelection() async {
     final selectedHabitId = _selectedHabitId;
     if (selectedHabitId == null) return;
 
-  await context.read<HabitRecordProvider>().toggleCompletedToday(_selectedHabitId!);
+  await context.read<HabitRecordProvider>().recordHabit(_selectedHabitId!, _date);
     if (!mounted) return;
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Habit recorded for today')),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Habit recorded for $formattedDate'),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     final habitProvider = context.watch<HabitProvider>();
-    final habitRecordProvider = context.watch<HabitRecordProvider>();
 
-    final selectableHabits = habitRecordProvider.unCompletedHabits(habitProvider.habits);
-    final currentValue = selectableHabits.any((h) => h.id == _selectedHabitId)
-    ? _selectedHabitId
-    : null;
+    final selectableHabits = habitProvider.activeHabits;
+    final currentValue = _selectedHabitId;
 
     return Padding(
     // Padding for bottom sheet to avoid keyboard overlap if necessary
@@ -53,7 +56,7 @@ class _RecordHabitInterfacePopUpState extends State<RecordHabitInterfacePopUp> {
         const SizedBox(height: 20),
         // Allow user to select a date[cite: 38].
         // Defaults to current day[cite: 39]. Users can select from pop-up calendar[cite: 43].
-        DatePicker(),
+        DatePicker(onDateChanged: (date) => setState(() => _date = date),),
         // Allow selecting a time[cite: 45]. Defaults to current time[cite: 46].
         TimePicker(),
         const SizedBox(height: 20),

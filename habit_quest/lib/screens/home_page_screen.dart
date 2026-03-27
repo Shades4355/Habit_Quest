@@ -36,7 +36,7 @@ class HomePageScreen extends StatelessWidget {
           // color: isCompleted ? Colors.green : null,
         ),
         onPressed: () async {
-          await context.read<HabitRecordProvider>().toggleCompletedToday(habitId);
+          await context.read<HabitRecordProvider>().recordHabitToday(habitId);
         },
       ),
       title: Text(currentHabit.habitName),
@@ -61,7 +61,7 @@ class HomePageScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final topHabits = habitRecordProvider.topUncompletedHabits(habitProvider.habits);
+    final topHabits = habitRecordProvider.topUncompletedHabits(habitProvider.activeHabits);
 
     return ListView.builder(
       shrinkWrap: true,
