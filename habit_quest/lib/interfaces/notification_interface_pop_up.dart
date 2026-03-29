@@ -42,7 +42,7 @@ class _NotificationInterfacePopUpState extends State<NotificationInterfacePopUp>
       final enabled = await NotificationService().areNotificationsEnabled();
       if (!enabled) {
         final granted = await NotificationService().requestPermissions();
-        if (!granted) {
+        if (!granted && !await NotificationService().areNotificationsEnabled()) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Please enable notifications in system settings.'))

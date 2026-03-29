@@ -10,10 +10,15 @@ import 'package:flutter/foundation.dart';
 import 'package:sqlite_inspector/sqlite_inspector.dart';
 
 // Notification Service
+import 'package:flutter_native_timezone_latest/flutter_native_timezone_latest.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:habit_quest/services/notification_service.dart';
 
 // State Management
 import 'package:habit_quest/providers/theme_provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:provider/provider.dart';
 
 // Screens
@@ -28,6 +33,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Notification Service
+  tz_data.initializeTimeZones();
+  final String timeZoneName = await FlutterNativeTimezoneLatest.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
   await NotificationService().initNotification();
 
   // Start SQLite Inspector in debug mode
@@ -36,7 +44,9 @@ void main() async {
   }
 
   // Initialize database
-  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db')
+    .addMigrations(AppDatabase.migrations)
+    .build();
 
   // Initialize the repository
   HabitRepository.initialize(
@@ -51,11 +61,15 @@ void main() async {
   ]);
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => HabitProvider()),
+        ChangeNotifierProvider(create: (_) => HabitRecordProvider()),
+      ],
       child: const HabitQuestApp(),
     ),
-);
+  );
 }
 class HabitQuestApp extends StatelessWidget {  // change to StatelessWidget
   const HabitQuestApp({super.key});

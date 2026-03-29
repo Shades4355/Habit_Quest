@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:habit_quest/repositories/habit_repository.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:flutter/services.dart';
 
@@ -46,11 +45,7 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ScoreChart(
-          isHomePage: false,
-          habitRepo: HabitRepository.instance,
-          maxY: 20,
-        )
+        child: ScoreChart(chartType: ChartType.extended)
       ),
     );
   }

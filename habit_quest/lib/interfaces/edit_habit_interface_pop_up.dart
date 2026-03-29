@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
-import 'package:habit_quest/repositories/habit_repository.dart';
 
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 
 class EditHabitInterfacePopUp extends StatefulWidget{
   const EditHabitInterfacePopUp({super.key, required this.habit});
@@ -16,8 +17,6 @@ class EditHabitInterfacePopUp extends StatefulWidget{
 class _EditHabitInterfacePopUpState extends State<EditHabitInterfacePopUp> {
   late TextEditingController _habitNameController;
   late int _importanceLevel;
-
-  HabitRepository get _habitRepo => HabitRepository.instance;
 
   @override
   void initState() {
@@ -44,14 +43,15 @@ class _EditHabitInterfacePopUpState extends State<EditHabitInterfacePopUp> {
           const SizedBox(height: 20),
           const Text('Change Importance:'),
           Slider(
-            value: _importanceLevel.toDouble(),
+            value: _importanceLevel.abs().toDouble(),
             min: 1,
             max: 5,
             divisions: 4,
-            label: '$_importanceLevel',
+            label: '${_importanceLevel.abs()}',
             onChanged: (val) {
               setState(() {
-                _importanceLevel = val.toInt();
+                final sign = _importanceLevel < 0 ? -1 : 1;
+                _importanceLevel = val.toInt() * sign;
               });
             },
           ),
@@ -72,7 +72,7 @@ class _EditHabitInterfacePopUpState extends State<EditHabitInterfacePopUp> {
               createdAtMilliseconds: widget.habit.createdAtMilliseconds,
               isArchived: widget.habit.isArchived,
             );
-            await _habitRepo.updateHabit(updatedHabit);
+            await context.read<HabitProvider>().updateHabit(updatedHabit);
 
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Habit Updates Saved')));

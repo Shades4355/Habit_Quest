@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -14,19 +15,32 @@ class NotificationService {
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
-  /// Check if notifications are enabled (Android-specific)
+  /// Check if notifications are enabled
   Future<bool> areNotificationsEnabled() async {
+    if (Platform.isIOS) {
+      final result = await notificationPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.checkPermissions();
+      return result?.isEnabled ?? false;
+    }
     return await Permission.notification.isGranted;
   }
 
   Future<bool> requestPermissions() async {
+    if (Platform.isIOS) {
+      final result = await notificationPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      return result ?? false;
+    }
+
+    // Android flow
     final status = await Permission.notification.status;
-    
-    if (status.isDenied || status.isPermanentlyDenied) {
+    if (status.isPermanentlyDenied || status.isDenied) {
       await openAppSettings();
       return false;
     }
-    
+
     final result = await Permission.notification.request();
     return result.isGranted;
   }
@@ -43,9 +57,12 @@ class NotificationService {
 
     // iOS initialization
     const initSettingsIOS = DarwinInitializationSettings(
-      requestSoundPermission: true,
-      requestBadgePermission: true,
-      requestAlertPermission: true,
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+      requestAlertPermission: false,
+      defaultPresentAlert: true,
+      defaultPresentBadge: true,
+      defaultPresentSound: true,
     );
 
     // Initialization settings for both platforms
