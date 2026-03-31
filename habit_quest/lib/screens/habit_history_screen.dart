@@ -78,8 +78,8 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
                 ),
                 Text(
                   'Total Score: $totalScore',
-                  style: TextStyle(                
-                    color: totalScore >= 0 ? Colors.green : Colors.red,
+                  style: TextStyle(
+                    color: totalScore >= 0 && records.isNotEmpty ? Colors.green : Colors.red,
                     fontSize: 14, // Slightly scaled down so it fits nicely next to the arrow
                     fontWeight: FontWeight.normal,
                   ),
