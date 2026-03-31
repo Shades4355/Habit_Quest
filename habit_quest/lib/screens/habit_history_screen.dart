@@ -54,8 +54,11 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     return Scaffold(
       drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Habit History')),
-      body: ListView.builder(
+      // CHANGED: Swapped ListView.builder for ListView.separated
+      body: ListView.separated(
         itemCount: days.length,
+        // CHANGED: Added the divider here
+        separatorBuilder: (context, index) => const Divider(height: 1, thickness: 1),
         itemBuilder: (ctx, dayIndex) {
           final date = days[dayIndex];
           final records = habitRecordProvider.getRecordsForDaySync(date);
@@ -65,16 +68,26 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
           return ExpansionTile(
             backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             collapsedBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-            title: Text(
-              '${date.month}/${date.day}/${date.year}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            // CHANGED: Put both Date and Score into a Row inside the title
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${date.month}/${date.day}/${date.year}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Total Score: $totalScore',
+                  style: TextStyle(                
+                    color: totalScore >= 0 ? Colors.green : Colors.red,
+                    fontSize: 14, // Slightly scaled down so it fits nicely next to the arrow
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ],
             ),
-            trailing: Text(
-              'Total Score: $totalScore',
-              style: TextStyle(                
-                color: totalScore >= 0 ? Colors.green : Colors.red,
-              ),
-            ),
+            // CHANGED: Removed the 'trailing' property entirely. 
+            // This allows the default animated chevron ("V") to return!
             children: records.isEmpty
               ? [const ListTile(title: Text('No habits completed'))]
               : records.map((record) {
