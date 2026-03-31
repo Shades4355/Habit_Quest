@@ -79,7 +79,7 @@ Current state: we have a front-end; we need the back-end; and our file structure
 ### 03-March-2026
 Team meeting #6:
 
-In attendance: Shades, Luca, Marvens, Miguel
+In attendance: all present
 
 Since last week, Shades has written more manual tests, and has started reading up on how to write widget tests.
 
@@ -111,7 +111,7 @@ This week, Miguel will try to refactor the code to remove the `habitRepo` requir
 ### 18-March-2026
 Team meeting #8:
 
-In attendance: everyone
+In attendance: all present
 
 By majority consent, we moved this meeting from the 17th to the 18th.
 
