@@ -56,7 +56,6 @@ class HomePageScreen extends StatelessWidget {
     final HabitProvider habitProvider = context.watch<HabitProvider>();
     final habitRecordProvider = context.watch<HabitRecordProvider>();
   
-
     if (habitProvider.isLoading || habitRecordProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -76,11 +75,6 @@ class HomePageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // CALCULATE DYNAMIC HEIGHT HERE
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double dynamicChartHeight =
-        screenHeight * 0.25; // 25% of screen height
-
     return Scaffold(
       drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Habit Quest')),
@@ -91,8 +85,8 @@ class HomePageScreen extends StatelessWidget {
               onTap: () => Navigator.pushNamed(context, '/extended_graph'),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: SizedBox(
-                  height: dynamicChartHeight, // DYNAMIC HEIGHT APPLIED
+                child: AspectRatio(
+                  aspectRatio: 1.5, // Keeps the graph perfectly proportioned on all screens
                   child: AbsorbPointer(
                     child: ScoreChart(chartType: ChartType.home),
                   ),
