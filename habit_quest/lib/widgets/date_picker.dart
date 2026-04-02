@@ -10,8 +10,8 @@ class _DatePickerState extends State<DatePicker> {
 
 Future<void> pickDate() async {
     final TextEditingController textController = TextEditingController(
-      text: '${dateSelection.day.toString().padLeft(2, '0')}/'
-            '${dateSelection.month.toString().padLeft(2, '0')}/'
+      text:'${dateSelection.month.toString().padLeft(2, '0')}/'
+            '${dateSelection.day.toString().padLeft(2, '0')}/'
             '${dateSelection.year}',
     );
     DateTime tempDate = dateSelection;
@@ -68,8 +68,8 @@ Future<void> pickDate() async {
                       setDialogState(() {
                         tempDate = date;
                         textController.text =
-                          '${date.day.toString().padLeft(2, '0')}/'
                           '${date.month.toString().padLeft(2, '0')}/'
+                          '${date.day.toString().padLeft(2, '0')}/'
                           '${date.year}';
                       });
                     },
@@ -97,8 +97,8 @@ Future<void> pickDate() async {
   }
 
   String get formattedDate =>
-      '${dateSelection.day.toString().padLeft(2, '0')}/'
       '${dateSelection.month.toString().padLeft(2, '0')}/'
+      '${dateSelection.day.toString().padLeft(2, '0')}/'
       '${dateSelection.year}';
 
   @override
