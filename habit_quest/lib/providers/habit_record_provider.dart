@@ -103,4 +103,24 @@ class HabitRecordProvider extends ChangeNotifier {
 
   /// Get score for a specific date
   Future<int?> getScoreForDate(DateTime date) => _habitRepo.getScoreForDate(date);
+
+  // ==================== NEW TOOLTIP HELPERS ====================
+
+ /// Calculates total positive points recorded on a specific date
+  int getPositivePointsForDate(DateTime date) {
+    final dailyRecords = getRecordsForDaySync(date);
+    // Sum only the records where scoreDelta is greater than 0
+    return dailyRecords
+        .where((r) => r.scoreDelta > 0)
+        .fold(0, (sum, r) => sum + r.scoreDelta);
+  }
+
+  /// Calculates total negative points recorded on a specific date
+  int getNegativePointsForDate(DateTime date) {
+    final dailyRecords = getRecordsForDaySync(date);
+    // Sum only the records where scoreDelta is less than 0
+    return dailyRecords
+        .where((r) => r.scoreDelta < 0)
+        .fold(0, (sum, r) => sum + r.scoreDelta);
+  }
 }
