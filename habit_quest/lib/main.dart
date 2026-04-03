@@ -1,3 +1,18 @@
+/*
+Honor Statement
+
+Academic achievement is ordinarily evaluated based on work that a student produces independently. Infringement of this Code of Honor entails penalties ranging from reprimand to suspension, dismissal, or expulsion from the University.
+
+Your name on any exercise is regarded as assurance and certification that what you are submitting for that exercise is the result of your thoughts and study. Where collaboration is authorized, you should state very clearly which parts of any assignment were performed with collaboration and name your collaborators.
+
+In writing examinations and quizzes, you are expected and required to respond entirely based on your memory and capacity, without any assistance whatsoever except such as what is specifically authorized by the instructor.
+
+I certify that the work submitted with this assignment is mine and was generated in a manner consistent with this document, the course academic policy on the course website, and the UMass Lowell academic code.
+
+Date: 02-April-2026
+Names: Shades Meyers, Luca Azevedo, Miguel Echeverry, Marvens Luc
+*/
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
