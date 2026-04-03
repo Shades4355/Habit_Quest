@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 class DatePicker extends StatefulWidget {
-  const DatePicker({super.key});
+  final ValueChanged<DateTime>? onDateChanged;
+  const DatePicker({super.key, this.onDateChanged});
 
   @override
   State<DatePicker> createState() => _DatePickerState();
@@ -8,9 +9,9 @@ class DatePicker extends StatefulWidget {
 class _DatePickerState extends State<DatePicker> {
   DateTime dateSelection = DateTime.now();
 
-Future<void> pickDate() async {
+  Future<void> pickDate() async {
     final TextEditingController textController = TextEditingController(
-      text:'${dateSelection.month.toString().padLeft(2, '0')}/'
+      text: '${dateSelection.month.toString().padLeft(2, '0')}/'
             '${dateSelection.day.toString().padLeft(2, '0')}/'
             '${dateSelection.year}',
     );
@@ -31,7 +32,7 @@ Future<void> pickDate() async {
                   TextField(
                     controller: textController,
                     decoration: const InputDecoration(
-                      labelText: 'Enter date (DD/MM/YYYY)',
+                      labelText: 'Enter date (MM/DD/YYYY)',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.edit_calendar),
                     ),
@@ -86,6 +87,7 @@ Future<void> pickDate() async {
             FilledButton(
               onPressed: () {
                 setState(() => dateSelection = tempDate);
+                widget.onDateChanged?.call(tempDate);
                 Navigator.pop(context);
               },
               child: const Text('Confirm'),

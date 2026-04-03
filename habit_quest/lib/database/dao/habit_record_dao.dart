@@ -11,9 +11,16 @@ abstract class HabitRecordDao {
   @Query('SELECT * FROM HabitRecord WHERE habitId = :habitId AND date = :date')
   Future<HabitRecord?> findRecord(int habitId, int date);
 
+  @Query('SELECT * FROM HabitRecord WHERE date = :date')
+  Future<List<HabitRecord>> findRecordsForDate(int date);
+
   /// Insert or replace a record
-  @Insert(onConflict: OnConflictStrategy.replace)
+  @Insert(onConflict: OnConflictStrategy.abort)
   Future<int?> insertRecord(HabitRecord record);
+
+  /// Count the number of records for a specific habit and date
+  @Query('SELECT COUNT(*) FROM HabitRecord WHERE habitId = :habitId AND date = :date')
+  Future<int?> countRecordsForHabit(int habitId, int date);
 
   /// Delete all records for a habit
   @Query('DELETE FROM HabitRecord WHERE habitId = :habitId AND date = :date')

@@ -12,9 +12,6 @@ import 'package:habit_quest/database/entities/habit.dart';
       onDelete: ForeignKeyAction.cascade,
     ),
   ],
-  indices: [
-    Index(value: ['habitId', 'date'], unique: true),
-  ]
 )
 class HabitRecord {
   /// The unique ID of the habit record

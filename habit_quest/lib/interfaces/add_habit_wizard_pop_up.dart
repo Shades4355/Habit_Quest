@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
-import 'package:habit_quest/repositories/habit_repository.dart';
+
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 
 enum HabitType { start, stop }
 
@@ -21,7 +23,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
   double _importanceRating = 3.0; // Placeholder for Display 3 scale [cite: 122]
 
   Future<void> _saveHabit(Habit newHabit) async {
-    HabitRepository.instance.addHabit(newHabit);
+    await context.read<HabitProvider>().addHabit(newHabit);
   }
 
   @override
@@ -36,8 +38,8 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
             // Display 1 will display the prompt "Add A New Habit"[cite: 94].
             const Text('Add A New Habit (Step 1/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
-            // Prompt the User to select whether they are creating a habit they wish to start or stop[cite: 95].
-            const Text('Are you trying to START or STOP this habit?'),
+            // Prompt the User to select whether they are creating a habit they wish to start or break[cite: 95].
+            const Text('Are you trying to START or BREAK this habit?'),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -48,7 +50,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
                 ),
                 const SizedBox(width: 10),
                 ChoiceChip(
-                  label: const Text('STOP'),
+                  label: const Text('BREAK'),
                   selected: _habitType == HabitType.stop,
                   onSelected: (b) => setState(() => _habitType = HabitType.stop)
                 ),
@@ -72,7 +74,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
           // --- Display 3 content ---
           if (_currentDisplay == 3) ...[
             // Display 3 will display the new habit's name[cite: 120].
-            const Text('Habit Importance: [Name Placeholder] (Step 3/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Habit Importance: $_habitName (Step 3/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             // Prompt Users to select an importance rating... scale ranging from 1 to 5[cite: 121, 122].
             Text('Importance Rating: ${_importanceRating.round()}'),

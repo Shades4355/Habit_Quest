@@ -79,7 +79,7 @@ Current state: we have a front-end; we need the back-end; and our file structure
 ### 03-March-2026
 Team meeting #6:
 
-In attendance: Shades, Luca, Marvens, Miguel
+In attendance: all present
 
 Since last week, Shades has written more manual tests, and has started reading up on how to write widget tests.
 
@@ -111,7 +111,7 @@ This week, Miguel will try to refactor the code to remove the `habitRepo` requir
 ### 18-March-2026
 Team meeting #8:
 
-In attendance: everyone
+In attendance: all present
 
 By majority consent, we moved this meeting from the 17th to the 18th.
 
@@ -120,5 +120,41 @@ Since the last meeting, Luca attempted to refactor the file names, but encounter
 For this week, Luca will work on refactoring the interface windows to be dynamically sized instead of statically sized. Marvens will continue work on the toggle feature for the deadlines. Miguel will work on connecting the Habits History page to the database. Shades will continue working on the Master Testing Document and widget testing.
 
 Luca was having some difficulties with his emulators; we troubleshooted as a group.
+
+
+### 24-March-2026
+Team meeting #9:
+
+In attendance: all present
+
+Since the last meeting, Shades has started on the Pre-Release paperwork. Shades also started work on the User Testing framework, including fleshing out a script. After being informed that the screens would be switching back to stateless, Shades did not do additional work on writing widget tests; opting to wait until the app’s structure is more stable.
+
+Miguel has been working on refactoring the code to make the display reactive to changes to the database using App State. Miguel has also been working on making the Todo List display as desired.
+
+Marvens has been working on setting up the toggle for the Deadline display.
+
+Luca made the interfaces’ heights dynamic.
+
+For the upcoming week, Miguel and Marvens will continue working on their respective branches. Shades will continue working on Pre-Release paperwork. Luca will also look into making the width dynamic and will help Miguel as requested.
+
+This meeting we mainly talked about User Testing. We also discussed what work still needs to be done on our application and we discussed how we are going to structure our Pre-Release presentation.
+
+
+### 31-March-2026
+Team meeting #10:
+
+In attendance: Shades, Miguel, Marvens
+
+Since last week, Shades has finished the draft of the Pre-Release Presentation, and has made the Pre-Release presentation slides. Shades also forgot to post the blog post for the last meeting, and will be posting both blog posts after this meeting. Additionally, Shades confirmed the willingness of 2 ADHD friends to help with User Testing, and is waiting to hear back from another.
+
+Luca has worked on some UI improvements for the Habit History page, to make it more visually clean and intuitive. Luca also worked on a fix for a visual bug with the 7-day graph on iOS devices; the fix appears to have not worked.
+
+Miguel has finished the refactoring to convert to App State from Stateful Widgets. Miguel created a demo branch for our presentation that includes a button to force a notification.
+
+As a group, we decided to change how we’re displaying unrecorded habits, and as such we are doing away with the deadline display and toggle. If we have time at the end, we will revisit adding in deadlines. This change has invalidated Marvens’ work for the week. The S.A.D.D. was updated accordingly.
+
+We also discussed what color a score of ‘0’ should be. We settled on red if no habits have been recorded, and green otherwise.
+
+We will meet again Wednesday April 1st to go over Thursday's presentation.
 
 
