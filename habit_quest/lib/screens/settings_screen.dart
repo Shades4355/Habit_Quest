@@ -91,24 +91,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           const Divider(),
-
-          // --- NEW: Toggle deadline reminder ---
-          SwitchListTile(
-            secondary: const Icon(Icons.notification_important_outlined),
-            title: const Text('Toggle deadline reminder'),
-            value: _deadlineReminder,
-            onChanged: (bool value) {
-              setState(() {
-                _deadlineReminder = value;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text('Deadline reminders: ${value ? "ON" : "OFF"}')),
-              );
-            },
-          ),
-          const Divider(),
-
           // "Dark Mode" with an on/off slider.
           SwitchListTile(
             secondary: const Icon(Icons.dark_mode),
