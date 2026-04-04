@@ -35,6 +35,7 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final padding = MediaQuery.of(context).padding;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Extended Graph'),
@@ -44,8 +45,15 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ScoreChart(chartType: ChartType.extended)
+        padding: EdgeInsets.only(
+          left: padding.left,
+          right: padding.right,
+          bottom: padding.bottom,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ScoreChart(chartType: ChartType.extended)
+        ),
       ),
     );
   }
