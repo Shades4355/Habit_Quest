@@ -47,7 +47,6 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
       body: Padding(
         padding: EdgeInsets.only(
           left: padding.left,
-          right: padding.right,
           bottom: padding.bottom,
         ),
         child: Padding(
