@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Interfaces
+import 'package:habit_quest/widgets/theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
-
-// State Management
-import 'package:provider/provider.dart';
-import 'package:habit_quest/providers/theme_provider.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
@@ -19,9 +17,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  // Local state for the deadline reminder toggle
-  bool _deadlineReminder = false;
-
   @override
   void initState() {
     super.initState();
@@ -92,14 +87,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           // "Dark Mode" with an on/off slider.
-          SwitchListTile(
-            secondary: const Icon(Icons.dark_mode),
-            title: const Text('Dark Mode'),
-            value: context.watch<ThemeProvider>().darkMode,
-            onChanged: (bool value) {
-              context.read<ThemeProvider>().toggleDarkMode(value);
-            },
-          ),
+          // SwitchListTile(
+          //   secondary: const Icon(Icons.dark_mode),
+          //   title: const Text('Dark Mode'),
+          //   value: context.watch<ThemeProvider>().darkMode,
+          //   onChanged: (bool value) {
+          //     context.read<ThemeProvider>().toggleDarkMode(value);
+          //   },
+          // ),
+          const ThemePicker(),
           const Divider(),
 
           // "Credits" option.

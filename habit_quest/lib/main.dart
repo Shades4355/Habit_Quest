@@ -109,7 +109,7 @@ class HabitQuestApp extends StatelessWidget {  // change to StatelessWidget
         ),
         useMaterial3: true,
       ),
-      themeMode: themeProvider.darkMode ? ThemeMode.dark : ThemeMode.light,
+      themeMode: themeProvider.flutterThemeMode,
       initialRoute: '/',
       routes: {
         '/': (context) => HomePageScreen(),
