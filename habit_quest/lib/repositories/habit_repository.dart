@@ -123,4 +123,13 @@ class HabitRepository {
 
   /// Counts the number of records for a specific habit and date
   Future<int?> countRecordsForHabit(int habitId, DateTime date) => habitRecordDao.countRecordsForHabit(habitId, dayKey(date));
+
+  Future<void> clearAllHabits() async {
+    await habitDao.deleteAllHabits();
+  }
+
+  Future<void> clearAllRecords() async {
+    await habitRecordDao.deleteAllRecords();
+  }
+
 }

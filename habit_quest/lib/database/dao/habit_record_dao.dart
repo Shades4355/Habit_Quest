@@ -30,7 +30,11 @@ abstract class HabitRecordDao {
   @Query('DELETE FROM HabitRecord WHERE habitId = :habitId')
   Future<int?> deleteRecordsForHabit(int habitId);
 
+  @Query('DELETE FROM HabitRecord')
+  Future<int?> deleteAllRecords();
+
   /// Get the total score across all habit records for a specific date
   @Query('SELECT COALESCE(SUM(scoreDelta), 0) FROM HabitRecord WHERE date = :date')
   Future<int?> getScoreForDate(int date);
+
 }

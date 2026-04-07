@@ -225,6 +225,12 @@ class _$HabitDao extends HabitDao {
   }
 
   @override
+  Future<int?> deleteAllHabits() async {
+    return _queryAdapter.query('DELETE FROM Habit',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
   Future<int> insertHabit(Habit habit) {
     return _habitInsertionAdapter.insertAndReturnId(
         habit, OnConflictStrategy.abort);
@@ -327,6 +333,12 @@ class _$HabitRecordDao extends HabitRecordDao {
     return _queryAdapter.query('DELETE FROM HabitRecord WHERE habitId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as int,
         arguments: [habitId]);
+  }
+
+  @override
+  Future<int?> deleteAllRecords() async {
+    return _queryAdapter.query('DELETE FROM HabitRecord',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 
   @override

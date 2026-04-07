@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:habit_quest/providers/habit_record_provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 
 // Interfaces
 import 'package:habit_quest/widgets/theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
+import 'package:provider/provider.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
@@ -59,12 +62,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: const Text('Cancel'),
                           ),
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              final habitRecordProvider = context.read<HabitRecordProvider>();
+                              final habitProvider = context.read<HabitProvider>();
+                              await habitRecordProvider.clearAllRecords();
+                              await habitProvider.clearAllHabits();
+                              if (!ctx.mounted) return;
                               Navigator.pop(ctx);
+                              if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Placeholder: History Cleared')));
+                                const SnackBar(content: Text('All data cleared'))
+                              );
                             },
                             child: const Text('Confirm',
                                 style: TextStyle(color: Colors.red)),
@@ -86,15 +94,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           const Divider(),
-          // "Dark Mode" with an on/off slider.
-          // SwitchListTile(
-          //   secondary: const Icon(Icons.dark_mode),
-          //   title: const Text('Dark Mode'),
-          //   value: context.watch<ThemeProvider>().darkMode,
-          //   onChanged: (bool value) {
-          //     context.read<ThemeProvider>().toggleDarkMode(value);
-          //   },
-          // ),
           const ThemePicker(),
           const Divider(),
 

@@ -34,4 +34,7 @@ abstract class HabitDao {
   /// Deletes a habit from the database
   @delete
   Future<int?> deleteHabit(Habit habit);
+
+  @Query('DELETE FROM Habit')
+  Future<int?> deleteAllHabits();
 }
