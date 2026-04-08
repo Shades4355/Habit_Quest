@@ -7,6 +7,9 @@ abstract class HabitDao {
   @Query('SELECT * FROM Habit WHERE id = :id')
   Future<Habit?> findHabitById(int id);
 
+  @Query('SELECT * FROM Habit')
+  Future<List<Habit>> findAllHabits();
+
   /// Retrieves all active (non-archived) habits from the database
   @Query('SELECT * FROM Habit WHERE isArchived = 0')
   Future<List<Habit>> findActiveHabits();

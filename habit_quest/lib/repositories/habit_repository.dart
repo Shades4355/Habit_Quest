@@ -84,6 +84,8 @@ class HabitRepository {
 
     await habitRecordDao.insertRecord(HabitRecord(
       habitId: habitId,
+      habitName: habit.habitName,
+      importanceLevel: habit.importanceLevel,
       date: dayKey(date),
       scoreDelta: habit.importanceLevel,
     ));
@@ -121,6 +123,9 @@ class HabitRepository {
     return results.expand((r) => r).toList();
   }
 
+  /// Gets all habit records across all dates
+  Future<List<HabitRecord>> getAllRecords() => habitRecordDao.findAllRecords();
+
   /// Counts the number of records for a specific habit and date
   Future<int?> countRecordsForHabit(int habitId, DateTime date) => habitRecordDao.countRecordsForHabit(habitId, dayKey(date));
 
@@ -132,4 +137,5 @@ class HabitRepository {
     await habitRecordDao.deleteAllRecords();
   }
 
+  Future<List<Habit>> getAllHabits() => habitDao.findAllHabits();
 }

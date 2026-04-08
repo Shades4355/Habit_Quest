@@ -14,6 +14,9 @@ abstract class HabitRecordDao {
   @Query('SELECT * FROM HabitRecord WHERE date = :date')
   Future<List<HabitRecord>> findRecordsForDate(int date);
 
+  @Query('SELECT * FROM HabitRecord')
+  Future<List<HabitRecord>> findAllRecords();
+
   /// Insert or replace a record
   @Insert(onConflict: OnConflictStrategy.abort)
   Future<int?> insertRecord(HabitRecord record);

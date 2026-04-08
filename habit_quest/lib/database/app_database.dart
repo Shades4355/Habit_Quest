@@ -9,25 +9,40 @@ import 'package:habit_quest/database/dao/habit_record_dao.dart';
 
 part 'app_database.g.dart'; // the generated code will be there
 
-@Database(version: 2, entities: [Habit, HabitRecord])
+@Database(version: 3, entities: [Habit, HabitRecord])
 abstract class AppDatabase extends FloorDatabase {
   HabitDao get habitDao;
   HabitRecordDao get habitRecordDao;
 
   static final migration1to2 = Migration(1, 2, (database) async {
-  await database.execute('DROP TABLE IF EXISTS HabitRecord');
-  await database.execute('''
-    CREATE TABLE IF NOT EXISTS HabitRecord (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      habitId INTEGER NOT NULL,
-      date INTEGER NOT NULL,
-      scoreDelta INTEGER NOT NULL,
-      FOREIGN KEY (habitId) REFERENCES Habit (id) ON DELETE CASCADE
-    )
-  ''');
-});
+    await database.execute('DROP TABLE IF EXISTS HabitRecord');
+    await database.execute('''
+      CREATE TABLE IF NOT EXISTS HabitRecord (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        habitId INTEGER NOT NULL,
+        date INTEGER NOT NULL,
+        scoreDelta INTEGER NOT NULL,
+        FOREIGN KEY (habitId) REFERENCES Habit (id) ON DELETE CASCADE
+      )
+    ''');
+  });
+
+  static final migration2to3 = Migration(2, 3, (database) async {
+    await database.execute('DROP TABLE IF EXISTS HabitRecord');
+    await database.execute('''
+      CREATE TABLE IF NOT EXISTS HabitRecord (
+        recordId INTEGER PRIMARY KEY AUTOINCREMENT,
+        habitId INTEGER NOT NULL,
+        habitName TEXT NOT NULL,
+        importanceLevel INTEGER NOT NULL,
+        date INTEGER NOT NULL,
+        scoreDelta INTEGER NOT NULL
+      )
+    ''');
+  });
 
   static final List<Migration> migrations = [
     migration1to2,
+    migration2to3,
   ];
 }
