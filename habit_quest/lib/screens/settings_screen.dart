@@ -20,7 +20,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   // Local state for the deadline reminder toggle
-  bool _deadlineReminder = false;
+  final bool _deadlineReminder = false;
 
   @override
   void initState() {
@@ -76,6 +76,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ],
                       ));
+            },
+          ),
+          const Divider(),
+
+          // "Reset Tutorial" option.
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('Reset Tutorial'),
+            onTap: () {
+              // Placeholder: Will hold the actual tutorial reset logic later
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Placeholder: Tutorial Reset...')));
             },
           ),
           const Divider(),

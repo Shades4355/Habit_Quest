@@ -31,9 +31,8 @@ class HomePageScreen extends StatelessWidget {
     if (isCompleted) return const SizedBox.shrink();
     return ListTile(
       leading: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.check_box_outline_blank
-          // color: isCompleted ? Colors.green : null,
         ),
         onPressed: () async {
           await context.read<HabitRecordProvider>().recordHabitToday(habitId);
@@ -113,13 +112,23 @@ class HomePageScreen extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.task_alt),
+        label: const Text('Log Activity'),
         onPressed: () async {
           await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (ctx) => RecordHabitInterfacePopUp(),
+            useSafeArea: true, 
+            builder: (ctx) {
+              // Grab the system padding to push the UI above the navigation bar
+              final bottomPadding = MediaQuery.of(ctx).padding.bottom;
+              
+              return Padding(
+                padding: EdgeInsets.only(bottom: bottomPadding),
+                child: const RecordHabitInterfacePopUp(),
+              );
+            },
           ).then((_) async {
             if (!context.mounted) return;
             await context.read<HabitRecordProvider>().loadAll();
