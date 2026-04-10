@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Android notification permissions -->
-    
+
     <!-- Shows Notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- Lets the app receive broadcasts when the device boots -->
