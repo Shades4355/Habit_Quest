@@ -44,11 +44,8 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.only(
-          left: padding.left,
-          bottom: padding.bottom,
-        ),
+      // Wrap the body in a SafeArea so the sideways nav bar doesn't cover the chart
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ScoreChart(chartType: ChartType.extended)

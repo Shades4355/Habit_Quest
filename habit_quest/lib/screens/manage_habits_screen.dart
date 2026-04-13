@@ -58,20 +58,27 @@ class ManageHabitsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const AppDrawer(),
-      // The "Manage Habits" screen will display the text "Manage Habits" at the top[cite: 70].
+      // The "Manage Habits" screen will display the text "Manage Habits" at the top.
       appBar: AppBar(title: const Text('Manage Habits')),
-      // The "Manage Habits" screen will display all current habits[cite: 72].
+      // The "Manage Habits" screen will display all current habits.
       body: _currentHabitsList(context),
-      // The "Manage Habits" screen will include the ability to add new habits... button at the bottom center[cite: 73, 74].
+      // The "Manage Habits" screen will include the ability to add new habits... button at the bottom center.
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          // This button will bring up the "Add Habit" interface[cite: 75].
+          // This button will bring up the "Add Habit" interface.
           await showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (ctx) => AddHabitWizardPopUp()
-          );
+              useSafeArea: true, // <-- Added this
+              builder: (ctx) {
+                // <-- Added dynamic bottom padding
+                final bottomPadding = MediaQuery.of(ctx).padding.bottom;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: bottomPadding),
+                  child: const AddHabitWizardPopUp(),
+                );
+              });
         },
         label: const Text('Add New Habit'),
         icon: const Icon(Icons.add),

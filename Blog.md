@@ -158,3 +158,25 @@ We also discussed what color a score of ‘0’ should be. We settled on red if 
 We will meet again Wednesday April 1st to go over Thursday's presentation.
 
 
+### 07-April-2026
+Team meeting #11:
+
+In attendance: all present
+
+Last week’s additional meeting was missed by all members.
+
+Since last week, Miguel fixed a bug with the notification settings, implemented the “Clear Habit History” with confirmation prompt, and started working on the exporting functionality.
+
+Shades worked on User Testing, completing 3 tests on Android this week. Shades is hopeful to do 2 more User Tests on Android by Friday, but scheduling is proving to be a problem. Due to the difficulty of testing on iPhones (installing an unsigned app technically breaks ToS, and is generally not User friendly), we are unlikely to be able to test iPhone Users.
+
+This meeting we discussed User Testing feedback, including the tutorial. The tutorial is unlikely to be worked on until next week.
+
+This week, Shades will return to writing the Manual Tests, and will hopefully start running said tests. Shades will do the User Testing write-up Saturday, April 11th (after the post-week-of-use feedback is submitted by the Users).
+
+Miguel will look into Firebase as a cloud backup for the app. We will reconvene on Friday to discuss if we want to replace the export function with a cloud backup. Miguel will also refactor the database to make the Habit History a true historical record, as well as include an edit and delete option to the Habit History (in the event of a misspelled Habit name, or an accidentally recorded Performed Habit).
+
+Based on User feedback, Luca will work on changing the “Record A Habit” to be something along the lines of “Record A Performed Habit”. Once we agree on a wording, the S.A.D.D. will be updated accordingly. Luca will also work on researching how to suppress the context bar some phones (especially Samsungs) have at the bottom of the screen that is currently overlapping the bottom of our app.
+
+Marvens will assist Miguel and Luca as needed.
+
+

@@ -50,6 +50,7 @@ dependencies:
   shared_preferences: ^2.2.2
   provider: ^6.1.5+1
   flutter_native_timezone_latest: ^1.0.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   analyzer: 6.4.1
@@ -107,3 +108,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/habit_quest_icon.png"
+  # To enable adaptive icons on Android (highly recommended):
+  adaptive_icon_background: "#1E2A3A" # Use a color from your app's deep blue background
+  adaptive_icon_foreground: "assets/icon/habit_quest_icon.png" # Path to your logo (should have transparency for best effect)
