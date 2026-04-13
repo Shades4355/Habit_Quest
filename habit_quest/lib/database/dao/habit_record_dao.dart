@@ -14,6 +14,9 @@ abstract class HabitRecordDao {
   @Query('SELECT * FROM HabitRecord WHERE date = :date')
   Future<List<HabitRecord>> findRecordsForDate(int date);
 
+  @Query('SELECT * FROM HabitRecord')
+  Future<List<HabitRecord>> findAllRecords();
+
   /// Insert or replace a record
   @Insert(onConflict: OnConflictStrategy.abort)
   Future<int?> insertRecord(HabitRecord record);
@@ -30,7 +33,11 @@ abstract class HabitRecordDao {
   @Query('DELETE FROM HabitRecord WHERE habitId = :habitId')
   Future<int?> deleteRecordsForHabit(int habitId);
 
+  @Query('DELETE FROM HabitRecord')
+  Future<int?> deleteAllRecords();
+
   /// Get the total score across all habit records for a specific date
   @Query('SELECT COALESCE(SUM(scoreDelta), 0) FROM HabitRecord WHERE date = :date')
   Future<int?> getScoreForDate(int date);
+
 }

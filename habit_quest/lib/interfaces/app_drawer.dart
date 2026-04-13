@@ -5,6 +5,14 @@ import 'package:flutter/material.dart';
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
+  void _navigateTo(BuildContext context, String route) {
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    Navigator.pop(context); // close drawer
+    if (currentRoute != route) {
+      Navigator.pushReplacementNamed(context, route);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // The "Navigation Panel" is a pop-up (ex: drawer)[cite: 62].
@@ -21,25 +29,25 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.home),
             title: const Text('Home'),
             // The "Home" option will take the User to the "Homepage"[cite: 64].
-            onTap: () => Navigator.pushReplacementNamed(context, '/'),
+            onTap: () => _navigateTo(context, '/'),
           ),
           ListTile(
             leading: const Icon(Icons.edit_note),
             title: const Text('Manage Habits'),
             // The "Manage Habits" option will take Users to the "Manage Habits" screen[cite: 65, 66].
-            onTap: () => Navigator.pushReplacementNamed(context, '/manage_habits'),
+            onTap: () => _navigateTo(context, '/manage_habits'),
           ),
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text('Habit History'),
             // The "Habit History" option will take Users to the "Habit History" screen[cite: 67].
-            onTap: () => Navigator.pushReplacementNamed(context, '/habit_history'),
+            onTap: () => _navigateTo(context, '/habit_history'),
           ),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
             // The "Settings" option will take Users to the "Settings" screen[cite: 68].
-            onTap: () => Navigator.pushReplacementNamed(context, '/settings'),
+            onTap: () => _navigateTo(context, '/settings'),
           ),
         ],
       ),
