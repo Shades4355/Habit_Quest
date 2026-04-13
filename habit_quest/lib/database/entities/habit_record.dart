@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:habit_quest/database/entities/habit.dart';
 
 /// A record of a habit for a specific date
 @Entity(tableName: 'HabitRecord')

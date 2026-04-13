@@ -35,7 +35,6 @@ class _ExtendedGraphScreen extends State<ExtendedGraphScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final padding = MediaQuery.of(context).padding;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Extended Graph'),
