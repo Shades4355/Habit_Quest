@@ -28,11 +28,19 @@ class ManageHabitsScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 100, top: 10),
       itemCount: habits.length,
       itemBuilder: (ctx, i) => ListTile(
-        leading: CircleAvatar(child: Text('${i + 1}')),
+        // Circle with Importance level
+        leading: CircleAvatar(
+          backgroundColor: habits[i].importanceLevel > 0 ? Colors.green : Colors.red,
+          child: Text('${habits[i].importanceLevel}'),
+        ),
+        
+        // Habit Name
         title: Text(habits[i].habitName),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+
+            // Edit Button
             IconButton(
               icon: const Icon(Icons.edit, color: Colors.blue),
               onPressed: () async {
@@ -42,6 +50,8 @@ class ManageHabitsScreen extends StatelessWidget {
                 );
               },
             ),
+
+            // Delete Button
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () async {

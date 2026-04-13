@@ -28,7 +28,7 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
         Icons.check_circle,
         color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
       ),
-      title: Text(habit?.habitName ?? 'Unknown Habit'),
+      title: Text(record.habitName),
       trailing: Text(
         '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
         style: TextStyle(
