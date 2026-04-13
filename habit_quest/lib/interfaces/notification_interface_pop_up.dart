@@ -85,8 +85,10 @@ class _NotificationInterfacePopUpState extends State<NotificationInterfacePopUp>
       _ => [20]
     };
 
-    for (var hour in hours) {
+    for (int i = 0; i < count; i++) {
+      final hour = hours[i];
       await NotificationService().scheduleDailyNotification(
+        id: i,
         hour: hour,
         minute: 0,
       );

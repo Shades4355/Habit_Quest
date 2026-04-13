@@ -104,6 +104,11 @@ class HabitRecordProvider extends ChangeNotifier {
   /// Get score for a specific date
   Future<int?> getScoreForDate(DateTime date) => _habitRepo.getScoreForDate(date);
 
+  Future<void> clearAllRecords() async {
+    await _habitRepo.clearAllRecords();
+    await loadAll();
+  }
+
   // ==================== NEW TOOLTIP HELPERS ====================
 
  /// Calculates total positive points recorded on a specific date

@@ -47,11 +47,11 @@ class ScoreChart extends StatelessWidget {
         titlesData: FlTitlesData(
           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          leftTitles: const AxisTitles(
+          leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               interval: 5,
-              reservedSize: 30,
+              reservedSize: 40//MediaQuery.of(context).size.width * 0.12,
             ),
           ),
           bottomTitles: AxisTitles(

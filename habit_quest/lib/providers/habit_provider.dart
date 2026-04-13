@@ -55,4 +55,8 @@ class HabitProvider extends ChangeNotifier {
     await loadHabits();
   }
 
+  Future<void> clearAllHabits() async {
+    await _habitRepo.clearAllHabits();
+    await loadHabits();
+  }
 }

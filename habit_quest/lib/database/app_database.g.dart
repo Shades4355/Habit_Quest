@@ -82,7 +82,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 2,
+      version: 3,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Habit` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `habitName` TEXT NOT NULL, `habitDescription` TEXT, `importanceLevel` INTEGER NOT NULL, `createdAtMilliseconds` INTEGER NOT NULL, `isArchived` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `HabitRecord` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `habitId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `scoreDelta` INTEGER NOT NULL, FOREIGN KEY (`habitId`) REFERENCES `Habit` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+            'CREATE TABLE IF NOT EXISTS `HabitRecord` (`recordId` INTEGER PRIMARY KEY AUTOINCREMENT, `habitId` INTEGER NOT NULL, `habitName` TEXT NOT NULL, `importanceLevel` INTEGER NOT NULL, `date` INTEGER NOT NULL, `scoreDelta` INTEGER NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -187,6 +187,18 @@ class _$HabitDao extends HabitDao {
   }
 
   @override
+  Future<List<Habit>> findAllHabits() async {
+    return _queryAdapter.queryList('SELECT * FROM Habit',
+        mapper: (Map<String, Object?> row) => Habit(
+            id: row['id'] as int?,
+            habitName: row['habitName'] as String,
+            habitDescription: row['habitDescription'] as String?,
+            importanceLevel: row['importanceLevel'] as int,
+            createdAtMilliseconds: row['createdAtMilliseconds'] as int,
+            isArchived: (row['isArchived'] as int) != 0));
+  }
+
+  @override
   Future<List<Habit>> findActiveHabits() async {
     return _queryAdapter.queryList('SELECT * FROM Habit WHERE isArchived = 0',
         mapper: (Map<String, Object?> row) => Habit(
@@ -225,6 +237,12 @@ class _$HabitDao extends HabitDao {
   }
 
   @override
+  Future<int?> deleteAllHabits() async {
+    return _queryAdapter.query('DELETE FROM Habit',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
   Future<int> insertHabit(Habit habit) {
     return _habitInsertionAdapter.insertAndReturnId(
         habit, OnConflictStrategy.abort);
@@ -251,8 +269,10 @@ class _$HabitRecordDao extends HabitRecordDao {
             database,
             'HabitRecord',
             (HabitRecord item) => <String, Object?>{
-                  'id': item.id,
+                  'recordId': item.recordId,
                   'habitId': item.habitId,
+                  'habitName': item.habitName,
+                  'importanceLevel': item.importanceLevel,
                   'date': item.date,
                   'scoreDelta': item.scoreDelta
                 });
@@ -271,6 +291,8 @@ class _$HabitRecordDao extends HabitRecordDao {
         'SELECT * FROM HabitRecord WHERE habitId = ?1 ORDER BY date ASC',
         mapper: (Map<String, Object?> row) => HabitRecord(
             habitId: row['habitId'] as int,
+            habitName: row['habitName'] as String,
+            importanceLevel: row['importanceLevel'] as int,
             date: row['date'] as int,
             scoreDelta: row['scoreDelta'] as int),
         arguments: [habitId]);
@@ -285,6 +307,8 @@ class _$HabitRecordDao extends HabitRecordDao {
         'SELECT * FROM HabitRecord WHERE habitId = ?1 AND date = ?2',
         mapper: (Map<String, Object?> row) => HabitRecord(
             habitId: row['habitId'] as int,
+            habitName: row['habitName'] as String,
+            importanceLevel: row['importanceLevel'] as int,
             date: row['date'] as int,
             scoreDelta: row['scoreDelta'] as int),
         arguments: [habitId, date]);
@@ -295,9 +319,22 @@ class _$HabitRecordDao extends HabitRecordDao {
     return _queryAdapter.queryList('SELECT * FROM HabitRecord WHERE date = ?1',
         mapper: (Map<String, Object?> row) => HabitRecord(
             habitId: row['habitId'] as int,
+            habitName: row['habitName'] as String,
+            importanceLevel: row['importanceLevel'] as int,
             date: row['date'] as int,
             scoreDelta: row['scoreDelta'] as int),
         arguments: [date]);
+  }
+
+  @override
+  Future<List<HabitRecord>> findAllRecords() async {
+    return _queryAdapter.queryList('SELECT * FROM HabitRecord',
+        mapper: (Map<String, Object?> row) => HabitRecord(
+            habitId: row['habitId'] as int,
+            habitName: row['habitName'] as String,
+            importanceLevel: row['importanceLevel'] as int,
+            date: row['date'] as int,
+            scoreDelta: row['scoreDelta'] as int));
   }
 
   @override
@@ -327,6 +364,12 @@ class _$HabitRecordDao extends HabitRecordDao {
     return _queryAdapter.query('DELETE FROM HabitRecord WHERE habitId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as int,
         arguments: [habitId]);
+  }
+
+  @override
+  Future<int?> deleteAllRecords() async {
+    return _queryAdapter.query('DELETE FROM HabitRecord',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 
   @override
