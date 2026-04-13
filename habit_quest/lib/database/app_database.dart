@@ -45,7 +45,14 @@ abstract class AppDatabase extends FloorDatabase {
     // Copy data
     await database.execute('''
       INSERT INTO HabitRecord_new (habitId, habitName, importanceLevel, date, scoreDelta)
-      SELECT habitId, '', 0, date, scoreDelta FROM HabitRecord
+      SELECT 
+        r.habitId,
+        COALESCE(h.habitName, '') as habitName,
+        COALESCE(h.importanceLevel, 0) as importanceLevel,
+        r.date,
+        r.scoreDelta
+      FROM HabitRecord r
+      LEFT JOIN Habit h ON r.habitId = h.id
     ''');
 
     // Drop old table
