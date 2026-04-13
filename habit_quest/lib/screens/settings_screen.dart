@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
-import 'package:habit_quest/providers/habit_provider.dart';
 
 // Interfaces
 import 'package:habit_quest/widgets/theme_picker.dart';
@@ -64,9 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           TextButton(
                             onPressed: () async {
                               final habitRecordProvider = context.read<HabitRecordProvider>();
-                              final habitProvider = context.read<HabitProvider>();
                               await habitRecordProvider.clearAllRecords();
-                              await habitProvider.clearAllHabits();
                               if (!ctx.mounted) return;
                               Navigator.pop(ctx);
                               if (!context.mounted) return;
