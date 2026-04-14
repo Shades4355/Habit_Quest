@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
-
+import 'package:habit_quest/services/export_service.dart';
 // Interfaces
 import 'package:habit_quest/widgets/theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
@@ -10,8 +10,6 @@ import 'package:provider/provider.dart';
 // ==================== SETTINGS SCREEN ====================
 
 class SettingsScreen extends StatefulWidget {
-  // Properties passed from main.dart
-
   const SettingsScreen({super.key});
 
   @override
@@ -36,7 +34,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: const Icon(Icons.download),
             title: const Text('Export Data'),
             subtitle: const Text('Save Habit History to CSV'),
-            onTap: () {
+            onTap: () async {
+              await ExportService().exportData(context);
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('Placeholder: Exporting data...')));
             },
