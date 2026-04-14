@@ -55,43 +55,12 @@ class ExportService {
 
     await file.writeAsString(csvString);
 
-    if (!context.mounted) return;
-
-    await showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Export Data'),
-        content: const Text('How would you like to export your data?'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              // Save to device
-              await FileSaver.instance.saveAs(
-                name: 'habit_quest',
-                bytes: Uint8List.fromList(csvString.codeUnits),
-                fileExtension: 'csv',
-                mimeType: MimeType.csv,
-              );
-            },
-            child: const Text('Save to Device'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              // Share
-              final dir = await getTemporaryDirectory();
-              final file = File('${dir.path}/habit_quest_export.csv');
-              await file.writeAsString(csvString);
-              await Share.shareXFiles(
-                [XFile(file.path)],
-                subject: 'Habit Quest Export',
-              );
-            },
-            child: const Text('Share'),
-          ),
-        ],
-      ),
+    // Save to device
+    await FileSaver.instance.saveAs(
+      name: 'habit_quest',
+      bytes: Uint8List.fromList(csvString.codeUnits),
+      fileExtension: 'csv',
+      mimeType: MimeType.csv,
     );
   }
 }
