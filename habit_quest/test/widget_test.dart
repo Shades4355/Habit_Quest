@@ -49,7 +49,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(home: const HomePageScreen()));
 
     expect(find.textContaining("Today's Score:"), findsOneWidget);
-    expect(find.text("Unrecorded Habits:"), findsOneWidget);
+    expect(find.text("Todo:"), findsOneWidget);
   });
 
   testWidgets("The Navigation Panel contains the correct options.", (WidgetTester tester) async {

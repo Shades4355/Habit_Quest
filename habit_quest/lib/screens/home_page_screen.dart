@@ -54,7 +54,7 @@ class HomePageScreen extends StatelessWidget {
   Widget _habitsList(BuildContext context) {
     final HabitProvider habitProvider = context.watch<HabitProvider>();
     final habitRecordProvider = context.watch<HabitRecordProvider>();
-  
+
     if (habitProvider.isLoading || habitRecordProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -100,7 +100,7 @@ class HomePageScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Unrecorded Habits:',
+                  'Todo:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -119,11 +119,11 @@ class HomePageScreen extends StatelessWidget {
           await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            useSafeArea: true, 
+            useSafeArea: true,
             builder: (ctx) {
               // Grab the system padding to push the UI above the navigation bar
               final bottomPadding = MediaQuery.of(ctx).padding.bottom;
-              
+
               return Padding(
                 padding: EdgeInsets.only(bottom: bottomPadding),
                 child: const RecordHabitInterfacePopUp(),
