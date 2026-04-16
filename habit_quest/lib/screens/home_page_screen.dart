@@ -8,11 +8,26 @@ import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:provider/provider.dart';
+import 'package:habit_quest/services/tutorial_manager.dart';
 
 // ==================== HOMEPAGE SCREEN ====================
 
-class HomePageScreen extends StatelessWidget {
+class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
+
+  @override
+  State<HomePageScreen> createState() => _HomePageScreenState();
+}
+
+class _HomePageScreenState extends State<HomePageScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Trigger tutorial check when the home screen loads!
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      TutorialManager.checkAndShowTutorial();
+    });
+  }
 
   Widget _todaysScore(BuildContext context) {
     final score = context.watch<HabitRecordProvider>().todayScore;
@@ -76,18 +91,34 @@ class HomePageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const AppDrawer(),
-      appBar: AppBar(title: const Text('Habit Quest')),
+      appBar: AppBar(
+        title: const Text('Habit Quest'),
+        // OVERRIDE LEADING: Wrap the Hamburger menu in our FocusNode
+        leading: Focus(
+          focusNode: TutorialManager.menuNode,
+          child: Builder(
+            builder: (ctx) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(ctx).openDrawer(),
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            InkWell(
-              onTap: () => Navigator.pushNamed(context, '/extended_graph'),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: AspectRatio(
-                  aspectRatio: 1.5, // Keeps the graph perfectly proportioned on all screens
-                  child: AbsorbPointer(
-                    child: ScoreChart(chartType: ChartType.home),
+            // WELCOME NODE: Wraps the graph so the first step highlights the top of the screen
+            Focus(
+              focusNode: TutorialManager.welcomeNode,
+              child: InkWell(
+                onTap: () => Navigator.pushNamed(context, '/extended_graph'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: AspectRatio(
+                    aspectRatio: 1.5, // Keeps the graph perfectly proportioned on all screens
+                    child: AbsorbPointer(
+                      child: ScoreChart(chartType: ChartType.home),
+                    ),
                   ),
                 ),
               ),

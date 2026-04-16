@@ -6,6 +6,7 @@ import 'package:habit_quest/widgets/theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
 import 'package:provider/provider.dart';
+import 'package:habit_quest/services/tutorial_manager.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
@@ -80,14 +81,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
 
-          // "Reset Tutorial" option.
+          // "Reset Tutorial" option. (Only ONE button now, wired up correctly)
           ListTile(
             leading: const Icon(Icons.help_outline),
             title: const Text('Reset Tutorial'),
-            onTap: () {
-              // Placeholder: Will hold the actual tutorial reset logic later
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Placeholder: Tutorial Reset...')));
+            onTap: () async {
+              await TutorialManager.resetTutorial(context);
             },
           ),
           const Divider(),

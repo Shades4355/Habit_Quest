@@ -6,6 +6,7 @@ import 'package:habit_quest/interfaces/add_habit_wizard_pop_up.dart';
 
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/services/tutorial_manager.dart';
 
 // ==================== MANAGE HABITS SCREEN ====================
 
@@ -74,24 +75,27 @@ class ManageHabitsScreen extends StatelessWidget {
       body: _currentHabitsList(context),
       // The "Manage Habits" screen will include the ability to add new habits... button at the bottom center.
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          // This button will bring up the "Add Habit" interface.
-          await showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              useSafeArea: true, // <-- Added this
-              builder: (ctx) {
-                // <-- Added dynamic bottom padding
-                final bottomPadding = MediaQuery.of(ctx).padding.bottom;
-                return Padding(
-                  padding: EdgeInsets.only(bottom: bottomPadding),
-                  child: const AddHabitWizardPopUp(),
-                );
-              });
-        },
-        label: const Text('Add New Habit'),
-        icon: const Icon(Icons.add),
+      floatingActionButton: Focus(
+        focusNode: TutorialManager.addHabitNode,
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            // This button will bring up the "Add Habit" interface.
+            await showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true, // <-- Added this
+                builder: (ctx) {
+                  // <-- Added dynamic bottom padding
+                  final bottomPadding = MediaQuery.of(ctx).padding.bottom;
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: bottomPadding),
+                    child: const AddHabitWizardPopUp(),
+                  );
+                });
+          },
+          label: const Text('Add New Habit'),
+          icon: const Icon(Icons.add),
+        ),
       ),
     );
   }

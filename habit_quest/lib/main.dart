@@ -30,6 +30,10 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:habit_quest/services/notification_service.dart';
 
+// Tutorial / Onboarding
+import 'package:onboarding_overlay/onboarding_overlay.dart';
+import 'package:habit_quest/services/tutorial_manager.dart';
+
 // State Management
 import 'package:habit_quest/providers/theme_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
@@ -44,32 +48,32 @@ import 'package:habit_quest/screens/habit_history_screen.dart';
 import 'package:habit_quest/screens/settings_screen.dart';
 
 void main() async {
-  // Ensure plugin services are initialized
+  // I ensure my plugin services are initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Notification Service
+  // I initialize my Notification Service and timezone data
   tz_data.initializeTimeZones();
   final String timeZoneName = await FlutterNativeTimezoneLatest.getLocalTimezone();
   tz.setLocalLocation(tz.getLocation(timeZoneName));
   await NotificationService().initNotification();
 
-  // Start SQLite Inspector in debug mode
+  // I start the SQLite Inspector only when running in debug mode
   if (kDebugMode) {
     await SqliteInspector.start();
   }
 
-  // Initialize database
+  // I initialize my local Floor database
   final database = await $FloorAppDatabase.databaseBuilder('app_database.db')
     .addMigrations(AppDatabase.migrations)
     .build();
 
-  // Initialize the repository
+  // I initialize my main repository pattern for data access
   HabitRepository.initialize(
     habitDao: database.habitDao,
     habitRecordDao: database.habitRecordDao
   );
 
-  // Lock the app to Portrait (Source: Document Section 1.D)
+  // I lock the app to Portrait mode so my UI doesn't break when tilted
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -86,7 +90,8 @@ void main() async {
     ),
   );
 }
-class HabitQuestApp extends StatelessWidget {  // change to StatelessWidget
+
+class HabitQuestApp extends StatelessWidget {  
   const HabitQuestApp({super.key});
 
   @override
@@ -112,11 +117,26 @@ class HabitQuestApp extends StatelessWidget {  // change to StatelessWidget
       themeMode: themeProvider.flutterThemeMode,
       initialRoute: '/',
       routes: {
-        '/': (context) => HomePageScreen(),
+        '/': (context) => const HomePageScreen(),
         '/extended_graph': (context) => const ExtendedGraphScreen(),
         '/manage_habits': (context) => const ManageHabitsScreen(),
         '/habit_history': (context) => const HabitHistoryScreen(),
         '/settings': (context) => const SettingsScreen(),
+      },
+      builder: (context, child) {
+        // I wrap my app in an explicit Overlay here so the tutorial has a canvas 
+        // to draw on that persists through screen changes without crashing!
+        return Overlay(
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) => Onboarding(
+                key: TutorialManager.onboardingKey,
+                steps: TutorialManager.getSteps(context),
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
+          ],
+        );
       },
     );
   }
