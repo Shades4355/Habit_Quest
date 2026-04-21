@@ -75,8 +75,7 @@ class ExportService {
 
     // Create rows for habits (with headers)
     final habitRows = [
-      ['Habits'],
-      ['Id', 'Name', 'Importance', 'Created At', 'Is Archived'],
+      ..._habitHeader,
       ...habits.map((habit) => [
         habit.id,
         habit.habitName,
@@ -88,8 +87,7 @@ class ExportService {
 
     // Create rows for records (with headers)
     final recordRows = [
-      ['Habit Records'],
-      ['Record Id', 'Habit Id', 'Habit Name', 'Date', 'Importance', 'Score Delta'],
+      ..._recordHeader,
       ...records.map((record) => [
         record.recordId,
         record.habitId,
