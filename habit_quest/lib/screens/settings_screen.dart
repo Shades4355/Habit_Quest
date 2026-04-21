@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+// Providers
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
+// Services
 import 'package:habit_quest/services/export_service.dart';
-// Interfaces
+// Interfaces and Widgets
 import 'package:habit_quest/widgets/theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
-import 'package:provider/provider.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
@@ -48,6 +51,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text('Load Habit History from CSV'),
             onTap: () async {
               await ExportService().importData(context);
+              if (!context.mounted) return;
+              await context.read<HabitProvider>().loadHabits();
+              await context.read<HabitRecordProvider>().loadAll();
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('Placeholder: Importing data...')));
             },
