@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+// Providers
+import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
-
-// Interfaces
+// Services
+import 'package:habit_quest/services/export_service.dart';
+// Interfaces and Widgets
 import 'package:habit_quest/widgets/theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
-import 'package:provider/provider.dart';
 
 // ==================== SETTINGS SCREEN ====================
 
 class SettingsScreen extends StatefulWidget {
-  // Properties passed from main.dart
-
   const SettingsScreen({super.key});
 
   @override
@@ -36,9 +37,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: const Icon(Icons.download),
             title: const Text('Export Data'),
             subtitle: const Text('Save Habit History to CSV'),
-            onTap: () {
+            onTap: () async {
+              await ExportService().exportData(context);
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('Placeholder: Exporting data...')));
+            },
+          ),
+          const Divider(),
+
+          ListTile(
+            leading: const Icon(Icons.upload_file),
+            title: const Text('Import Data'),
+            subtitle: const Text('Load Habit History from CSV'),
+            onTap: () async {
+              await ExportService().importData(context);
+              if (!context.mounted) return;
+              await context.read<HabitProvider>().loadHabits();
+              await context.read<HabitRecordProvider>().loadAll();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Placeholder: Importing data...')));
             },
           ),
           const Divider(),
