@@ -42,6 +42,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
 
+          ListTile(
+            leading: const Icon(Icons.upload_file),
+            title: const Text('Import Data'),
+            subtitle: const Text('Load Habit History from CSV'),
+            onTap: () async {
+              await ExportService().importData(context);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Placeholder: Importing data...')));
+            },
+          ),
+          const Divider(),
+
           // "Clear History" option.
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.red),
