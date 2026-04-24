@@ -8,60 +8,191 @@ import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
 
-// ==================== MANAGE HABITS SCREEN ====================
-
 class ManageHabitsScreen extends StatelessWidget {
   const ManageHabitsScreen({super.key});
 
-  Widget _currentHabitsList(BuildContext context) {
+  Widget _body(BuildContext context) {
     final habitProvider = context.watch<HabitProvider>();
-    if (habitProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    final colorScheme = Theme.of(context).colorScheme;
 
-    final habits = habitProvider.activeHabits;
-    if (habits.isEmpty) {
-      return const Center(child: Text('No active habits yet.'));
-    }
+    // KEY FIX: Focus(manageHabitsListNode) is kept permanently attached by placing
+    // it in a Stack. We restrict its height to the top portion of the screen so that
+    // the tutorial plugin has enough space below to render the text box without clipping.
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Builder(
+            builder: (context) {
+              if (habitProvider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-    return ListView.builder(
-      // Pushes the list up so it's not hidden behind the FloatingActionButton
-      padding: const EdgeInsets.only(bottom: 100, top: 10),
-      itemCount: habits.length,
-      itemBuilder: (ctx, i) => ListTile(
-        // Circle with Importance level
-        leading: CircleAvatar(
-          backgroundColor: habits[i].importanceLevel > 0 ? Colors.green : Colors.red,
-          child: Text('${habits[i].importanceLevel}'),
-        ),
-        
-        // Habit Name
-        title: Text(habits[i].habitName),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+              final habits = habitProvider.activeHabits;
 
-            // Edit Button
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.blue),
-              onPressed: () async {
-                await showDialog(
-                  context: context,
-                  builder: (ctx) => EditHabitInterfacePopUp(habit: habits[i]),
+              if (habits.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.inbox_rounded,
+                          size: 64, color: colorScheme.outlineVariant),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No active habits yet',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tap the button below to add your first habit.',
+                        style:
+                            TextStyle(fontSize: 13, color: colorScheme.outline),
+                      ),
+                    ],
+                  ),
                 );
-              },
-            ),
+              }
 
-            // Delete Button
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () async {
-                await context.read<HabitProvider>().removeHabit(habits[i]);
-              },
-            ),
-          ],
+              return ListView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
+                itemCount: habits.length + 1,
+                itemBuilder: (ctx, i) {
+                  if (i == 0) {
+                    return ValueListenableBuilder<bool>(
+                      valueListenable: TutorialManager.isTutorialActive,
+                      builder: (ctx, isActive, _) {
+                        if (!isActive) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+                          child: Text(
+                            'These are your active habits. Tap the pencil to edit or the trash to delete. The number badge shows the importance level.',
+                            style: TextStyle(fontSize: 13, color: colorScheme.outline),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                  final habit = habits[i - 1];
+                  final isPositive = habit.importanceLevel > 0;
+                  final badgeColor = isPositive
+                      ? Colors.green.shade600
+                      : Colors.red.shade600;
+                  final badgeBg =
+                      isPositive ? Colors.green.shade50 : Colors.red.shade50;
+
+                  return Card(
+                    elevation: 0,
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      side: BorderSide(
+                          color: colorScheme.outlineVariant, width: 1),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                      leading: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: badgeBg,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${habit.importanceLevel}',
+                            style: TextStyle(
+                              color: badgeColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        habit.habitName,
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        isPositive ? 'Building habit' : 'Breaking habit',
+                        style:
+                            TextStyle(fontSize: 12, color: colorScheme.outline),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit_rounded,
+                                color: colorScheme.primary, size: 20),
+                            tooltip: 'Edit',
+                            onPressed: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (ctx) =>
+                                    EditHabitInterfacePopUp(habit: habit),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete_outline_rounded,
+                                color: colorScheme.error, size: 20),
+                            tooltip: 'Delete',
+                            onPressed: () async {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (dCtx) => AlertDialog(
+                                  title: const Text('Delete Habit'),
+                                  content: Text(
+                                      'Remove "${habit.habitName}"? This can\'t be undone.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(dCtx, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    FilledButton(
+                                      style: FilledButton.styleFrom(
+                                          backgroundColor: colorScheme.error),
+                                      onPressed: () =>
+                                          Navigator.pop(dCtx, true),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirmed == true && context.mounted) {
+                                await context
+                                    .read<HabitProvider>()
+                                    .removeHabit(habit);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
-      ),
+        // The dummy focus target that highlights the top area of the list
+        Positioned(
+          top: 12,
+          left: 12,
+          right: 12,
+          height: 140,
+          child: IgnorePointer(
+            child: Focus(
+              focusNode: TutorialManager.manageHabitsListNode,
+              child: const SizedBox.expand(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -69,32 +200,49 @@ class ManageHabitsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const AppDrawer(),
-      // The "Manage Habits" screen will display the text "Manage Habits" at the top.
-      appBar: AppBar(title: const Text('Manage Habits')),
-      // The "Manage Habits" screen will display all current habits.
-      body: _currentHabitsList(context),
-      // The "Manage Habits" screen will include the ability to add new habits... button at the bottom center.
+      appBar: AppBar(
+        title: const Text('Manage Habits'),
+        leading: Focus(
+          focusNode: TutorialManager.menuNode,
+          child: Builder(
+            builder: (ctx) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(ctx).openDrawer();
+                // THE NATIVE HANDSHAKE
+                if (TutorialManager.isTutorialActive.value) {
+                  TutorialManager.nextStep();
+                }
+              },
+            ),
+          ),
+        ),
+      ),
+      body: _body(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Focus(
         focusNode: TutorialManager.addHabitNode,
         child: FloatingActionButton.extended(
           onPressed: () async {
-            // This button will bring up the "Add Habit" interface.
+            // THE NATIVE HANDSHAKE
+            if (TutorialManager.isTutorialActive.value) {
+              TutorialManager.nextStep();
+            }
             await showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                useSafeArea: true, // <-- Added this
-                builder: (ctx) {
-                  // <-- Added dynamic bottom padding
-                  final bottomPadding = MediaQuery.of(ctx).padding.bottom;
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: bottomPadding),
-                    child: const AddHabitWizardPopUp(),
-                  );
-                });
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (ctx) {
+                final bottomPadding = MediaQuery.of(ctx).padding.bottom;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: bottomPadding),
+                  child: const AddHabitWizardPopUp(),
+                );
+              },
+            );
           },
           label: const Text('Add New Habit'),
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add_rounded),
         ),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:habit_quest/database/entities/habit_record.dart';
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/services/tutorial_manager.dart';
 
 class HabitHistoryScreen extends StatefulWidget {
   const HabitHistoryScreen({super.key});
@@ -14,6 +15,11 @@ class HabitHistoryScreen extends StatefulWidget {
 }
 
 class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
+  static const _monthNames = [
+    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -22,17 +28,57 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     });
   }
 
-  Widget _habitRecordTile(BuildContext context, HabitRecord record, Habit? habit) {
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
+      return 'Today';
+    }
+    final yesterday = now.subtract(const Duration(days: 1));
+    if (date.year == yesterday.year &&
+        date.month == yesterday.month &&
+        date.day == yesterday.day) {
+      return 'Yesterday';
+    }
+    return '${_monthNames[date.month]} ${date.day}, ${date.year}';
+  }
+
+  Widget _habitRecordTile(BuildContext context, HabitRecord record) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isPositive = record.scoreDelta >= 0;
+    final scoreColor = isPositive ? Colors.green.shade600 : Colors.red.shade600;
+    final scoreLabel =
+        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} pts';
+
     return ListTile(
+      dense: true,
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       leading: Icon(
-        Icons.check_circle,
-        color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+        isPositive
+            ? Icons.check_circle_rounded
+            : Icons.cancel_rounded,
+        color: scoreColor,
+        size: 22,
       ),
-      title: Text(record.habitName.isEmpty ? 'Unknown Habit' : record.habitName),
-      trailing: Text(
-        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
-        style: TextStyle(
-          color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+      title: Text(
+        record.habitName.isEmpty ? 'Unknown Habit' : record.habitName,
+        style: const TextStyle(fontSize: 14),
+      ),
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: (isPositive ? Colors.green : Colors.red).withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          scoreLabel,
+          style: TextStyle(
+            color: scoreColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
         ),
       ),
     );
@@ -42,61 +88,148 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
   Widget build(BuildContext context) {
     final habitRecordProvider = context.watch<HabitRecordProvider>();
     final habitProvider = context.watch<HabitProvider>();
+    final colorScheme = Theme.of(context).colorScheme;
 
-    if (habitRecordProvider.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    final days = List.generate(30, (i) => 
-      DateTime.now().subtract(Duration(days: i))
+    final days = List.generate(
+      30,
+      (i) => DateTime.now().subtract(Duration(days: i)),
     );
 
     return Scaffold(
       drawer: const AppDrawer(),
-      appBar: AppBar(title: const Text('Habit History')),
-      // CHANGED: Swapped ListView.builder for ListView.separated
-      body: ListView.separated(
+      appBar: AppBar(
+        title: const Text('Habit History'),
+      ),
+      body: habitRecordProvider.isLoading
+          ? Focus(
+              focusNode: TutorialManager.historyItemNode,
+              child: const Center(child: CircularProgressIndicator()),
+            )
+          : ListView.separated(
         itemCount: days.length,
-        // CHANGED: Added the divider here
-        separatorBuilder: (context, index) => const Divider(height: 1, thickness: 1),
+        separatorBuilder: (context, index) =>
+            Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
         itemBuilder: (ctx, dayIndex) {
           final date = days[dayIndex];
           final records = habitRecordProvider.getRecordsForDaySync(date);
+          final totalScore =
+              records.fold<int>(0, (sum, r) => sum + r.scoreDelta);
+          final hasRecords = records.isNotEmpty;
 
-          final totalScore = records.fold(0, (sum, r) => sum + r.scoreDelta);
+          final scoreColor = totalScore > 0
+              ? Colors.green.shade600
+              : totalScore < 0
+                  ? Colors.red.shade600
+                  : colorScheme.outline;
 
-          return ExpansionTile(
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            collapsedBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-            // CHANGED: Put both Date and Score into a Row inside the title
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${date.month}/${date.day}/${date.year}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Total Score: $totalScore',
-                  style: TextStyle(
-                    color: totalScore >= 0 && records.isNotEmpty ? Colors.green : Colors.red,
-                    fontSize: 14, // Slightly scaled down so it fits nicely next to the arrow
-                    fontWeight: FontWeight.normal,
+          Widget expansionTile = Theme(
+            // Remove the default dividers inside ExpansionTile
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              backgroundColor:
+                  colorScheme.surfaceContainerHighest,
+              collapsedBackgroundColor:
+                  colorScheme.surfaceContainerHigh,
+              tilePadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+              title: Row(
+                children: [
+                  // Date column
+                  SizedBox(
+                    width: 48,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${date.day}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                            height: 1.1,
+                          ),
+                        ),
+                        Text(
+                          _monthNames[date.month].toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: colorScheme.outline,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  // Label
+                  Expanded(
+                    child: Text(
+                      _formatDate(date),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  // Score badge
+                  if (hasRecords)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color:
+                            (totalScore >= 0 ? Colors.green : Colors.red)
+                                .withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${totalScore > 0 ? '+' : ''}$totalScore',
+                        style: TextStyle(
+                          color: scoreColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    )
+                  else
+                    Text(
+                      'No records',
+                      style: TextStyle(
+                          fontSize: 12, color: colorScheme.outline),
+                    ),
+                ],
+              ),
+              children: hasRecords
+                  ? records.map((record) {
+                      // ignore: unused_local_variable
+                      final habit = habitProvider.habits
+                          .where((h) => h.id == record.habitId)
+                          .firstOrNull;
+                      return _habitRecordTile(context, record);
+                    }).toList()
+                  : [
+                      ListTile(
+                        dense: true,
+                        title: Text(
+                          'No habits completed this day.',
+                          style: TextStyle(
+                              color: colorScheme.outline, fontSize: 13),
+                        ),
+                      ),
+                    ],
             ),
-            // CHANGED: Removed the 'trailing' property entirely. 
-            // This allows the default animated chevron ("V") to return!
-            children: records.isEmpty
-              ? [const ListTile(title: Text('No habits completed'))]
-              : records.map((record) {
-                final habit = habitProvider.habits
-                    .where((h) => h.id == record.habitId)
-                    .firstOrNull;
-                return _habitRecordTile(context, record, habit);
-              }).toList(),
           );
+
+          // ── Tutorial spotlight on today's entry (index 0) ─────────────
+          if (dayIndex == 0) {
+            return Focus(
+              focusNode: TutorialManager.historyItemNode,
+              child: expansionTile,
+            );
+          }
+
+          return expansionTile;
         },
       ),
     );
