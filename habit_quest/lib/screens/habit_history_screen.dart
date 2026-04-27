@@ -22,22 +22,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     });
   }
 
-  Future<void> _openRecordHabitSheet() async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (ctx) {
-        final bottomPadding = MediaQuery.of(ctx).padding.bottom;
-
-        return Padding(
-          padding: EdgeInsets.only(bottom: bottomPadding),
-          child: const RecordHabitInterfacePopUp(),
-        );
-      },
-    );
-  }
-
   Future<void> _deleteRecord(HabitRecord record) async {
     await context.read<HabitRecordProvider>().deleteHabitRecord(record);
     if (!mounted) return;
