@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
-import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 import 'package:provider/provider.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
