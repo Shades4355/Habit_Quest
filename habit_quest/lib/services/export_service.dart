@@ -7,6 +7,7 @@ import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:habit_quest/services/toast_service.dart';
 
 class ExportService {
   static final ExportService _instance = ExportService._internal();
@@ -113,14 +114,10 @@ class ExportService {
         mimeType: MimeType.csv,
       );
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data exported successfully!')),
-      );
+      ToastService.showSuccess('Data exported successfully!');
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to export data: $e')),
-      );
+      ToastService.showError('Failed to export data: $e');
     }
   }
 
@@ -139,9 +136,7 @@ class ExportService {
       final content = await _readCsv(result.files.single.path!);
       if (content.isEmpty) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No data found in CSV file.')),
-        );
+        ToastService.showError('Selected file is empty');
         return;
       }
 
@@ -205,14 +200,10 @@ class ExportService {
       }
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data imported successfully!')),
-      );
+      ToastService.showSuccess('Data imported successfully!');
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to import data: $e')),
-      );
+      ToastService.showError('Failed to import data: $e');
     }
   }
 }
