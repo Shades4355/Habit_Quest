@@ -200,3 +200,25 @@ Miguel will finish up the export feature, and will start the import feature.
 Luca arrived after the meeting ended. Luca will work on the tutorial feature this week. Miguel has already done some research in that field, so Luca was directed to speak to Miguel before starting.
 
 
+### 21-April-2026
+Team meeting #13:
+
+In attendance: all present
+
+We discussed the state of our app and what needs to be done before the 30th.
+
+We also discussed publishing to the Google Play store and continuing to maintain the app. We have decided to do so.
+
+
+### 27-April-2026
+Team Meeting #14
+
+In attendance: Shades, Luca, Miguel
+
+This was our final meeting for this class but, given that we are going to continue working on and maintaining this app, not our final meeting in gneral.
+
+We discussed a bug found in the `TUTORIAL` branch that needs to be addressed before we can merge the branch into `main`.
+
+We also discussed our presentation for tomorrow and desided who would be in charge of presenting which slides.
+
+
