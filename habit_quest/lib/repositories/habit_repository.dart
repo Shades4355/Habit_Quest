@@ -129,6 +129,16 @@ class HabitRepository {
   /// Counts the number of records for a specific habit and date
   Future<int?> countRecordsForHabit(int habitId, DateTime date) => habitRecordDao.countRecordsForHabit(habitId, dayKey(date));
 
+  Future<void> editRecord({
+    required HabitRecord oldRecord,
+    required HabitRecord newRecord,
+  }) async {
+    await habitRecordDao.deleteRecordById(oldRecord.recordId!);
+    await habitRecordDao.insertRecord(newRecord);
+  }
+
+  Future<int?> deleteRecordById(int id) => habitRecordDao.deleteRecordById(id);
+
   /// Deletes a habit record for the provided habit and day key.
   Future<int?> deleteRecord({required int habitId, required int dateKey}) {
     return habitRecordDao.deleteRecord(habitId, dateKey);
