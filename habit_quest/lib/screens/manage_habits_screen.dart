@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
+// Interfaces
 import "package:habit_quest/interfaces/app_drawer.dart";
 import 'package:habit_quest/interfaces/edit_habit_interface_pop_up.dart';
 import 'package:habit_quest/interfaces/add_habit_wizard_pop_up.dart';
 
+// Widgets
+import 'package:habit_quest/widgets/edit_button.dart';
+import 'package:habit_quest/widgets/delete_button.dart';
+
+// Providers
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 
@@ -41,22 +47,16 @@ class ManageHabitsScreen extends StatelessWidget {
           children: [
 
             // Edit Button
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.blue),
-              onPressed: () async {
-                await showDialog(
-                  context: context,
-                  builder: (ctx) => EditHabitInterfacePopUp(habit: habits[i]),
-                );
-              },
+            EditButton(
+              editInterface: EditHabitInterfacePopUp(habit: habits[i]),
             ),
 
             // Delete Button
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () async {
+            DeleteButton(
+              onDelete: () async {
                 await context.read<HabitProvider>().removeHabit(habits[i]);
               },
+              deleteContext: DeleteContext.habit,
             ),
           ],
         ),
