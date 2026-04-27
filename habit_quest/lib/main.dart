@@ -122,9 +122,11 @@ class HabitQuestApp extends StatelessWidget {
           key: TutorialManager.overlayKey,
           initialEntries: [
             OverlayEntry(
-              builder: (context) => Onboarding(
+              builder: (overlayContext) => Onboarding(
                 key: TutorialManager.onboardingKey,
-                steps: TutorialManager.getSteps(context),
+                // Use overlayContext to ensure the steps are built with a context
+                // that is active within the Overlay's scope.
+                steps: TutorialManager.getSteps(overlayContext),
                 child: Focus(
                   focusNode: TutorialManager.fullScreenNode,
                   child: child ?? const SizedBox.shrink(),

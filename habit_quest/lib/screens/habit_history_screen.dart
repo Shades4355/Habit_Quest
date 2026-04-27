@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
-import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
