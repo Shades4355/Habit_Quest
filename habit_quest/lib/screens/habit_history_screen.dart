@@ -52,17 +52,11 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
 
   Widget _habitRecordTile(BuildContext context, HabitRecord record) {
     return ListTile(
-      leading: Icon(
-        Icons.check_circle,
-        color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
-      ),
-      title: Text(record.habitName.isEmpty ? 'Unknown Habit' : record.habitName),
-      subtitle: Text(
-        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
-        style: TextStyle(
-          color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+      leading: CircleAvatar(
+          backgroundColor: record.scoreDelta > 0 ? Colors.green : Colors.red,
+          child: Text('${record.scoreDelta}'),
         ),
-      ),
+      title: Text(record.habitName.isEmpty ? 'Unknown Habit' : record.habitName),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
