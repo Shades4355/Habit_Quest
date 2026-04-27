@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
+import 'package:habit_quest/interfaces/edit_record_interface_pop_up.dart';
 import 'package:provider/provider.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
@@ -21,6 +22,26 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     });
   }
 
+  Future<void> _editRecord(HabitRecord record) async {
+    final result = await showDialog<HabitRecord?>(
+      context: context,
+      builder: (ctx) => EditRecordInterfacePopUp(record: record),
+    );
+
+    if (result == null) return;
+
+    if (!context.mounted) return;
+    await context.read<HabitRecordProvider>().editHabitRecord(
+      oldRecord: record,
+      newRecord: result,
+    );
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Record updated')),
+    );
+  }
+
   Future<void> _deleteRecord(HabitRecord record) async {
     await context.read<HabitRecordProvider>().deleteHabitRecord(record);
     if (!mounted) return;
@@ -36,14 +57,19 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
         color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
       ),
       title: Text(record.habitName.isEmpty ? 'Unknown Habit' : record.habitName),
+      subtitle: Text(
+        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
+        style: TextStyle(
+          color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+        ),
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
-            style: TextStyle(
-              color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
-            ),
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.blue),
+            tooltip: 'Edit record',
+            onPressed: () => _editRecord(record),
           ),
           DeleteButton(
             deleteContext: DeleteContext.habitRecord,
