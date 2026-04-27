@@ -95,6 +95,12 @@ class HabitRecordProvider extends ChangeNotifier {
     await loadAll();
   }
 
+  /// Deletes a habit record and refreshes all dependent score and status data.
+  Future<void> deleteHabitRecord(HabitRecord record) async {
+    await _habitRepo.deleteRecord(habitId: record.habitId, dateKey: record.date);
+    await loadAll();
+  }
+
   /// Get records for a specific day (synchronous version) 
   List<HabitRecord> getRecordsForDaySync(DateTime date) {
     final key = _habitRepo.dayKey(date);

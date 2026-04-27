@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
+import 'package:habit_quest/interfaces/record_habit_interface_pop_up.dart';
 import 'package:provider/provider.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
-import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
-import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/widgets/delete_button.dart';
 
 class HabitHistoryScreen extends StatefulWidget {
   const HabitHistoryScreen({super.key});
@@ -22,18 +22,51 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     });
   }
 
-  Widget _habitRecordTile(BuildContext context, HabitRecord record, Habit? habit) {
+  Future<void> _openRecordHabitSheet() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (ctx) {
+        final bottomPadding = MediaQuery.of(ctx).padding.bottom;
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: bottomPadding),
+          child: const RecordHabitInterfacePopUp(),
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteRecord(HabitRecord record) async {
+    await context.read<HabitRecordProvider>().deleteHabitRecord(record);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Record deleted')),
+    );
+  }
+
+  Widget _habitRecordTile(BuildContext context, HabitRecord record) {
     return ListTile(
       leading: Icon(
         Icons.check_circle,
         color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
       ),
       title: Text(record.habitName.isEmpty ? 'Unknown Habit' : record.habitName),
-      trailing: Text(
-        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
-        style: TextStyle(
-          color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
-        ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} points',
+            style: TextStyle(
+              color: record.scoreDelta >= 0 ? Colors.green : Colors.red,
+            ),
+          ),
+          DeleteButton(
+            deleteContext: DeleteContext.habitRecord,
+            onDelete: () => _deleteRecord(record),
+          ),
+        ],
       ),
     );
   }
@@ -41,7 +74,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final habitRecordProvider = context.watch<HabitRecordProvider>();
-    final habitProvider = context.watch<HabitProvider>();
 
     if (habitRecordProvider.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -90,12 +122,7 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
             // This allows the default animated chevron ("V") to return!
             children: records.isEmpty
               ? [const ListTile(title: Text('No habits completed'))]
-              : records.map((record) {
-                final habit = habitProvider.habits
-                    .where((h) => h.id == record.habitId)
-                    .firstOrNull;
-                return _habitRecordTile(context, record, habit);
-              }).toList(),
+              : records.map((record) => _habitRecordTile(context, record)).toList(),
           );
         },
       ),
