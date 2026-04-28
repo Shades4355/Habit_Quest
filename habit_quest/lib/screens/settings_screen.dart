@@ -5,6 +5,7 @@ import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 // Services
 import 'package:habit_quest/services/export_service.dart';
+import 'package:habit_quest/services/toast_service.dart';
 // Interfaces and Widgets
 import 'package:habit_quest/widgets/theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
@@ -39,8 +40,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text('Save Habit History to CSV'),
             onTap: () async {
               await ExportService().exportData(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Placeholder: Exporting data...')));
             },
           ),
           const Divider(),
@@ -54,8 +53,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (!context.mounted) return;
               await context.read<HabitProvider>().loadHabits();
               await context.read<HabitRecordProvider>().loadAll();
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Placeholder: Importing data...')));
             },
           ),
           const Divider(),
@@ -84,9 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               if (!ctx.mounted) return;
                               Navigator.pop(ctx);
                               if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('All data cleared'))
-                              );
+                              ToastService.showToast('Habit history cleared');
                             },
                             child: const Text('Confirm',
                                 style: TextStyle(color: Colors.red)),
@@ -103,8 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Reset Tutorial'),
             onTap: () {
               // Placeholder: Will hold the actual tutorial reset logic later
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Placeholder: Tutorial Reset...')));
+              ToastService.showInfo('Restarting tutorial...');
             },
           ),
           const Divider(),
