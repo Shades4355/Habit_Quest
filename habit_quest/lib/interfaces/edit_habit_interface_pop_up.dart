@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
+import 'package:habit_quest/services/toast_service.dart';
 
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
@@ -75,7 +76,7 @@ class _EditHabitInterfacePopUpState extends State<EditHabitInterfacePopUp> {
             await context.read<HabitProvider>().updateHabit(updatedHabit);
 
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Habit Updates Saved')));
+              ToastService.showSuccess('Habit Successfully Updated');
               Navigator.pop(context);
             }
           },
