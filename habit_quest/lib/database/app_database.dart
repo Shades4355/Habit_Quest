@@ -44,8 +44,9 @@ abstract class AppDatabase extends FloorDatabase {
 
     // Copy data
     await database.execute('''
-      INSERT INTO HabitRecord_new (habitId, habitName, importanceLevel, date, scoreDelta)
-      SELECT 
+      INSERT INTO HabitRecord_new (recordId, habitId, habitName, importanceLevel, date, scoreDelta)
+      SELECT
+        r.id,
         r.habitId,
         COALESCE(h.habitName, '') as habitName,
         COALESCE(h.importanceLevel, 0) as importanceLevel,
