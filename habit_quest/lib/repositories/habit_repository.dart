@@ -24,7 +24,7 @@ class HabitRepository {
 
   HabitRepository._internal(this.habitDao, this.habitRecordDao);
 
-  /// Converts a DateTime to an integer key in the format MMDDYYYY 
+  /// Converts a DateTime to an integer key in the format MMDDYYYY
   int dayKey(DateTime date) => date.month * 1000000 + date.day * 10000 + date.year;
 
   /// Retrieves all active (non-archived) habits from the database
@@ -148,9 +148,11 @@ class HabitRepository {
     await habitDao.deleteAllHabits();
   }
 
+  /// Deletes all habit records from the database
   Future<void> clearAllRecords() async {
     await habitRecordDao.deleteAllRecords();
   }
 
+  /// Gets all habits regardless of archived status
   Future<List<Habit>> getAllHabits() => habitDao.findAllHabits();
 }

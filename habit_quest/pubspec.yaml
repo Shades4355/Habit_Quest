@@ -52,6 +52,16 @@ dependencies:
   flutter_native_timezone_latest: ^1.0.0
   flutter_launcher_icons: ^0.14.4
 
+  # For exporting data to CSV and sharing it/importing it
+  csv: ^8.0.0
+  share_plus: ^10.0.0
+  path_provider: ^2.0.0
+  file_saver: ^0.3.1
+  file_picker: ^11.0.2
+  
+  # For showing toast messages
+  fluttertoast: ^9.0.0
+
 dev_dependencies:
   analyzer: 6.4.1
   floor_generator: ^1.5.0
