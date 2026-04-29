@@ -290,6 +290,7 @@ class _$HabitRecordDao extends HabitRecordDao {
     return _queryAdapter.queryList(
         'SELECT * FROM HabitRecord WHERE habitId = ?1 ORDER BY date ASC',
         mapper: (Map<String, Object?> row) => HabitRecord(
+            recordId: row['recordId'] as int?,
             habitId: row['habitId'] as int,
             habitName: row['habitName'] as String,
             importanceLevel: row['importanceLevel'] as int,
@@ -306,6 +307,7 @@ class _$HabitRecordDao extends HabitRecordDao {
     return _queryAdapter.query(
         'SELECT * FROM HabitRecord WHERE habitId = ?1 AND date = ?2',
         mapper: (Map<String, Object?> row) => HabitRecord(
+            recordId: row['recordId'] as int?,
             habitId: row['habitId'] as int,
             habitName: row['habitName'] as String,
             importanceLevel: row['importanceLevel'] as int,
@@ -318,6 +320,7 @@ class _$HabitRecordDao extends HabitRecordDao {
   Future<List<HabitRecord>> findRecordsForDate(int date) async {
     return _queryAdapter.queryList('SELECT * FROM HabitRecord WHERE date = ?1',
         mapper: (Map<String, Object?> row) => HabitRecord(
+            recordId: row['recordId'] as int?,
             habitId: row['habitId'] as int,
             habitName: row['habitName'] as String,
             importanceLevel: row['importanceLevel'] as int,
@@ -330,6 +333,7 @@ class _$HabitRecordDao extends HabitRecordDao {
   Future<List<HabitRecord>> findAllRecords() async {
     return _queryAdapter.queryList('SELECT * FROM HabitRecord',
         mapper: (Map<String, Object?> row) => HabitRecord(
+            recordId: row['recordId'] as int?,
             habitId: row['habitId'] as int,
             habitName: row['habitName'] as String,
             importanceLevel: row['importanceLevel'] as int,
@@ -357,6 +361,13 @@ class _$HabitRecordDao extends HabitRecordDao {
         'DELETE FROM HabitRecord WHERE habitId = ?1 AND date = ?2',
         mapper: (Map<String, Object?> row) => row.values.first as int,
         arguments: [habitId, date]);
+  }
+
+  @override
+  Future<int?> deleteRecordById(int id) async {
+    return _queryAdapter.query('DELETE FROM HabitRecord WHERE recordId = ?1',
+        mapper: (Map<String, Object?> row) => row.values.first as int,
+        arguments: [id]);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:habit_quest/database/entities/habit.dart';
+import 'package:habit_quest/services/toast_service.dart';
 
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
@@ -128,7 +129,7 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
 
                   if (context.mounted) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Placeholder: New Habit Saved with calculated score')));
+                    ToastService.showSuccess('$habitName Saved with ${newHabit.importanceLevel} score');
                   }
                 },
                 child: Text(_currentDisplay < 3 ? 'Next' : 'Finish & Save'),
