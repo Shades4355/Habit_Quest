@@ -1,20 +1,143 @@
 workflows:
+  # IOS Workflow - Builds the iOS app and pushes the IPA to the runnables folder in the repository
   ios-workflow:
-    name: iOS Workflow
+    name: iOS Only Workflow
     instance_type: mac_mini_m1
     working_directory: habit_quest
+
     environment:
       flutter: stable
+      groups:
+        - github_credentials
+
     scripts:
       - name: Install dependencies
         script: flutter pub get
+
       - name: Build iOS
         script: flutter build ios --release --no-codesign
+
       - name: Package IPA
         script: |
           cd build/ios/iphoneos
+          rm -rf Payload
           mkdir Payload
           cp -r Runner.app Payload/Runner.app
-          zip -r Runner.ipa Payload
+          zip -r habit_quest.ipa Payload
+
+      - name: Copy IPA into runnables folder
+        script: |
+          mkdir -p ../runnables
+          rm -f ../runnables/*.ipa
+          cp build/ios/iphoneos/habit_quest.ipa ../runnables/habit_quest-ios-latest.ipa
+
+      - name: Commit and push IPA
+        script: |
+          cd ..
+
+          git config user.name "Codemagic Bot"
+          git config user.email "codemagic-bot@example.com"
+
+          git add runnables/
+          git commit -m "Update latest iOS runnable from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
+
+          git push https://$GITHUB_TOKEN@github.com/UML-COMP4630-LIN/project-coderepository-habitquest.git HEAD:$CM_BRANCH
+
     artifacts:
-      - build/ios/iphoneos/Runner.ipa
+      - build/ios/iphoneos/habit_quest.ipa
+
+  # Android Workflow - Builds the Android app and pushes the APK to the runnables folder in the repository
+  android-workflow:
+    name: Android Only Workflow
+    instance_type: mac_mini_m1
+    working_directory: habit_quest
+
+    environment:
+      flutter: stable
+      groups:
+        - github_credentials
+
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+
+      - name: Build Android APK
+        script: flutter build apk --release
+
+      - name: Copy APK into runnables folder
+        script: |
+          mkdir -p ../runnables
+          rm -f ../runnables/*.apk
+          cp build/app/outputs/flutter-apk/app-release.apk ../runnables/habit_quest-android-latest.apk
+
+      - name: Commit and push APK
+        script: |
+          cd ..
+
+          git config user.name "Codemagic Bot"
+          git config user.email "codemagic-bot@example.com"
+
+          git add runnables/
+          git commit -m "Update latest Android runnable from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
+
+          git push https://$GITHUB_TOKEN@github.com/UML-COMP4630-LIN/project-coderepository-habitquest.git HEAD:$CM_BRANCH
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+  # Full Workflow - Builds both iOS and Android apps and pushes the IPA and APK to the runnables folder in the repository
+  full-workflow:
+    name: iOS and Android Workflow
+    instance_type: mac_mini_m1
+    working_directory: habit_quest
+
+    environment:
+      flutter: stable
+      groups:
+        - github_credentials
+
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+
+      - name: Build iOS
+        script: flutter build ios --release --no-codesign
+
+      - name: Package IPA
+        script: |
+          cd build/ios/iphoneos
+          rm -rf Payload
+          mkdir Payload
+          cp -r Runner.app Payload/Runner.app
+          zip -r habit_quest.ipa Payload
+
+      - name: Copy IPA into runnables folder
+        script: |
+          mkdir -p ../runnables
+          rm -f ../runnables/*.ipa
+          cp build/ios/iphoneos/habit_quest.ipa ../runnables/habit_quest-ios-latest.ipa
+
+      - name: Build Android APK
+        script: flutter build apk --release
+
+      - name: Copy APK into runnables folder
+        script: |
+          mkdir -p ../runnables
+          rm -f ../runnables/*.apk
+          cp build/app/outputs/flutter-apk/app-release.apk ../runnables/habit_quest-android-latest.apk
+
+      - name: Commit and push runnables
+        script: |
+          cd ..
+
+          git config user.name "Codemagic Bot"
+          git config user.email "codemagic-bot@example.com"
+
+          git add runnables/
+          git commit -m "Update latest app runnables from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
+
+          git push https://$GITHUB_TOKEN@github.com/UML-COMP4630-LIN/project-coderepository-habitquest.git HEAD:$CM_BRANCH
+
+    artifacts:
+      - build/ios/iphoneos/habit_quest.ipa
+      - build/app/outputs/flutter-apk/app-release.apk
