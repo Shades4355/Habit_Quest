@@ -29,6 +29,10 @@ abstract class HabitRecordDao {
   @Query('DELETE FROM HabitRecord WHERE habitId = :habitId AND date = :date')
   Future<int?> deleteRecord(int habitId, int date);
 
+  /// Delete a record by its ID
+  @Query('DELETE FROM HabitRecord WHERE recordId = :id')
+  Future<int?> deleteRecordById(int id);
+
   /// Delete all records for a habit
   @Query('DELETE FROM HabitRecord WHERE habitId = :habitId')
   Future<int?> deleteRecordsForHabit(int habitId);

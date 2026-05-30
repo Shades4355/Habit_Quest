@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
+// Interfaces
 import "package:habit_quest/interfaces/app_drawer.dart";
 import 'package:habit_quest/interfaces/edit_habit_interface_pop_up.dart';
 import 'package:habit_quest/interfaces/add_habit_wizard_pop_up.dart';
 
+// Widgets
+import 'package:habit_quest/widgets/edit_button.dart';
+import 'package:habit_quest/widgets/delete_button.dart';
+
+// Providers
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
@@ -58,7 +64,8 @@ class ManageHabitsScreen extends StatelessWidget {
 
               return ListView.builder(
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
-                itemCount: habits.length + 1,
+                // itemCount: habits.length + 1,
+                itemCount: habits.length,
                 itemBuilder: (ctx, i) {
                   if (i == 0) {
                     return ValueListenableBuilder<bool>(
@@ -77,11 +84,12 @@ class ManageHabitsScreen extends StatelessWidget {
                   }
                   final habit = habits[i - 1];
                   final isPositive = habit.importanceLevel > 0;
-                  final badgeColor = isPositive
-                      ? Colors.green.shade600
-                      : Colors.red.shade600;
+                  // final badgeColor = isPositive
+                  //     ? Colors.green
+                  //     : Colors.red;
+                  final badgeColor = Colors.white;
                   final badgeBg =
-                      isPositive ? Colors.green.shade50 : Colors.red.shade50;
+                      isPositive ? Colors.green : Colors.red;
 
                   return Card(
                     elevation: 0,
@@ -124,51 +132,14 @@ class ManageHabitsScreen extends StatelessWidget {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.edit_rounded,
-                                color: colorScheme.primary, size: 20),
-                            tooltip: 'Edit',
-                            onPressed: () async {
-                              await showDialog(
-                                context: context,
-                                builder: (ctx) =>
-                                    EditHabitInterfacePopUp(habit: habit),
-                              );
-                            },
+                          EditButton(
+                            editInterface: EditHabitInterfacePopUp(habit: habit),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.delete_outline_rounded,
-                                color: colorScheme.error, size: 20),
-                            tooltip: 'Delete',
-                            onPressed: () async {
-                              final confirmed = await showDialog<bool>(
-                                context: context,
-                                builder: (dCtx) => AlertDialog(
-                                  title: const Text('Delete Habit'),
-                                  content: Text(
-                                      'Remove "${habit.habitName}"? This can\'t be undone.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(dCtx, false),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    FilledButton(
-                                      style: FilledButton.styleFrom(
-                                          backgroundColor: colorScheme.error),
-                                      onPressed: () =>
-                                          Navigator.pop(dCtx, true),
-                                      child: const Text('Delete'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              if (confirmed == true && context.mounted) {
-                                await context
-                                    .read<HabitProvider>()
-                                    .removeHabit(habit);
-                              }
+                          DeleteButton(
+                            onDelete: () async {
+                              await context.read<HabitProvider>().removeHabit(habit);
                             },
+                            deleteContext: DeleteContext.habit,
                           ),
                         ],
                       ),

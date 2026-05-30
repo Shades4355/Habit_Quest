@@ -62,7 +62,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget _habitsList(BuildContext context) {
     final HabitProvider habitProvider = context.watch<HabitProvider>();
     final habitRecordProvider = context.watch<HabitRecordProvider>();
-  
+
     if (habitProvider.isLoading || habitRecordProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -94,7 +94,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
               onPressed: () {
                 Scaffold.of(ctx).openDrawer();
                 // THE NATIVE HANDSHAKE
-                if (TutorialManager.isTutorialActive.value) TutorialManager.nextStep(); 
+                if (TutorialManager.isTutorialActive.value) TutorialManager.nextStep();
               },
             ),
           ),
@@ -110,7 +110,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: AspectRatio(
-                    aspectRatio: 1.5, 
+                    aspectRatio: 1.5,
                     child: AbsorbPointer(
                       child: ScoreChart(chartType: ChartType.home),
                     ),
@@ -125,7 +125,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Unrecorded Habits:', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Todo:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             _habitsList(context),
@@ -142,10 +145,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
           onPressed: () async {
             // THE NATIVE HANDSHAKE
             if (TutorialManager.isTutorialActive.value) TutorialManager.nextStep();
-            
+
             await showModalBottomSheet(
               context: context,
-              isScrollControlled: true, useSafeArea: true, 
+              isScrollControlled: true, useSafeArea: true,
               builder: (ctx) {
                 final bottomPadding = MediaQuery.of(ctx).padding.bottom;
                 return Padding(

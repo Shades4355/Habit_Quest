@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
+import 'package:habit_quest/interfaces/edit_record_interface_pop_up.dart';
 import 'package:provider/provider.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
+import 'package:habit_quest/widgets/delete_button.dart';
+
 
 class HabitHistoryScreen extends StatefulWidget {
   const HabitHistoryScreen({super.key});
@@ -27,27 +30,60 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     });
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    if (date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day) {
-      return 'Today';
-    }
-    final yesterday = now.subtract(const Duration(days: 1));
-    if (date.year == yesterday.year &&
-        date.month == yesterday.month &&
-        date.day == yesterday.day) {
-      return 'Yesterday';
-    }
-    return '${_monthNames[date.month]} ${date.day}, ${date.year}';
+  // String _formatDate(DateTime date) {
+  //   final now = DateTime.now();
+  //   if (date.year == now.year &&
+  //       date.month == now.month &&
+  //       date.day == now.day) {
+  //     return 'Today';
+  //   }
+  //   final yesterday = now.subtract(const Duration(days: 1));
+  //   if (date.year == yesterday.year &&
+  //       date.month == yesterday.month &&
+  //       date.day == yesterday.day) {
+  //     return 'Yesterday';
+  //   }
+  //   return '${_monthNames[date.month]} ${date.day}, ${date.year}';
+  // }
+
+  // String _formatDate(DateTime date) =>
+  //     '${date.month.toString().padLeft(2, '0')}-'
+  //     '${date.day.toString().padLeft(2, '0')}-'
+  //     '${date.year}';
+
+  Future<void> _editRecord(HabitRecord record) async {
+    final result = await showDialog<HabitRecord?>(
+      context: context,
+      builder: (ctx) => EditRecordInterfacePopUp(record: record),
+    );
+
+    if (result == null) return;
+
+    if (!context.mounted) return;
+    await context.read<HabitRecordProvider>().editHabitRecord(
+      oldRecord: record,
+      newRecord: result,
+    );
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Record updated')),
+    );
+  }
+
+  Future<void> _deleteRecord(HabitRecord record) async {
+    await context.read<HabitRecordProvider>().deleteHabitRecord(record);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Record deleted')),
+    );
   }
 
   Widget _habitRecordTile(BuildContext context, HabitRecord record) {
-    final colorScheme = Theme.of(context).colorScheme;
+    // final colorScheme = Theme.of(context).colorScheme;
     final isPositive = record.scoreDelta >= 0;
-    final scoreColor = isPositive ? Colors.green.shade600 : Colors.red.shade600;
-    final scoreLabel =
+    final scoreColor = isPositive ? Colors.green : Colors.red;
+    // final scoreLabel =
         '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} pts';
 
     return ListTile(
@@ -65,20 +101,33 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
         record.habitName.isEmpty ? 'Unknown Habit' : record.habitName,
         style: const TextStyle(fontSize: 14),
       ),
-      trailing: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(
-          color: (isPositive ? Colors.green : Colors.red).withOpacity(0.12),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          scoreLabel,
-          style: TextStyle(
-            color: scoreColor,
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
+      // trailing: Container(
+      //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      //   decoration: BoxDecoration(
+      //     color: (isPositive ? Colors.green : Colors.red).withOpacity(0.12),
+      //     borderRadius: BorderRadius.circular(20),
+      //   ),
+      //   child: Text(
+      //     scoreLabel,
+      //     style: TextStyle(
+      //       color: scoreColor,
+      //       fontWeight: FontWeight.w600,
+      //       fontSize: 12,
+      //     ),
+      //   ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.blue),
+            tooltip: 'Edit record',
+            onPressed: () => _editRecord(record),
           ),
-        ),
+          DeleteButton(
+            deleteContext: DeleteContext.habitRecord,
+            onDelete: () => _deleteRecord(record),
+          ),
+        ],
       ),
     );
   }
@@ -164,7 +213,7 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
                   // Label
                   Expanded(
                     child: Text(
-                      _formatDate(date),
+                      "",
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -176,16 +225,17 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color:
-                            (totalScore >= 0 ? Colors.green : Colors.red)
-                                .withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                      // decoration: BoxDecoration(
+                      //   color:
+                      //       (totalScore > 0 ? Colors.green : Colors.red),
+                      //   borderRadius: BorderRadius.circular(20),
+                      // ),
                       child: Text(
                         '${totalScore > 0 ? '+' : ''}$totalScore',
                         style: TextStyle(
-                          color: scoreColor,
+                          color: (totalScore > 0
+                                    ? Colors.green
+                                    : Colors.red),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),

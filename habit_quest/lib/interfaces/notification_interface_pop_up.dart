@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/services/notification_service.dart';
+import 'package:habit_quest/services/toast_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -44,9 +45,7 @@ class _NotificationInterfacePopUpState extends State<NotificationInterfacePopUp>
         final granted = await NotificationService().requestPermissions();
         if (!granted && !await NotificationService().areNotificationsEnabled()) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enable notifications in system settings.'))
-            );
+            ToastService.showError('Notifications permission denied. Please enable notifications in system settings.');
           }
           return;
         }

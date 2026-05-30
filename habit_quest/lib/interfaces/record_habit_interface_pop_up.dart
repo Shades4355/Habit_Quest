@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:habit_quest/services/toast_service.dart';
+
 import 'package:habit_quest/widgets/date_picker.dart';
 import 'package:habit_quest/widgets/time_picker.dart';
 import 'package:provider/provider.dart';
@@ -32,12 +34,7 @@ class _RecordHabitInterfacePopUpState
 
     if (!mounted) return;
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Habit recorded for $formattedDate'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    ToastService.showToast('Habit recorded for $formattedDate');
   }
 
   @override

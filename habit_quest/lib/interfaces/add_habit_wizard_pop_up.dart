@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habit_quest/database/entities/habit.dart';
+import 'package:habit_quest/services/toast_service.dart';
+
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
@@ -180,6 +182,9 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
 
                       if (context.mounted) {
                         Navigator.pop(context);
+                        ToastService.showSuccess(
+                          '$habitName Saved with ${newHabit.importanceLevel} score',
+                        );
                       }
                     },
                     child:
