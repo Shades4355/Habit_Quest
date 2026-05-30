@@ -47,10 +47,11 @@ dependencies:
   flutter_local_notifications: ^21.0.0
   timezone: ^0.11.0
   permission_handler: ^11.0.0
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.5.5
   provider: ^6.1.5+1
   flutter_native_timezone_latest: ^1.0.0
   flutter_launcher_icons: ^0.14.4
+  onboarding_overlay: ^3.2.3
 
   # For exporting data to CSV and sharing it/importing it
   csv: ^8.0.0

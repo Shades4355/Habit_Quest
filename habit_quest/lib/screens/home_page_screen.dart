@@ -8,11 +8,23 @@ import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:provider/provider.dart';
+import 'package:habit_quest/services/tutorial_manager.dart';
 
-// ==================== HOMEPAGE SCREEN ====================
-
-class HomePageScreen extends StatelessWidget {
+class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
+
+  @override
+  State<HomePageScreen> createState() => _HomePageScreenState();
+}
+
+class _HomePageScreenState extends State<HomePageScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      TutorialManager.checkAndShowTutorial();
+    });
+  }
 
   Widget _todaysScore(BuildContext context) {
     final score = context.watch<HabitRecordProvider>().todayScore;
@@ -31,9 +43,7 @@ class HomePageScreen extends StatelessWidget {
     if (isCompleted) return const SizedBox.shrink();
     return ListTile(
       leading: IconButton(
-        icon: const Icon(
-          Icons.check_box_outline_blank
-        ),
+        icon: const Icon(Icons.check_box_outline_blank),
         onPressed: () async {
           await context.read<HabitRecordProvider>().recordHabitToday(habitId);
         },
@@ -42,9 +52,7 @@ class HomePageScreen extends StatelessWidget {
       trailing: Text(
         '${currentHabit.importanceLevel}',
         style: TextStyle(
-          color: currentHabit.importanceLevel > 0
-              ? Colors.green
-              : Colors.red,
+          color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -76,18 +84,36 @@ class HomePageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const AppDrawer(),
-      appBar: AppBar(title: const Text('Habit Quest')),
+      appBar: AppBar(
+        title: const Text('Habit Quest'),
+        leading: Focus(
+          focusNode: TutorialManager.menuNode,
+          child: Builder(
+            builder: (ctx) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(ctx).openDrawer();
+                // THE NATIVE HANDSHAKE
+                if (TutorialManager.isTutorialActive.value) TutorialManager.nextStep();
+              },
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            InkWell(
-              onTap: () => Navigator.pushNamed(context, '/extended_graph'),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: AspectRatio(
-                  aspectRatio: 1.5, // Keeps the graph perfectly proportioned on all screens
-                  child: AbsorbPointer(
-                    child: ScoreChart(chartType: ChartType.home),
+            Focus(
+              focusNode: TutorialManager.welcomeNode,
+              child: InkWell(
+                onTap: () => Navigator.pushNamed(context, '/extended_graph'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: AspectRatio(
+                    aspectRatio: 1.5,
+                    child: AbsorbPointer(
+                      child: ScoreChart(chartType: ChartType.home),
+                    ),
                   ),
                 ),
               ),
@@ -106,34 +132,36 @@ class HomePageScreen extends StatelessWidget {
               ),
             ),
             _habitsList(context),
-            // Extra padding at the bottom so the FAB doesn't cover the list
             const SizedBox(height: 80),
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.task_alt),
-        label: const Text('Log Activity'),
-        onPressed: () async {
-          await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            useSafeArea: true,
-            builder: (ctx) {
-              // Grab the system padding to push the UI above the navigation bar
-              final bottomPadding = MediaQuery.of(ctx).padding.bottom;
+      floatingActionButton: Focus(
+        focusNode: TutorialManager.logActivityNode,
+        child: FloatingActionButton.extended(
+          icon: const Icon(Icons.task_alt),
+          label: const Text('Log Activity'),
+          onPressed: () async {
+            // THE NATIVE HANDSHAKE
+            if (TutorialManager.isTutorialActive.value) TutorialManager.nextStep();
 
-              return Padding(
-                padding: EdgeInsets.only(bottom: bottomPadding),
-                child: const RecordHabitInterfacePopUp(),
-              );
-            },
-          ).then((_) async {
-            if (!context.mounted) return;
-            await context.read<HabitRecordProvider>().loadAll();
-          });
-        },
+            await showModalBottomSheet(
+              context: context,
+              isScrollControlled: true, useSafeArea: true,
+              builder: (ctx) {
+                final bottomPadding = MediaQuery.of(ctx).padding.bottom;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: bottomPadding),
+                  child: const RecordHabitInterfacePopUp(),
+                );
+              },
+            ).then((_) async {
+              if (!context.mounted) return;
+              await context.read<HabitRecordProvider>().loadAll();
+            });
+          },
+        ),
       ),
     );
   }

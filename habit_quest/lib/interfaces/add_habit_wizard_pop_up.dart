@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
-
 import 'package:habit_quest/database/entities/habit.dart';
 import 'package:habit_quest/services/toast_service.dart';
 
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/services/tutorial_manager.dart';
 
 enum HabitType { start, stop }
 
-// --- Add Habit Wizard Pop-up (General [cite: 89]) ---
 class AddHabitWizardPopUp extends StatefulWidget {
-
   const AddHabitWizardPopUp({super.key});
   @override
   State<AddHabitWizardPopUp> createState() => _AddHabitWizardPopUpState();
 }
 
-
 class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
   int _currentDisplay = 1;
-  String _habitName = ''; // Placeholder for Display 2 text field input
-  HabitType _habitType = HabitType.start; // Placeholder for Display 1 choice
-  double _importanceRating = 3.0; // Placeholder for Display 3 scale [cite: 122]
+  String _habitName = '';
+  HabitType _habitType = HabitType.start;
+  double _importanceRating = 3.0;
+
+  // We create a local node as a fallback when the tutorial is off
+  final FocusNode _internalNode = FocusNode();
+
+  @override
+  void dispose() {
+    _internalNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _saveHabit(Habit newHabit) async {
     await context.read<HabitProvider>().addHabit(newHabit);
@@ -29,115 +35,167 @@ class _AddHabitWizardPopUpState extends State<AddHabitWizardPopUp> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // FIX: Only use the Tutorial's node if the tutorial is actually running.
+    // Otherwise, use our internal node so the UI doesn't "freeze".
+    final effectiveNode = TutorialManager.isTutorialActive.value
+        ? TutorialManager.wizardPanelNode
+        : _internalNode;
+
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // --- Display 1 content ---
-          if (_currentDisplay == 1) ...[
-            // Display 1 will display the prompt "Add A New Habit"[cite: 94].
-            const Text('Add A New Habit (Step 1/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            // Prompt the User to select whether they are creating a habit they wish to start or break[cite: 95].
-            const Text('Are you trying to START or BREAK this habit?'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ChoiceChip(
-                  label: const Text('START'), 
-                  selected: _habitType == HabitType.start, 
-                  onSelected: (b) => setState(() => _habitType = HabitType.start)
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 16,
+        right: 16,
+        top: 16,
+      ),
+      child: Focus(
+        focusNode: effectiveNode,
+        child: SingleChildScrollView( // FIX: Prevents "Cannot hit test a render box with no size"
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ── Step 1: Start or Break ──────────────────────────────────
+              if (_currentDisplay == 1) ...[
+                Text(
+                  'Add A New Habit (Step 1/3)',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(width: 10),
-                ChoiceChip(
-                  label: const Text('BREAK'),
-                  selected: _habitType == HabitType.stop,
-                  onSelected: (b) => setState(() => _habitType = HabitType.stop)
+                const SizedBox(height: 20),
+                const Text('Are you trying to START or BREAK this habit?'),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('START'),
+                      selected: _habitType == HabitType.start,
+                      onSelected: (_) =>
+                          setState(() => _habitType = HabitType.start),
+                    ),
+                    const SizedBox(width: 10),
+                    ChoiceChip(
+                      label: const Text('BREAK'),
+                      selected: _habitType == HabitType.stop,
+                      onSelected: (_) =>
+                          setState(() => _habitType = HabitType.stop),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
 
-          // --- Display 2 content ---
-          if (_currentDisplay == 2) ...[
-            // Display 2 will replace Display 1[cite: 104].
-            // Prompt the User for the name of the new habit[cite: 105].
-            const Text('Name Your Habit (Step 2/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            // Provide a text field for the User to enter the habit's name[cite: 107].
-            TextField(
-              decoration: const InputDecoration(labelText: 'Habit Name', border: OutlineInputBorder()),
-              onChanged: (val) => setState(() => _habitName = val),
-            ),
-          ],
+              // ── Step 2: Name ────────────────────────────────────────────
+              if (_currentDisplay == 2) ...[
+                Text(
+                  'Name Your Habit (Step 2/3)',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  autofocus: true, // Automatically pops keyboard for better UX
+                  decoration: const InputDecoration(
+                    labelText: 'Habit Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (val) => setState(() => _habitName = val),
+                ),
+              ],
 
-          // --- Display 3 content ---
-          if (_currentDisplay == 3) ...[
-            // Display 3 will display the new habit's name[cite: 120].
-            Text('Habit Importance: $_habitName (Step 3/3)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            // Prompt Users to select an importance rating... scale ranging from 1 to 5[cite: 121, 122].
-            Text('Importance Rating: ${_importanceRating.round()}'),
-            Slider(
-              value: _importanceRating,
-              min: 1,
-              max: 5,
-              divisions: 4,
-              label: _importanceRating.round().toString(),
-              onChanged: (val) => setState(() => _importanceRating = val),
-            ),
-            // Below the scale... provide an explanation for the numbers' corresponding importances[cite: 123].
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              // Explanations for 1-5[cite: 124, 125, 126, 127, 128, 129].
-              child: Text('1: Once in a while\n3: Most of the time\n5: Utmost importance', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
-            ),
-          ],
+              // ── Step 3: Importance ──────────────────────────────────────
+              if (_currentDisplay == 3) ...[
+                Text(
+                  'Habit Importance (Step 3/3)',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Text('Importance: ${_importanceRating.round()}',
+                    style: const TextStyle(fontSize: 16)),
+                Slider(
+                  value: _importanceRating,
+                  min: 1,
+                  max: 5,
+                  divisions: 4,
+                  label: _importanceRating.round().toString(),
+                  onChanged: (val) =>
+                      setState(() => _importanceRating = val),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    '1: Once in a while   ·   3: Most of the time   ·   5: Utmost importance',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 12,
+                      color: colorScheme.outline,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
 
-          const SizedBox(height: 20),
-          // --- Wizard Navigation Buttons ---
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // "Cancel" button behavior changes slightly per display, but generally closes the interface and returns to Manage Habits[cite: 97, 99, 108, 110, 130, 132, 133].
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
+              const SizedBox(height: 20),
+
+              // ── Actions ─────────────────────────────────────────────────
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Only advance tutorial if active
+                      if (TutorialManager.isTutorialActive.value) {
+                        TutorialManager.nextStep();
+                      }
+
+                      if (_currentDisplay < 3) {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        setState(() => _currentDisplay++);
+                        return;
+                      }
+
+                      final habitName = _habitName.trim();
+                      if (habitName.isEmpty) return;
+
+                      final newHabit = Habit.newHabit(
+                        habitName: habitName,
+                        importanceLevel: _habitType == HabitType.start
+                            ? _importanceRating.round()
+                            : -_importanceRating.round(),
+                        millisecondsSinceEpoch:
+                            DateTime.now().millisecondsSinceEpoch,
+                      );
+
+                      await _saveHabit(newHabit);
+
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        ToastService.showSuccess(
+                          '$habitName Saved with ${newHabit.importanceLevel} score',
+                        );
+                      }
+                    },
+                    child:
+                        Text(_currentDisplay < 3 ? 'Next' : 'Finish & Save'),
+                  ),
+                ],
               ),
-              // "Save" button behavior advances displays or finalizes[cite: 100, 114, 134].
-              ElevatedButton(
-                onPressed: () async {
-                  if (_currentDisplay < 3) {
-                    setState(() {
-                      _currentDisplay++;
-                    });
-                    return;
-                  }
-
-                  final habitName = _habitName.trim();
-                  if (habitName.isEmpty) {
-                    return;
-                  }
-
-                  final newHabit = Habit.newHabit(
-                    habitName: habitName,
-                    importanceLevel: _habitType == HabitType.start ? _importanceRating.round() : -_importanceRating.round(),
-                    millisecondsSinceEpoch: DateTime.now().millisecondsSinceEpoch,
-                  );
-                  await _saveHabit(newHabit);
-
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    ToastService.showSuccess('$habitName Saved with ${newHabit.importanceLevel} score');
-                  }
-                },
-                child: Text(_currentDisplay < 3 ? 'Next' : 'Finish & Save'),
-              ),
+              const SizedBox(height: 20),
             ],
           ),
-          const SizedBox(height: 20),
-        ],
+        ),
       ),
     );
   }
