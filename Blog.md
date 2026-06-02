@@ -222,3 +222,13 @@ We discussed a bug found in the `TUTORIAL` branch that needs to be addressed bef
 We also discussed our presentation for tomorrow and desided who would be in charge of presenting which slides.
 
 
+### 01-June-2026
+Team Meeting #16
+
+In Attendence: Shades, Miguel
+
+Meeting #15 was held to tackle some merge conflicts related to the TUTORIAL branch.
+
+This meeting we discussed the timeline for our remaining work, as well as divided up the work load.
+
+Regretable, due to work conflict-of-interest concerns, Luca has removed himself from this project. His work during the semester was excellent and we are sad to see him leave. But the work continues, and Shades will be picking up the front-end work.
