@@ -78,7 +78,7 @@ class HabitQuestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
 
-     Future<String> getBackgroundColor() async {
+    Future<String> getBackgroundColor() async {
       final prefs = await SharedPreferences.getInstance();
 
       return prefs.getString('backgroundString')
