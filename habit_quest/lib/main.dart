@@ -1,17 +1,4 @@
-/*
-Honor Statement
-
-Academic achievement is ordinarily evaluated based on work that a student produces independently. Infringement of this Code of Honor entails penalties ranging from reprimand to suspension, dismissal, or expulsion from the University.
-
-Your name on any exercise is regarded as assurance and certification that what you are submitting for that exercise is the result of your thoughts and study. Where collaboration is authorized, you should state very clearly which parts of any assignment were performed with collaboration and name your collaborators.
-
-In writing examinations and quizzes, you are expected and required to respond entirely based on your memory and capacity, without any assistance whatsoever except such as what is specifically authorized by the instructor.
-
-I certify that the work submitted with this assignment is mine and was generated in a manner consistent with this document, the course academic policy on the course website, and the UMass Lowell academic code.
-
-Date: 02-April-2026
-Names: Shades Meyers, Luca Azevedo, Miguel Echeverry, Marvens Luc
-*/
+// By: Shades Meyers, Luca Azevedo, Miguel Echeverry, Marvens Luc
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +26,10 @@ import 'package:habit_quest/screens/extended_graph_screen.dart';
 import 'screens/manage_habits_screen.dart';
 import 'package:habit_quest/screens/habit_history_screen.dart';
 import 'package:habit_quest/screens/settings_screen.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:string_to_color/string_to_color.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,16 +78,25 @@ class HabitQuestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
 
+     Future<String> getBackgroundColor() async {
+      final prefs = await SharedPreferences.getInstance();
+
+      return prefs.getString('backgroundString')
+      ?? Colors.indigo.toString();
+    }
+
+    String background = getBackgroundColor().toString();
+
     return MaterialApp(
       title: 'Habit Quest',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigo, brightness: Brightness.light),
+            seedColor: ColorUtils.stringToColor(background), brightness: Brightness.light),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigo, brightness: Brightness.dark),
+            seedColor: ColorUtils.stringToColor(background), brightness: Brightness.dark),
         useMaterial3: true,
       ),
       themeMode: themeProvider.flutterThemeMode,
