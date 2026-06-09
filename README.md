@@ -10,11 +10,11 @@ Habits the user wishes to break will be assigned a negative score based on how i
 This program is a product of UMass Lowell's Mobile App. Programming II, Spring 2026 class.
 
 The team:
-* Meyers, Shades - Project Manager & Design Quality Assurance Lead
-* Azevedo, Luca - Front-End Dev.
+* Meyers, Shades - Front-End Dev. (starting April 30th) & Project Manager & Design Quality Assurance Lead
+* Azevedo, Luca - Front-End Dev. (through April 30th)
 * Echeverry, Miguel - Back-End Dev.
 * Luc, Marvens - Assistant Dev.
 
 
 # Blog
-Our on-going blog: [Blog](https://github.com/UML-COMP4630-LIN/project-coderepository-habitquest/blob/main/Blog.md)
+Our on-going blog: [Blog](https://github.com/Shades4355/Habit_Quest/blob/main/Blog.md)
