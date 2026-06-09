@@ -78,10 +78,10 @@ class _NotificationInterfacePopUpState extends State<NotificationInterfacePopUp>
     // Spread notifications evenly across the day
     // 1 reminder = 8pm, 2 = 8am + 8pm, 3 = 8am + 2pm + 8pm
     final List<int> hours = switch (count) {
-      1 => [20],
-      2 => [8, 20],
-      3 => [8, 14, 20],
-      _ => [20]
+      1 => [11],
+      2 => [11, 20],
+      3 => [8, 11, 20],
+      _ => [11]
     };
 
     for (int i = 0; i < count; i++) {
