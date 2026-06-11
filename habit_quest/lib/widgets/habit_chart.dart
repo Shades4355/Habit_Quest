@@ -43,10 +43,13 @@ class ScoreChart extends StatelessWidget {
 
     // Calculate padding based on the range of data
     final span = (maxY - minY).abs();
-    final padding = (span * percentage);
+    final padding = (span * percentage).ceil();
 
-    minY -= padding.ceil();
-    maxY += padding.ceil();
+    // round the padding to the nearest 5 for cleaner axis labels
+    double roundToNearest5th(double value) => ((value / 5).round() * 5).toDouble();
+
+    minY = roundToNearest5th(minY - padding);
+    maxY = roundToNearest5th(maxY + padding);
 
     return [minY, maxY];
   }
