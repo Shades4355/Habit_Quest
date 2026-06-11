@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
+
+import 'package:string_to_color/string_to_color.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/edit_record_interface_pop_up.dart';
-import 'package:provider/provider.dart';
+
 import 'package:habit_quest/database/entities/habit_record.dart';
+
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
+
 import 'package:habit_quest/services/tutorial_manager.dart';
+
 import 'package:habit_quest/widgets/delete_button.dart';
+
+// import 'package:habit_quest/get_positive_color.dart';
+// import 'package:habit_quest/get_negative_color.dart';
 
 
 class HabitHistoryScreen extends StatefulWidget {
@@ -29,27 +42,17 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
       context.read<HabitRecordProvider>().loadAll();
     });
   }
+  Future<String> getPositiveColor() async {
+    final prefs = await SharedPreferences.getInstance();
 
-  // String _formatDate(DateTime date) {
-  //   final now = DateTime.now();
-  //   if (date.year == now.year &&
-  //       date.month == now.month &&
-  //       date.day == now.day) {
-  //     return 'Today';
-  //   }
-  //   final yesterday = now.subtract(const Duration(days: 1));
-  //   if (date.year == yesterday.year &&
-  //       date.month == yesterday.month &&
-  //       date.day == yesterday.day) {
-  //     return 'Yesterday';
-  //   }
-  //   return '${_monthNames[date.month]} ${date.day}, ${date.year}';
-  // }
+    return prefs.getString('positiveColorString') ?? Colors.green.toString();
+  }
 
-  // String _formatDate(DateTime date) =>
-  //     '${date.month.toString().padLeft(2, '0')}-'
-  //     '${date.day.toString().padLeft(2, '0')}-'
-  //     '${date.year}';
+  Future<String> getNegativeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString('negativeColorString') ?? Colors.red.toString();
+  }
 
   Future<void> _editRecord(HabitRecord record) async {
     final result = await showDialog<HabitRecord?>(
@@ -80,11 +83,14 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
   }
 
   Widget _habitRecordTile(BuildContext context, HabitRecord record) {
-    // final colorScheme = Theme.of(context).colorScheme;
-    final isPositive = record.scoreDelta >= 0;
-    final scoreColor = isPositive ? Colors.green : Colors.red;
+    String positiveColor = getPositiveColor().toString();
+    String negativeColor = getNegativeColor().toString();
+
+    final isPositive = record.scoreDelta > 0;
+    final scoreColor = isPositive ? ColorUtils.stringToColor(positiveColor) : ColorUtils.stringToColor(negativeColor);
+
     // final scoreLabel =
-        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} pts';
+    //     '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} pts';
 
     return ListTile(
       dense: true,
@@ -164,11 +170,14 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
               records.fold<int>(0, (sum, r) => sum + r.scoreDelta);
           final hasRecords = records.isNotEmpty;
 
-          final scoreColor = totalScore > 0
-              ? Colors.green.shade600
-              : totalScore < 0
-                  ? Colors.red.shade600
-                  : colorScheme.outline;
+          String positiveColor = getPositiveColor().toString();
+          String negativeColor = getNegativeColor().toString();
+
+          // final scoreColor = totalScore > 0
+          //     ? Colors.green.shade600
+          //     : totalScore < 0
+          //         ? Colors.red.shade600
+          //         : colorScheme.outline;
 
           Widget expansionTile = Theme(
             // Remove the default dividers inside ExpansionTile
@@ -234,8 +243,8 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
                         '${totalScore > 0 ? '+' : ''}$totalScore',
                         style: TextStyle(
                           color: (totalScore > 0
-                                    ? Colors.green
-                                    : Colors.red),
+                                    ? ColorUtils.stringToColor(positiveColor)
+                                    : ColorUtils.stringToColor(negativeColor)),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
