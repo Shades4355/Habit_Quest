@@ -23,9 +23,32 @@ class ScoreChart extends StatelessWidget {
     );
   }
 
+  List<double> _axisScalingFormula(List<FlSpot> data) {
+    final percentage = 0.3;
+    if (data.isEmpty) {
+      return [-20, 20];
+    }
+
+    double minY = data.reduce((a, b) => a.y < b.y ? a : b).y;
+    double maxY = data.reduce((a, b) => a.y > b.y ? a : b).y;
+
+    if (minY > -20 && maxY < 20) {
+      return [-20, 20];
+    }
+
+    final span = (maxY - minY).abs();
+    final padding = (span * percentage);
+
+    minY -= padding.ceil();
+    maxY += padding.ceil();
+
+    return [minY, maxY];
+  }
+
   @override
   Widget build(BuildContext context) {
     final spots = _getDataPoints(context);
+    final yScale = _axisScalingFormula(spots);
     final provider = context.watch<HabitRecordProvider>();
 
     if (spots.isEmpty) {
@@ -36,8 +59,8 @@ class ScoreChart extends StatelessWidget {
       LineChartData(
         minX: 0,
         maxX: chartType == ChartType.home ? 6 : 29,
-        minY: -20,
-        maxY: 20,
+        minY: yScale.first,
+        maxY: yScale.last,
         gridData: const FlGridData(
           show: true,
           verticalInterval: 1,
