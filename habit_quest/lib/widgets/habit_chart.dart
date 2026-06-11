@@ -23,12 +23,17 @@ class ScoreChart extends StatelessWidget {
     );
   }
 
+  // Formula for dynamic axis scaling
   List<double> _axisScalingFormula(List<FlSpot> data) {
+    // percent padding
     final percentage = 0.3;
+
+    // Default range [-20, 20]
     if (data.isEmpty) {
       return [-20, 20];
     }
 
+    // min and max y values
     double minY = data.reduce((a, b) => a.y < b.y ? a : b).y;
     double maxY = data.reduce((a, b) => a.y > b.y ? a : b).y;
 
@@ -36,6 +41,7 @@ class ScoreChart extends StatelessWidget {
       return [-20, 20];
     }
 
+    // Calculate padding based on the range of data
     final span = (maxY - minY).abs();
     final padding = (span * percentage);
 
