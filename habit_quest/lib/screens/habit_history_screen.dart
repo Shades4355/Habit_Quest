@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 
 import 'package:string_to_color/string_to_color.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/edit_record_interface_pop_up.dart';
 
@@ -18,8 +16,8 @@ import 'package:habit_quest/services/tutorial_manager.dart';
 
 import 'package:habit_quest/widgets/delete_button.dart';
 
-// import 'package:habit_quest/get_positive_color.dart';
-// import 'package:habit_quest/get_negative_color.dart';
+import 'package:habit_quest/get_positive_color.dart';
+import 'package:habit_quest/get_negative_color.dart';
 
 
 class HabitHistoryScreen extends StatefulWidget {
@@ -41,17 +39,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HabitRecordProvider>().loadAll();
     });
-  }
-  Future<String> getPositiveColor() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString('positiveColorString') ?? Colors.green.toString();
-  }
-
-  Future<String> getNegativeColor() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString('negativeColorString') ?? Colors.red.toString();
   }
 
   Future<void> _editRecord(HabitRecord record) async {
@@ -82,15 +69,12 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     );
   }
 
+  Color positiveColor = ColorUtils.stringToColor(getPositiveColor().toString());
+  Color negativeColor = ColorUtils.stringToColor(getNegativeColor().toString());
+
   Widget _habitRecordTile(BuildContext context, HabitRecord record) {
-    String positiveColor = getPositiveColor().toString();
-    String negativeColor = getNegativeColor().toString();
-
     final isPositive = record.scoreDelta > 0;
-    final scoreColor = isPositive ? ColorUtils.stringToColor(positiveColor) : ColorUtils.stringToColor(negativeColor);
-
-    // final scoreLabel =
-    //     '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} pts';
+    final scoreColor = isPositive ? positiveColor : negativeColor;
 
     return ListTile(
       dense: true,
@@ -107,20 +91,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
         record.habitName.isEmpty ? 'Unknown Habit' : record.habitName,
         style: const TextStyle(fontSize: 14),
       ),
-      // trailing: Container(
-      //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      //   decoration: BoxDecoration(
-      //     color: (isPositive ? Colors.green : Colors.red).withOpacity(0.12),
-      //     borderRadius: BorderRadius.circular(20),
-      //   ),
-      //   child: Text(
-      //     scoreLabel,
-      //     style: TextStyle(
-      //       color: scoreColor,
-      //       fontWeight: FontWeight.w600,
-      //       fontSize: 12,
-      //     ),
-      //   ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -169,15 +139,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
           final totalScore =
               records.fold<int>(0, (sum, r) => sum + r.scoreDelta);
           final hasRecords = records.isNotEmpty;
-
-          String positiveColor = getPositiveColor().toString();
-          String negativeColor = getNegativeColor().toString();
-
-          // final scoreColor = totalScore > 0
-          //     ? Colors.green.shade600
-          //     : totalScore < 0
-          //         ? Colors.red.shade600
-          //         : colorScheme.outline;
 
           Widget expansionTile = Theme(
             // Remove the default dividers inside ExpansionTile
@@ -243,8 +204,8 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
                         '${totalScore > 0 ? '+' : ''}$totalScore',
                         style: TextStyle(
                           color: (totalScore > 0
-                                    ? ColorUtils.stringToColor(positiveColor)
-                                    : ColorUtils.stringToColor(negativeColor)),
+                                    ? positiveColor
+                                    : negativeColor),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
