@@ -195,11 +195,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
-                      // decoration: BoxDecoration(
-                      //   color:
-                      //       (totalScore > 0 ? Colors.green : Colors.red),
-                      //   borderRadius: BorderRadius.circular(20),
-                      // ),
                       child: Text(
                         '${totalScore > 0 ? '+' : ''}$totalScore',
                         style: TextStyle(
