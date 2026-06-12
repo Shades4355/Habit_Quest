@@ -7,6 +7,7 @@ import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
 import 'package:habit_quest/widgets/delete_button.dart';
+import 'package:habit_quest/widgets/date_picker.dart';
 
 
 class HabitHistoryScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class HabitHistoryScreen extends StatefulWidget {
 }
 
 class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
+  DateTime _dateSelected = DateTime.now();
   static const _monthNames = [
     '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
@@ -29,27 +31,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
       context.read<HabitRecordProvider>().loadAll();
     });
   }
-
-  // String _formatDate(DateTime date) {
-  //   final now = DateTime.now();
-  //   if (date.year == now.year &&
-  //       date.month == now.month &&
-  //       date.day == now.day) {
-  //     return 'Today';
-  //   }
-  //   final yesterday = now.subtract(const Duration(days: 1));
-  //   if (date.year == yesterday.year &&
-  //       date.month == yesterday.month &&
-  //       date.day == yesterday.day) {
-  //     return 'Yesterday';
-  //   }
-  //   return '${_monthNames[date.month]} ${date.day}, ${date.year}';
-  // }
-
-  // String _formatDate(DateTime date) =>
-  //     '${date.month.toString().padLeft(2, '0')}-'
-  //     '${date.day.toString().padLeft(2, '0')}-'
-  //     '${date.year}';
 
   Future<void> _editRecord(HabitRecord record) async {
     final result = await showDialog<HabitRecord?>(
@@ -140,7 +121,7 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
 
     final days = List.generate(
       30,
-      (i) => DateTime.now().subtract(Duration(days: i)),
+      (i) => _dateSelected.subtract(Duration(days: i)),
     );
 
     return Scaffold(
@@ -149,138 +130,148 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
         title: const Text('Habit History'),
       ),
       body: habitRecordProvider.isLoading
-          ? Focus(
-              focusNode: TutorialManager.historyItemNode,
-              child: const Center(child: CircularProgressIndicator()),
-            )
-          : ListView.separated(
-        itemCount: days.length,
-        separatorBuilder: (context, index) =>
-            Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
-        itemBuilder: (ctx, dayIndex) {
-          final date = days[dayIndex];
-          final records = habitRecordProvider.getRecordsForDaySync(date);
-          final totalScore =
-              records.fold<int>(0, (sum, r) => sum + r.scoreDelta);
-          final hasRecords = records.isNotEmpty;
+      ? Focus(
+          focusNode: TutorialManager.historyItemNode,
+          child: const Center(child: CircularProgressIndicator()),
+        )
+      :
+      Column(
+        children: [
+          DatePicker(
+            onDateChanged: (date) => setState(() => _dateSelected = date),
+          ),
+          Expanded(
+            child :ListView.separated(
+              itemCount: days.length,
+              separatorBuilder: (context, index) =>
+                  Divider(height: 1, thickness: 1, color: colorScheme.outlineVariant),
+              itemBuilder: (ctx, dayIndex) {
+                final date = days[dayIndex];
+                final records = habitRecordProvider.getRecordsForDaySync(date);
+                final totalScore =
+                    records.fold<int>(0, (sum, r) => sum + r.scoreDelta);
+                final hasRecords = records.isNotEmpty;
 
-          final scoreColor = totalScore > 0
-              ? Colors.green.shade600
-              : totalScore < 0
-                  ? Colors.red.shade600
-                  : colorScheme.outline;
+                final scoreColor = totalScore > 0
+                    ? Colors.green.shade600
+                    : totalScore < 0
+                        ? Colors.red.shade600
+                        : colorScheme.outline;
 
-          Widget expansionTile = Theme(
-            // Remove the default dividers inside ExpansionTile
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              backgroundColor:
-                  colorScheme.surfaceContainerHighest,
-              collapsedBackgroundColor:
-                  colorScheme.surfaceContainerHigh,
-              tilePadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-              title: Row(
-                children: [
-                  // Date column
-                  SizedBox(
-                    width: 48,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                Widget expansionTile = Theme(
+                  // Remove the default dividers inside ExpansionTile
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    backgroundColor:
+                        colorScheme.surfaceContainerHighest,
+                    collapsedBackgroundColor:
+                        colorScheme.surfaceContainerHigh,
+                    tilePadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                    title: Row(
                       children: [
-                        Text(
-                          '${date.day}',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                            height: 1.1,
+                        // Date column
+                        SizedBox(
+                          width: 48,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${date.day}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface,
+                                  height: 1.1,
+                                ),
+                              ),
+                              Text(
+                                _monthNames[date.month].toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: colorScheme.outline,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          _monthNames[date.month].toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: colorScheme.outline,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
+                        const SizedBox(width: 12),
+                        // Label
+                        Expanded(
+                          child: Text(
+                            "",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
+                        // Score badge
+                        if (hasRecords)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            // decoration: BoxDecoration(
+                            //   color:
+                            //       (totalScore > 0 ? Colors.green : Colors.red),
+                            //   borderRadius: BorderRadius.circular(20),
+                            // ),
+                            child: Text(
+                              '${totalScore > 0 ? '+' : ''}$totalScore',
+                              style: TextStyle(
+                                color: (totalScore > 0
+                                          ? Colors.green
+                                          : Colors.red),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          )
+                        else
+                          Text(
+                            'No records',
+                            style: TextStyle(
+                                fontSize: 12, color: colorScheme.outline),
+                          ),
                       ],
                     ),
+                    children: hasRecords
+                        ? records.map((record) {
+                            // ignore: unused_local_variable
+                            final habit = habitProvider.habits
+                                .where((h) => h.id == record.habitId)
+                                .firstOrNull;
+                            return _habitRecordTile(context, record);
+                          }).toList()
+                        : [
+                            ListTile(
+                              dense: true,
+                              title: Text(
+                                'No habits completed this day.',
+                                style: TextStyle(
+                                    color: colorScheme.outline, fontSize: 13),
+                              ),
+                            ),
+                          ],
                   ),
-                  const SizedBox(width: 12),
-                  // Label
-                  Expanded(
-                    child: Text(
-                      "",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                  // Score badge
-                  if (hasRecords)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      // decoration: BoxDecoration(
-                      //   color:
-                      //       (totalScore > 0 ? Colors.green : Colors.red),
-                      //   borderRadius: BorderRadius.circular(20),
-                      // ),
-                      child: Text(
-                        '${totalScore > 0 ? '+' : ''}$totalScore',
-                        style: TextStyle(
-                          color: (totalScore > 0
-                                    ? Colors.green
-                                    : Colors.red),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    )
-                  else
-                    Text(
-                      'No records',
-                      style: TextStyle(
-                          fontSize: 12, color: colorScheme.outline),
-                    ),
-                ],
-              ),
-              children: hasRecords
-                  ? records.map((record) {
-                      // ignore: unused_local_variable
-                      final habit = habitProvider.habits
-                          .where((h) => h.id == record.habitId)
-                          .firstOrNull;
-                      return _habitRecordTile(context, record);
-                    }).toList()
-                  : [
-                      ListTile(
-                        dense: true,
-                        title: Text(
-                          'No habits completed this day.',
-                          style: TextStyle(
-                              color: colorScheme.outline, fontSize: 13),
-                        ),
-                      ),
-                    ],
+                );
+
+                // ── Tutorial spotlight on today's entry (index 0) ─────────────
+                if (dayIndex == 0) {
+                  return Focus(
+                    focusNode: TutorialManager.historyItemNode,
+                    child: expansionTile,
+                  );
+                }
+
+                return expansionTile;
+              },
             ),
-          );
-
-          // ── Tutorial spotlight on today's entry (index 0) ─────────────
-          if (dayIndex == 0) {
-            return Focus(
-              focusNode: TutorialManager.historyItemNode,
-              child: expansionTile,
-            );
-          }
-
-          return expansionTile;
-        },
-      ),
+          )
+        ],
+      )
     );
   }
 }
