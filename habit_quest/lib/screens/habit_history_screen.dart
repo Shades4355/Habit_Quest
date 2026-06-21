@@ -11,13 +11,11 @@ import 'package:habit_quest/database/entities/habit_record.dart';
 
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/providers/color_theme_provider.dart';
 
 import 'package:habit_quest/services/tutorial_manager.dart';
 
 import 'package:habit_quest/widgets/delete_button.dart';
-
-import 'package:habit_quest/get_positive_color.dart';
-import 'package:habit_quest/get_negative_color.dart';
 
 
 class HabitHistoryScreen extends StatefulWidget {
@@ -69,10 +67,11 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     );
   }
 
-  Color positiveColor = ColorUtils.stringToColor(getPositiveColor().toString());
-  Color negativeColor = ColorUtils.stringToColor(getNegativeColor().toString());
-
   Widget _habitRecordTile(BuildContext context, HabitRecord record) {
+    List<String> colors = context.watch<ColorThemeProvider>().colorThemes;
+    Color positiveColor = ColorUtils.stringToColor(colors[0]);
+    Color negativeColor = ColorUtils.stringToColor(colors[1]);
+
     final isPositive = record.scoreDelta > 0;
     final scoreColor = isPositive ? positiveColor : negativeColor;
 
@@ -113,6 +112,10 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     final habitRecordProvider = context.watch<HabitRecordProvider>();
     final habitProvider = context.watch<HabitProvider>();
     final colorScheme = Theme.of(context).colorScheme;
+
+    List<String> colors = context.watch<ColorThemeProvider>().colorThemes;
+    Color positiveColor = ColorUtils.stringToColor(colors[0]);
+    Color negativeColor = ColorUtils.stringToColor(colors[1]);
 
     final days = List.generate(
       30,

@@ -17,6 +17,7 @@ import 'package:onboarding_overlay/onboarding_overlay.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
 
 import 'package:habit_quest/providers/theme_provider.dart';
+import 'package:habit_quest/providers/color_theme_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,9 +27,6 @@ import 'package:habit_quest/screens/extended_graph_screen.dart';
 import 'screens/manage_habits_screen.dart';
 import 'package:habit_quest/screens/habit_history_screen.dart';
 import 'package:habit_quest/screens/settings_screen.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:string_to_color/string_to_color.dart';
 
 
 void main() async {
@@ -63,6 +61,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => ColorThemeProvider()),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
         ChangeNotifierProvider(create: (_) => HabitRecordProvider()),
       ],
@@ -78,25 +77,16 @@ class HabitQuestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
 
-    Future<String> getBackgroundColor() async {
-      final prefs = await SharedPreferences.getInstance();
-
-      return prefs.getString('backgroundString')
-      ?? Colors.indigo.toString();
-    }
-
-    String background = getBackgroundColor().toString();
-
     return MaterialApp(
       title: 'Habit Quest',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: ColorUtils.stringToColor(background), brightness: Brightness.light),
+            seedColor: Colors.indigo, brightness: Brightness.light),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: ColorUtils.stringToColor(background), brightness: Brightness.dark),
+            seedColor: Colors.indigo, brightness: Brightness.dark),
         useMaterial3: true,
       ),
       themeMode: themeProvider.flutterThemeMode,
