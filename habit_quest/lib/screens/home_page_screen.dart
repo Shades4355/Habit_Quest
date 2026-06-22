@@ -9,6 +9,8 @@ import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/widgets/habit_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
+import 'package:habit_quest/providers/color_theme_provider.dart';
+
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
@@ -38,6 +40,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
     final habitRecordProvider = context.watch<HabitRecordProvider>();
     final habitId = currentHabit.id;
     if (habitId == null) return const SizedBox.shrink();
+    int posColorInt = context.watch<ColorThemeProvider>().colorThemes[0];
+    int negColorInt = context.watch<ColorThemeProvider>().colorThemes[1];
 
     final isCompleted = habitRecordProvider.completedHabit[habitId] ?? false;
     if (isCompleted) return const SizedBox.shrink();
@@ -52,7 +56,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
       trailing: Text(
         '${currentHabit.importanceLevel}',
         style: TextStyle(
-          color: currentHabit.importanceLevel > 0 ? Colors.green : Colors.red,
+          color: currentHabit.importanceLevel > 0 ? Color(posColorInt) : Color(negColorInt),
           fontWeight: FontWeight.bold,
         ),
       ),
