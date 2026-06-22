@@ -16,8 +16,8 @@ class ColorThemeProvider extends ChangeNotifier {
 
   Future<void> _loadColorPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final int posColor = prefs.getInt('positiveColorString') ?? Colors.green.toARGB32();
-    final int negColor = prefs.getInt('negativeColorString') ?? Colors.red.toARGB32();
+    final int posColor = prefs.getInt('positiveColorInt') ?? Colors.green.toARGB32();
+    final int negColor = prefs.getInt('negativeColorInt') ?? Colors.red.toARGB32();
 
     List<int> _colorThemes = [posColor, negColor];
     notifyListeners();
@@ -30,7 +30,7 @@ class ColorThemeProvider extends ChangeNotifier {
     notifyListeners();
 
     final pref = await SharedPreferences.getInstance();
-    await pref.setInt('positiveColorString', posColor);
-    await pref.setInt('negativeColorString', negColor);
+    await pref.setInt('positiveColorInt', posColor);
+    await pref.setInt('negativeColorInt', negColor);
   }
 }
