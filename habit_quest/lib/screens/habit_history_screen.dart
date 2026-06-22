@@ -68,9 +68,9 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
   }
 
   Widget _habitRecordTile(BuildContext context, HabitRecord record) {
-    List<String> colors = context.watch<ColorThemeProvider>().colorThemes;
-    Color positiveColor = ColorUtils.stringToColor(colors[0]);
-    Color negativeColor = ColorUtils.stringToColor(colors[1]);
+    List<int> colors = context.watch<ColorThemeProvider>().colorThemes;
+    Color positiveColor = Color(colors[0]);
+    Color negativeColor = Color(colors[1]);
 
     final isPositive = record.scoreDelta > 0;
     final scoreColor = isPositive ? positiveColor : negativeColor;
@@ -113,9 +113,9 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     final habitProvider = context.watch<HabitProvider>();
     final colorScheme = Theme.of(context).colorScheme;
 
-    List<String> colors = context.watch<ColorThemeProvider>().colorThemes;
-    Color positiveColor = ColorUtils.stringToColor(colors[0]);
-    Color negativeColor = ColorUtils.stringToColor(colors[1]);
+    List<int> colors = context.watch<ColorThemeProvider>().colorThemes;
+    Color positiveColor = Color(colors[0]);
+    Color negativeColor = Color(colors[1]);
 
     final days = List.generate(
       30,

@@ -29,7 +29,7 @@ class ColorThemePicker extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: () {
                     context.read<ColorThemeProvider>().setColors([
-                      Colors.blue.toString(),
+                      Colors.blue.toARGB32(),
                       context.read<ColorThemeProvider>().colorThemes[1],
                     ]);
                   },
@@ -40,7 +40,7 @@ class ColorThemePicker extends StatelessWidget {
                   onPressed: () {
                     context.read<ColorThemeProvider>().setColors([
                       context.read<ColorThemeProvider>().colorThemes[0],
-                      Colors.yellow.toString(),
+                      Colors.yellow.toARGB32(),
                     ]);
                   },
                   icon: const Icon(Icons.circle, color: Colors.yellow),
