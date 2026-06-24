@@ -8,7 +8,8 @@ import 'package:habit_quest/services/export_service.dart';
 import 'package:habit_quest/services/toast_service.dart';
 // Interfaces and Widgets
 import 'package:habit_quest/widgets/theme_picker.dart';
-import 'package:habit_quest/widgets/color_theme_picker.dart';
+import 'package:habit_quest/widgets/pos_color_theme_picker.dart';
+import 'package:habit_quest/widgets/neg_color_theme_picker.dart';
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/notification_interface_pop_up.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
@@ -118,7 +119,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(),
           const ThemePicker(),
           const Divider(),
-          const ColorThemePicker(),
+          const PosColorThemePicker(),
+          const Divider(),
+          const NegColorThemePicker(),
           const Divider(),
 
           // "Credits" option.
