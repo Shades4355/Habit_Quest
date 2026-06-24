@@ -19,7 +19,7 @@ class ColorThemeProvider extends ChangeNotifier {
     final int posColor = prefs.getInt('positiveColorInt') ?? Colors.green.toARGB32();
     final int negColor = prefs.getInt('negativeColorInt') ?? Colors.red.toARGB32();
 
-    List<int> _colorThemes = [posColor, negColor];
+    _colorThemes = [posColor, negColor];
     notifyListeners();
   }
   Future<void> setColors(List<int> colorList) async {
