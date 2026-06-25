@@ -21,17 +21,17 @@ class NegColorThemePicker extends StatelessWidget {
           const SizedBox(height: 12),
           SegmentedButton<Color>(
             expandedInsets: EdgeInsets.zero, // fills full width
-            segments: const [
+            segments: [
                 ButtonSegment(
-                  value: Colors.red,
+                  value: Color(Colors.red.toARGB32()),
                   label: Text('Red'),
                   icon: Icon(Icons.circle, color: Colors.red),),
                 ButtonSegment(
-                  value: Colors.yellow,
+                  value: Color(Colors.yellow.toARGB32()),
                   label: Text('Yellow'),
                   icon: Icon(Icons.circle, color: Colors.yellow),),
                 ButtonSegment(
-                  value: Colors.purple,
+                  value: Color(Colors.purple.toARGB32()),
                   label: Text('Purple'),
                   icon: Icon(Icons.circle, color: Colors.purple),),
             ],

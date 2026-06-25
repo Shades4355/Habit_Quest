@@ -21,17 +21,17 @@ class PosColorThemePicker extends StatelessWidget {
           const SizedBox(height: 12),
           SegmentedButton<Color>(
             expandedInsets: EdgeInsets.zero, // fills full width
-            segments: const [
+            segments: [
                 ButtonSegment(
-                  value: Colors.green,
+                  value: Color(Colors.green.toARGB32()),
                   label: Text('Green'),
                   icon: Icon(Icons.circle, color: Colors.green),),
                 ButtonSegment(
-                  value: Colors.blue,
+                  value: Color(Colors.blue.toARGB32()),
                   label: Text('Blue'),
                   icon: Icon(Icons.circle, color: Colors.blue),),
                 ButtonSegment(
-                  value: Colors.teal,
+                  value: Color(Colors.teal.toARGB32()),
                   label: Text('Teal'),
                   icon: Icon(Icons.circle, color: Colors.teal),),
             ],
