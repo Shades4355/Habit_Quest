@@ -35,8 +35,8 @@ workflows:
         script: |
           cd ..
 
-          git config user.name "Shades4355"
-          git config user.email "Shades4355@gmail.com"
+          git config user.name "Codemagic Bot"
+          git config user.email "codemagic-bot@example.com"
 
           git add runnables/
           git commit -m "Update latest iOS runnable from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
@@ -74,8 +74,8 @@ workflows:
         script: |
           cd ..
 
-          git config user.name "Shades4355"
-          git config user.email "Shades4355@gmail.com"
+          git config user.name "Codemagic Bot"
+          git config user.email "codemagic-bot@example.com"
 
           git add runnables/
           git commit -m "Update latest Android runnable from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
@@ -130,8 +130,8 @@ workflows:
         script: |
           cd ..
 
-          git config user.name "Shades4355"
-          git config user.email "Shades4355@gmail.com"
+          git config user.name "Codemagic Bot"
+          git config user.email "codemagic-bot@example.com"
 
           git add runnables/
           git commit -m "Update latest app runnables from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
