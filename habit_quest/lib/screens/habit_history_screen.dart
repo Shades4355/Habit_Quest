@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
+
 import 'package:habit_quest/interfaces/app_drawer.dart';
 import 'package:habit_quest/interfaces/edit_record_interface_pop_up.dart';
-import 'package:provider/provider.dart';
+
 import 'package:habit_quest/database/entities/habit_record.dart';
+
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
+import 'package:habit_quest/providers/color_theme_provider.dart';
+
 import 'package:habit_quest/services/tutorial_manager.dart';
+
 import 'package:habit_quest/widgets/delete_button.dart';
 
 
@@ -29,27 +36,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
       context.read<HabitRecordProvider>().loadAll();
     });
   }
-
-  // String _formatDate(DateTime date) {
-  //   final now = DateTime.now();
-  //   if (date.year == now.year &&
-  //       date.month == now.month &&
-  //       date.day == now.day) {
-  //     return 'Today';
-  //   }
-  //   final yesterday = now.subtract(const Duration(days: 1));
-  //   if (date.year == yesterday.year &&
-  //       date.month == yesterday.month &&
-  //       date.day == yesterday.day) {
-  //     return 'Yesterday';
-  //   }
-  //   return '${_monthNames[date.month]} ${date.day}, ${date.year}';
-  // }
-
-  // String _formatDate(DateTime date) =>
-  //     '${date.month.toString().padLeft(2, '0')}-'
-  //     '${date.day.toString().padLeft(2, '0')}-'
-  //     '${date.year}';
 
   Future<void> _editRecord(HabitRecord record) async {
     final result = await showDialog<HabitRecord?>(
@@ -80,11 +66,12 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
   }
 
   Widget _habitRecordTile(BuildContext context, HabitRecord record) {
-    // final colorScheme = Theme.of(context).colorScheme;
-    final isPositive = record.scoreDelta >= 0;
-    final scoreColor = isPositive ? Colors.green : Colors.red;
-    // final scoreLabel =
-        '${record.scoreDelta > 0 ? '+' : ''}${record.scoreDelta} pts';
+    List<int> colors = context.watch<ColorThemeProvider>().colorThemes;
+    Color positiveColor = Color(colors[0]);
+    Color negativeColor = Color(colors[1]);
+
+    final isPositive = record.scoreDelta > 0;
+    final scoreColor = isPositive ? positiveColor : negativeColor;
 
     return ListTile(
       dense: true,
@@ -101,20 +88,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
         record.habitName.isEmpty ? 'Unknown Habit' : record.habitName,
         style: const TextStyle(fontSize: 14),
       ),
-      // trailing: Container(
-      //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      //   decoration: BoxDecoration(
-      //     color: (isPositive ? Colors.green : Colors.red).withOpacity(0.12),
-      //     borderRadius: BorderRadius.circular(20),
-      //   ),
-      //   child: Text(
-      //     scoreLabel,
-      //     style: TextStyle(
-      //       color: scoreColor,
-      //       fontWeight: FontWeight.w600,
-      //       fontSize: 12,
-      //     ),
-      //   ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -137,6 +110,10 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
     final habitRecordProvider = context.watch<HabitRecordProvider>();
     final habitProvider = context.watch<HabitProvider>();
     final colorScheme = Theme.of(context).colorScheme;
+
+    List<int> colors = context.watch<ColorThemeProvider>().colorThemes;
+    Color positiveColor = Color(colors[0]);
+    Color negativeColor = Color(colors[1]);
 
     final days = List.generate(
       30,
@@ -163,12 +140,6 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
           final totalScore =
               records.fold<int>(0, (sum, r) => sum + r.scoreDelta);
           final hasRecords = records.isNotEmpty;
-
-          final scoreColor = totalScore > 0
-              ? Colors.green.shade600
-              : totalScore < 0
-                  ? Colors.red.shade600
-                  : colorScheme.outline;
 
           Widget expansionTile = Theme(
             // Remove the default dividers inside ExpansionTile
@@ -225,17 +196,12 @@ class _HabitHistoryScreenState extends State<HabitHistoryScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
-                      // decoration: BoxDecoration(
-                      //   color:
-                      //       (totalScore > 0 ? Colors.green : Colors.red),
-                      //   borderRadius: BorderRadius.circular(20),
-                      // ),
                       child: Text(
                         '${totalScore > 0 ? '+' : ''}$totalScore',
                         style: TextStyle(
                           color: (totalScore > 0
-                                    ? Colors.green
-                                    : Colors.red),
+                                    ? positiveColor
+                                    : negativeColor),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),

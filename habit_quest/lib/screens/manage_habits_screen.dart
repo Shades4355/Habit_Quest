@@ -13,6 +13,8 @@ import 'package:habit_quest/widgets/delete_button.dart';
 import 'package:provider/provider.dart';
 import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/services/tutorial_manager.dart';
+import 'package:habit_quest/providers/color_theme_provider.dart';
+
 
 class ManageHabitsScreen extends StatelessWidget {
   const ManageHabitsScreen({super.key});
@@ -84,12 +86,12 @@ class ManageHabitsScreen extends StatelessWidget {
                   }
                   final habit = habits[i - 1];
                   final isPositive = habit.importanceLevel > 0;
-                  // final badgeColor = isPositive
-                  //     ? Colors.green
-                  //     : Colors.red;
+                  int posColorInt = context.watch<ColorThemeProvider>().colorThemes[0];
+                  int negColorInt = context.watch<ColorThemeProvider>().colorThemes[1];
+
                   final badgeColor = Colors.white;
                   final badgeBg =
-                      isPositive ? Colors.green : Colors.red;
+                      isPositive ? Color(posColorInt) : Color(negColorInt);
 
                   return Card(
                     elevation: 0,

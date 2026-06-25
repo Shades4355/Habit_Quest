@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 enum ThemeModeOption { system, light, dark }
 class ThemeProvider extends ChangeNotifier {
   // State variables
