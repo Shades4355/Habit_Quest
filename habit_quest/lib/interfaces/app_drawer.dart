@@ -4,14 +4,6 @@ import 'package:habit_quest/services/tutorial_manager.dart';
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
-  void _navigateTo(BuildContext context, String route) {
-    final currentRoute = ModalRoute.of(context)?.settings.name;
-    Navigator.pop(context);
-    if (currentRoute != route) {
-      Navigator.pushReplacementNamed(context, route);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -83,7 +75,7 @@ class AppDrawer extends StatelessWidget {
                       if (TutorialManager.isTutorialActive.value) {
                         TutorialManager.nextStep();
                       }
-                      _navigateTo(context, '/home');
+                      Navigator.of(context).pushNamed('/home');
                     },
                   ),
                 ),
@@ -98,7 +90,7 @@ class AppDrawer extends StatelessWidget {
                       if (TutorialManager.isTutorialActive.value) {
                         TutorialManager.nextStep();
                       }
-                      _navigateTo(context, '/manage_habits');
+                      Navigator.of(context).pushNamed('/manage_habits');
                     },
                   ),
                 ),
@@ -113,7 +105,7 @@ class AppDrawer extends StatelessWidget {
                       if (TutorialManager.isTutorialActive.value) {
                         TutorialManager.nextStep();
                       }
-                      _navigateTo(context, '/habit_history');
+                      Navigator.of(context).pushNamed('/habit_history');
                     },
                   ),
                 ),
@@ -125,7 +117,7 @@ class AppDrawer extends StatelessWidget {
                   icon: Icons.settings_rounded,
                   label: 'Settings',
                   isSelected: currentRoute == '/settings',
-                  onTap: () => _navigateTo(context, '/settings'),
+                  onTap: () => Navigator.of(context).pushNamed('/settings'),
                 ),
               ],
             ),
