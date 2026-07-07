@@ -83,7 +83,7 @@ class TutorialManager {
             // Pulsing Next button (Bottom Right - Shifted up to clear Save button)
             if (needsNext)
               Positioned(
-                bottom: 32, 
+                bottom: 32,
                 right: 20,
                 child: _TutorialChip(
                   label: 'Next',
@@ -125,7 +125,7 @@ class TutorialManager {
     _isProcessing = false;
     endTutorial();
     if (!context.mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
   }
 
   static void nextStep() {
@@ -343,7 +343,7 @@ class _TutorialChipState extends State<_TutorialChip> with SingleTickerProviderS
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
-    
+
     _scale = Tween<double>(begin: 1.0, end: 1.06).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
@@ -358,12 +358,12 @@ class _TutorialChipState extends State<_TutorialChip> with SingleTickerProviderS
   @override
   Widget build(BuildContext context) {
     // Next button uses Tertiary color to contrast with the Save button underneath
-    final baseColor = widget.filled 
-        ? widget.colorScheme.tertiary 
+    final baseColor = widget.filled
+        ? widget.colorScheme.tertiary
         : widget.colorScheme.surface.withOpacity(0.95);
-        
-    final contentColor = widget.filled 
-        ? widget.colorScheme.onTertiary 
+
+    final contentColor = widget.filled
+        ? widget.colorScheme.onTertiary
         : widget.colorScheme.onSurface;
 
     return ScaleTransition(
