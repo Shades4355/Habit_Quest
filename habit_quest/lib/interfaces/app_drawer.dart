@@ -15,7 +15,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final currentRoute = ModalRoute.of(context)?.settings.name ?? '/';
+    final currentRoute = ModalRoute.of(context)?.settings.name ?? '/home';
 
     return Drawer(
       child: Column(
@@ -78,12 +78,12 @@ class AppDrawer extends StatelessWidget {
                   child: _DrawerItem(
                     icon: Icons.home_rounded,
                     label: 'Home',
-                    isSelected: currentRoute == '/',
+                    isSelected: currentRoute == '/home',
                     onTap: () {
                       if (TutorialManager.isTutorialActive.value) {
                         TutorialManager.nextStep();
                       }
-                      _navigateTo(context, '/');
+                      _navigateTo(context, '/home');
                     },
                   ),
                 ),

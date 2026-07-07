@@ -90,9 +90,9 @@ class HabitQuestApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: themeProvider.flutterThemeMode,
-      initialRoute: '/',
+      initialRoute: '/home',
       routes: {
-        '/': (context) => const HomePageScreen(),
+        '/home': (context) => const HomePageScreen(),
         '/extended_graph': (context) => const ExtendedGraphScreen(),
         '/manage_habits': (context) => const ManageHabitsScreen(),
         '/habit_history': (context) => const HabitHistoryScreen(),
