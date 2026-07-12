@@ -23,11 +23,32 @@ class ScoreChart extends StatelessWidget {
     );
   }
 
+  double _axisInterval(List<FlSpot> data) {
+    if (data.isEmpty) {
+      return 5;
+    }
+
+    final minY = data.reduce((a, b) => a.y < b.y ? a : b).y;
+    final maxY = data.reduce((a, b) => a.y > b.y ? a : b).y;
+    final span = (maxY - minY).abs();
+
+    if (span <= 20) return 5;
+    if (span <= 50) return 10;
+    if (span <= 100) return 20;
+    if (span <= 250) return 50;
+    return 100;
+  }
+
+  double _clampDown(double value, double interval) {
+    return (value / interval).floor() * interval;
+  }
+
+  double _clampUp(double value, double interval) {
+    return (value / interval).ceil() * interval;
+  }
+
   // Formula for dynamic axis scaling
   List<double> _axisScalingFormula(List<FlSpot> data) {
-    // percent padding
-    final percentage = 0.3;
-
     // Default range [-20, 20]
     if (data.isEmpty) {
       return [-20, 20];
@@ -36,20 +57,20 @@ class ScoreChart extends StatelessWidget {
     // min and max y values
     double minY = data.reduce((a, b) => a.y < b.y ? a : b).y;
     double maxY = data.reduce((a, b) => a.y > b.y ? a : b).y;
+    final interval = _axisInterval(data);
+
+    if (minY == maxY) {
+      minY -= interval;
+      maxY += interval;
+    }
 
     if (minY > -20 && maxY < 20) {
       return [-20, 20];
     }
 
-    // Calculate padding based on the range of data
-    final span = (maxY - minY).abs();
-    final padding = (span * percentage).ceil();
-
-    // round the padding to the nearest 5 for cleaner axis labels
-    double roundToNearest5th(double value) => ((value / 5).round() * 5).toDouble();
-
-    minY = roundToNearest5th(minY - padding);
-    maxY = roundToNearest5th(maxY + padding);
+    final padding = (interval * 2).toDouble();
+    minY = _clampDown(minY - padding, interval);
+    maxY = _clampUp(maxY + padding, interval);
 
     return [minY, maxY];
   }
@@ -58,6 +79,7 @@ class ScoreChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final spots = _getDataPoints(context);
     final yScale = _axisScalingFormula(spots);
+    final yInterval = _axisInterval(spots);
     final provider = context.watch<HabitRecordProvider>();
 
     if (spots.isEmpty) {
@@ -73,8 +95,7 @@ class ScoreChart extends StatelessWidget {
         gridData: const FlGridData(
           show: true,
           verticalInterval: 1,
-          horizontalInterval: 5,
-        ),
+        ).copyWith(horizontalInterval: yInterval),
         borderData: FlBorderData(show: true),
         titlesData: FlTitlesData(
           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -82,8 +103,8 @@ class ScoreChart extends StatelessWidget {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: 5,
-              reservedSize: 40//MediaQuery.of(context).size.width * 0.12,
+              interval: yInterval,
+              reservedSize: 40,
             ),
           ),
           bottomTitles: AxisTitles(
