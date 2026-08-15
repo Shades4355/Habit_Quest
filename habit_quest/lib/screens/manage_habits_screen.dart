@@ -64,27 +64,24 @@ class ManageHabitsScreen extends StatelessWidget {
                 );
               }
 
+              final tutorialVisible = TutorialManager.isTutorialActive.value;
+
               return ListView.builder(
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
-                // itemCount: habits.length + 1,
-                itemCount: habits.length,
+                itemCount: habits.length + (tutorialVisible ? 1 : 0),
                 itemBuilder: (ctx, i) {
-                  if (i == 0) {
-                    return ValueListenableBuilder<bool>(
-                      valueListenable: TutorialManager.isTutorialActive,
-                      builder: (ctx, isActive, _) {
-                        if (!isActive) return const SizedBox.shrink();
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
-                          child: Text(
-                            'These are your active habits. Tap the pencil to edit or the trash to delete. The number badge shows the importance level.',
-                            style: TextStyle(fontSize: 13, color: colorScheme.outline),
-                          ),
-                        );
-                      },
+                  if (tutorialVisible && i == 0) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+                      child: Text(
+                        'These are your active habits. Tap the pencil to edit or the trash to delete. The number badge shows the importance level.',
+                        style: TextStyle(fontSize: 13, color: colorScheme.outline),
+                      ),
                     );
                   }
-                  final habit = habits[i - 1];
+
+                  final habitIndex = tutorialVisible ? i - 1 : i;
+                  final habit = habits[habitIndex];
                   final isPositive = habit.importanceLevel > 0;
                   int posColorInt = context.watch<ColorThemeProvider>().colorThemes[0];
                   int negColorInt = context.watch<ColorThemeProvider>().colorThemes[1];
