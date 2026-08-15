@@ -11,11 +11,11 @@ abstract class HabitDao {
   Future<List<Habit>> findAllHabits();
 
   /// Retrieves all active (non-archived) habits from the database
-  @Query('SELECT * FROM Habit WHERE isArchived = 0')
+  @Query('SELECT * FROM Habit WHERE isArchived = 0 ORDER BY createdAtMilliseconds DESC')
   Future<List<Habit>> findActiveHabits();
 
   /// Retrieves all archived habits from the database
-  @Query('SELECT * FROM Habit WHERE isArchived = 1')
+  @Query('SELECT * FROM Habit WHERE isArchived = 1 ORDER BY createdAtMilliseconds DESC')
   Future<List<Habit>> findArchivedHabits();
 
   /// Inserts a new habit into the database

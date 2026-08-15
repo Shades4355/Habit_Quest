@@ -200,7 +200,8 @@ class _$HabitDao extends HabitDao {
 
   @override
   Future<List<Habit>> findActiveHabits() async {
-    return _queryAdapter.queryList('SELECT * FROM Habit WHERE isArchived = 0',
+    return _queryAdapter.queryList(
+        'SELECT * FROM Habit WHERE isArchived = 0 ORDER BY createdAtMilliseconds DESC',
         mapper: (Map<String, Object?> row) => Habit(
             id: row['id'] as int?,
             habitName: row['habitName'] as String,
@@ -212,7 +213,8 @@ class _$HabitDao extends HabitDao {
 
   @override
   Future<List<Habit>> findArchivedHabits() async {
-    return _queryAdapter.queryList('SELECT * FROM Habit WHERE isArchived = 1',
+    return _queryAdapter.queryList(
+        'SELECT * FROM Habit WHERE isArchived = 1 ORDER BY createdAtMilliseconds DESC',
         mapper: (Map<String, Object?> row) => Habit(
             id: row['id'] as int?,
             habitName: row['habitName'] as String,
