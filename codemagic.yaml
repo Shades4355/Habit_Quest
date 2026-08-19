@@ -29,7 +29,7 @@ workflows:
         script: |
           mkdir -p ../runnables
           rm -f ../runnables/*.ipa
-          cp build/ios/iphoneos/habit_quest.ipa ../runnables/habit_quest-ios-latest.ipa
+          cp build/ios/iphoneos/habit_quest.ipa ../runnables/HabitQuest.ipa
 
       - name: Commit and push IPA
         script: |
@@ -41,7 +41,7 @@ workflows:
           git add runnables/
           git commit -m "Update latest iOS runnable from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
 
-          git push https://$GITHUB_TOKEN@github.com/UML-COMP4630-LIN/project-coderepository-habitquest.git HEAD:$CM_BRANCH
+          git push https://$GITHUB_TOKEN@github.com/Shades4355/Habit_Quest.git HEAD:$CM_BRANCH
 
     artifacts:
       - build/ios/iphoneos/habit_quest.ipa
@@ -68,7 +68,7 @@ workflows:
         script: |
           mkdir -p ../runnables
           rm -f ../runnables/*.apk
-          cp build/app/outputs/flutter-apk/app-release.apk ../runnables/habit_quest-android-latest.apk
+          cp build/app/outputs/flutter-apk/app-release.apk ../runnables/HabitQuest.apk
 
       - name: Commit and push APK
         script: |
@@ -80,7 +80,7 @@ workflows:
           git add runnables/
           git commit -m "Update latest Android runnable from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
 
-          git push https://$GITHUB_TOKEN@github.com/UML-COMP4630-LIN/project-coderepository-habitquest.git HEAD:$CM_BRANCH
+          git push https://$GITHUB_TOKEN@github.com/Shades4355/Habit_Quest.git HEAD:$CM_BRANCH
 
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
@@ -115,7 +115,7 @@ workflows:
         script: |
           mkdir -p ../runnables
           rm -f ../runnables/*.ipa
-          cp build/ios/iphoneos/habit_quest.ipa ../runnables/habit_quest-ios-latest.ipa
+          cp build/ios/iphoneos/habit_quest.ipa ../runnables/HabitQuest.ipa
 
       - name: Build Android APK
         script: flutter build apk --release
@@ -124,7 +124,7 @@ workflows:
         script: |
           mkdir -p ../runnables
           rm -f ../runnables/*.apk
-          cp build/app/outputs/flutter-apk/app-release.apk ../runnables/habit_quest-android-latest.apk
+          cp build/app/outputs/flutter-apk/app-release.apk ../runnables/HabitQuest.apk
 
       - name: Commit and push runnables
         script: |
@@ -136,7 +136,7 @@ workflows:
           git add runnables/
           git commit -m "Update latest app runnables from Codemagic build ${CM_BUILD_ID} [skip ci]" || echo "No changes to commit"
 
-          git push https://$GITHUB_TOKEN@github.com/UML-COMP4630-LIN/project-coderepository-habitquest.git HEAD:$CM_BRANCH
+          git push https://$GITHUB_TOKEN@github.com/Shades4355/Habit_Quest.git HEAD:$CM_BRANCH
 
     artifacts:
       - build/ios/iphoneos/habit_quest.ipa

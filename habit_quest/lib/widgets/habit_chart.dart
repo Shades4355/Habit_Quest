@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:habit_quest/providers/habit_record_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:habit_quest/providers/color_theme_provider.dart';
 
 enum ChartType { home, extended }
 
@@ -90,7 +91,7 @@ class ScoreChart extends StatelessWidget {
         ],
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (LineBarSpot touchedSpot) => 
+            getTooltipColor: (LineBarSpot touchedSpot) =>
                 Colors.blueGrey.withValues(alpha: 0.9),
             tooltipPadding: const EdgeInsets.all(8),
             tooltipMargin: 8,
@@ -116,15 +117,15 @@ class ScoreChart extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: '+$posPoints\n',
-                      style: const TextStyle(
-                        color: Colors.greenAccent,
+                      style: TextStyle(
+                        color: Color(context.read<ColorThemeProvider>().colorThemes[0]),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '$negPoints\n',
-                      style: const TextStyle(
-                        color: Colors.redAccent,
+                      style: TextStyle(
+                        color: Color(context.read<ColorThemeProvider>().colorThemes[1]),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
