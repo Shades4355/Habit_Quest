@@ -8,7 +8,6 @@ import 'package:habit_quest/interfaces/edit_record_interface_pop_up.dart';
 import 'package:habit_quest/database/entities/habit_record.dart';
 
 import 'package:habit_quest/providers/habit_record_provider.dart';
-import 'package:habit_quest/providers/habit_provider.dart';
 import 'package:habit_quest/providers/color_theme_provider.dart';
 
 import 'package:habit_quest/services/tutorial_manager.dart';
